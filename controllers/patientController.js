@@ -4,6 +4,7 @@ const Patient = require("../models/PatientModel");
 const {
   patientValidity,
   patientUpdate,
+  deletePatientValidity,
 } = require("../validations/patientFormValidation");
 
 class PatientClass {
@@ -114,21 +115,44 @@ class PatientClass {
             }
           )
         );
+      } else {
+        return res.status(404).send("Patient details not found for update");
       }
     } catch (error) {
       throw error;
     }
   }; //patientEdit close
 
+  //method to delete patient
+  deletePatient = async (req, res) => {
+    const email = req.body.email;
 
+    const check = deletePatientValidity.validate(req.body);
+    if (check.error) {
+      return res.status(404).send(check.error.details[0].message);
+    }
 
-  //mthod to delete patient
-  deletePatient = async (req, res)=>{
-    
-  }
+    // delete patient data
+    try {
+      // check if patient exist
+      const patientExist = await Patient.findOne({
+        where: { email: req.body.email },
+      });
 
-
-
+      if (patientExist) {
+        await Patient.destroy({
+          where: {
+            email: req.body.email,
+          },
+        });
+        return res.status(200).send("Patient data deleted successfully");
+      } else {
+        return res.status(404).send("Patient does not exsist");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 } //class close
 
 // creat instance of the patient class

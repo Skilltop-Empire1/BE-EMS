@@ -11,6 +11,6 @@ const router = express.Router()
 router.route("/").get(patient.patientClass.login)
 router.route("/create").post(patient.patientClass.createPatient)
 router.route("/edit").put(patient.patientClass.patientEdit)
-
+router.route("/delete").delete(patient.patientClass.deletePatient)
 //export module
 module.exports = router
