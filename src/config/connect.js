@@ -1,8 +1,9 @@
 //const pg  = require("pg")
 //const {Pool} = pg;
-const {Sequelize} = require("sequelize")
-
+const {Sequelize} = require("sequelize");
+//const { setUpAssociation } = require("../models");
 require("dotenv").config()
+
 
 console.log(process.env.PG_HOST)
 
@@ -33,8 +34,8 @@ const sequelize = new Sequelize(
     config
 ); 
 
-if(sequelize){
-    console.log("connected to databse")
-}
+
+
+
 
 module.exports = sequelize
