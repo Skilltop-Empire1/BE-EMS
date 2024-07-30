@@ -1,11 +1,12 @@
 const express = require("express");
 const validate = require("../middlewares/validation");
 const appointmentValidation = require("../schema/appointmentSchema");
-const {bookAutomaticAppointment, updateAppointment, deleteAppointment} = require("../controllers/appointmentController")
+const {bookAppointment, updateAppointment, deleteAppointment, getRecentAppointments} = require("../controllers/appointmentController")
 
 const router = express.Router();
 
-router.post("/book", validate(appointmentValidation),bookAutomaticAppointment )
+router.get("/recent", getRecentAppointments )
+router.post("/book/:patientId", validate(appointmentValidation), bookAppointment )
 router.put('/update/:appointmentId', validate(appointmentValidation),updateAppointment )
 router.delete('/delete/:appointmentId',deleteAppointment )
 

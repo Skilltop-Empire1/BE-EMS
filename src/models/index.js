@@ -8,18 +8,6 @@ const setUpAssociation = require("./associationSetup");
 
 
 
-// const synDatabase = async() => {
-//     try {
-//         setUpAssociation();
-//         await sequelize.sync({force: true})
-//         console.log("Databse syn correctly")
-//     } catch (error) {
-//         console.log("error in index syn",error)
-//     }
-// }
-
-// synDatabase()
-
 
 module.exports = {
     sequelize,

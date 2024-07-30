@@ -31,7 +31,12 @@ const Staff = sequelize.define('Staff', {
   specialization: {
     type: DataTypes.STRING(100),
     allowNull: false,
-  }
+  },
+  role: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'user' 
+}
 }, {
   tableName: 'staff',
   timestamps: false

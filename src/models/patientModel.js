@@ -22,7 +22,12 @@ const Patient = sequelize.define('Patient', {
   patient_mobile: {
     type: DataTypes.STRING(20),
     allowNull: false,
-  }
+  },
+  role: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'user' 
+}
 }, {
   tableName: 'patients',
   timestamps: false

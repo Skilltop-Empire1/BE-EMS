@@ -1,7 +1,6 @@
-//const pg  = require("pg")
-//const {Pool} = pg;
+
 const {Sequelize} = require("sequelize");
-//const { setUpAssociation } = require("../models");
+
 require("dotenv").config()
 
 
