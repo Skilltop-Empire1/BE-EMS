@@ -7,11 +7,19 @@ const {
   deletePatientValidity,
 } = require("../validations/patientFormValidation");
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
+
+// Object for functionality
+
 class PatientClass {
-  //test rout
-  login = (req, res) => {
+  //route to count number of patients
+
+  patientCount = async (req, res) => {
     try {
-      return res.send("welcome to our app");
+      const patientCount = await Patient.findAndCountAll({});
+      return res.send([patientCount.count]);
     } catch (error) {
       return console.log(error);
     }
@@ -40,7 +48,7 @@ class PatientClass {
     try {
       //check if patient exist
       const patientExist = await Patient.findOne({
-        where: { email: req.body.email },
+        where: { mobile_no: req.body.mobile_no },
       });
 
       // create patient data if patient does not exist
@@ -90,7 +98,7 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { email: req.body.email },
+        where: { mobile_no: req.body.mobile_no },
       });
 
       //update logic
@@ -110,7 +118,7 @@ class PatientClass {
             },
             {
               where: {
-                email: req.body.email,
+                mobile_no: req.body.mobile_no,
               },
             }
           )
@@ -125,7 +133,7 @@ class PatientClass {
 
   //method to delete patient
   deletePatient = async (req, res) => {
-    const email = req.body.email;
+    const mobile_no = req.body.mobile_no;
 
     const check = deletePatientValidity.validate(req.body);
     if (check.error) {
@@ -136,23 +144,29 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { email: req.body.email },
+        where: { mobile_no: req.body.mobile_no },
       });
 
       if (patientExist) {
         await Patient.destroy({
           where: {
-            email: req.body.email,
+            mobile_no: req.body.mobile_no,
           },
         });
         return res.status(200).send("Patient data deleted successfully");
       } else {
-        return res.status(404).send("Patient does not exsist");
+        return res.status(404).send("Patient does not exist");
       }
     } catch (error) {
       throw error;
     }
   };
+
+  //functionality to upload image
+  profilePics = async () =>{
+    
+  }
+
 } //class close
 
 // creat instance of the patient class

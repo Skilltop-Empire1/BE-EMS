@@ -38,7 +38,7 @@ const patientUpdate = Joi.object({
 
 //delete  dedtails
 const deletePatientValidity =  Joi.object({
-    email: Joi.string().email().required()
+    mobile_no: Joi.string().required()
 })
 
 //module export

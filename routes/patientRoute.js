@@ -8,7 +8,7 @@ const router = express.Router()
 
 
 //create routes
-router.route("/").get(patient.patientClass.login)
+router.route("/count").post(patient.patientClass.patientCount)
 router.route("/create").post(patient.patientClass.createPatient)
 router.route("/edit").put(patient.patientClass.patientEdit)
 router.route("/delete").delete(patient.patientClass.deletePatient)
