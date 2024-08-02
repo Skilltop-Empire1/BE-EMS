@@ -1,11 +1,14 @@
 const express = require('express');
-const { getSettings, updateSettings, updateAdminSettings } = require('../controllers/settingController');
+const { getSettings,createRolePermission,logout,updatePassword } = require('../controllers/settingController');
 const {auth,isAdmin} = require('../middlewares/auth');
 const router = express.Router();
 
-router.get('/settings',auth, getSettings);
-router.put('/settings',auth, updateSettings);
-router.put('/admin/settings',isAdmin, updateAdminSettings);
+
+router.post('/role',isAdmin,createRolePermission);
+router.post('/logout',auth, logout);
+router.put('/profile/change-password',auth, updatePassword);
+router.put('/:userId/update-picture')
+router.get('/:userId'/*,auth*/, getSettings);
 
 
 

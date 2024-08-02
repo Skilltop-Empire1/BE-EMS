@@ -14,8 +14,16 @@ const patientRoute = require("./src/routes/patientRoute")
 const staffRoute = require("./src/routes/staffRoute")
 const appointmentRoute = require("./src/routes/appointmentRoute")
 const settingRoute = require("./src/routes/settingRoute")
+
 app.use(morgan("tiny"))
-app.use(cors())
+
+const corsOptions = {
+    origin:["http://localhost:5000",`${process.env.CLIENT_URL}`],
+    methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials:true,
+    allowedHeaders:'Content-Type,Authorization'
+}
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
 const port = process.env.PORT || 5000
@@ -36,7 +44,6 @@ const start = async () => {
         // Sync models
         await sequelize.sync({ force: false/*true*/ });
         console.log('Database synchronized...');
-        //console.log(sqDb.config)
         app.listen(port,() => {
             console.log(`app is listening to port ${port}`)
         })
