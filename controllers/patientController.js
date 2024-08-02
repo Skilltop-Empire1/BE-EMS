@@ -6,9 +6,11 @@ const {
   patientUpdate,
   deletePatientValidity,
 } = require("../validations/patientFormValidation");
+// requiring multer library
 
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+
+
+
 
 
 // Object for functionality
@@ -163,10 +165,11 @@ class PatientClass {
   };
 
   //functionality to upload image
-  profilePics = async () =>{
-    
-  }
 
+  profilePics = async (req, res) => {
+    return res.send(req.file)  
+  };
+  
 } //class close
 
 // creat instance of the patient class

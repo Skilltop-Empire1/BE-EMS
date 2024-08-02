@@ -44,6 +44,10 @@ const Patient = db.define("Patient", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  picture: {
+    type: Sequelize.STRING, // Store the picture URL or path
+    allowNull: true,
+  },
 });
 
 module.exports = Patient;
