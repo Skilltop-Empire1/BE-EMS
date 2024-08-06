@@ -9,6 +9,10 @@ const doctorSchema = Joi.object({
     mobile_number: Joi.string().pattern(/^[0-9]+$/).min(10).max(15).required(),
     practice: Joi.string().required(),
     specialization: Joi.string().required(),
-});
+    date_Of_Birth: Joi.date().less('now').required().messages({
+        'date.less': 'Date of birth must be in the past'
+      }),
+      education_qualification: Joi.string().valid('High School', 'Associate Degree', 'Bachelor Degree', 'Nursing', 'Master Degree', 'Doctorate').required()
+    });
 
 module.exports = doctorSchema;

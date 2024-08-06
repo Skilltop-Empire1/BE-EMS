@@ -27,6 +27,12 @@ const Organization = sequelize.define('Organization', {
     zip_code: {
         type: DataTypes.STRING,
     },
+    patient_id: {
+        type: DataTypes.STRING,
+    },
+    staff_id: {
+        type: DataTypes.STRING,
+    },
 
 });
 

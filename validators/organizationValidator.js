@@ -9,7 +9,9 @@ const organizationSchema = Joi.object({
     mobile_number: Joi.string().pattern(/^[0-9]+$/).min(10).max(15).required(),
     city: Joi.string().required(),
     state: Joi.string().required(),
-    zip_code: Joi.string().pattern(/^[0-9]+$/).min(6).max(7).required()
+    zip_code: Joi.string().pattern(/^[0-9]+$/).min(6).max(7).required(),
+    patient_id: Joi.string().required(),
+    staff_id: Joi.string().required()
 });
 
 module.exports = organizationSchema;

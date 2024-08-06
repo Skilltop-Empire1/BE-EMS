@@ -9,6 +9,8 @@ const staffSchema = Joi.object({
     mobile_number: Joi.string().pattern(/^[0-9]+$/).min(10).max(15).required(),
     practice: Joi.string().required(),
     specialization: Joi.string().required(),
+    doctors_id: Joi.string().required(),
+    nurses_id: Joi.string().required(),
 });
 
 module.exports = staffSchema;
