@@ -1,31 +1,30 @@
 //import the required dependencies
-const express = require("express")
-const db = require("./config/dbConfig")
+const express = require("express");
+const db = require("./config/dbConfig");
 
 //import patient model
-require("./models/PatientModel")
-
-
+require("./models/PatientModel");
+cors = require("cors");
+const morgan = require("morgan");
 
 //create express app
-const app = express()
-
+const app = express();
 
 //middleware
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({ extended: false }));
 
+app.use(morgan("tiny"));
+const port = process.env.PORT || 5000;
 
 //route
-app.use('/EMS/patients', require('./routes/patientRoute'))
+app.use("/EMS/patients", require("./routes/patientRoute"));
 
+const start = () => {
+  try {
+    app.listen(port, () => {
+      console.log(`app is listening to port ${port}`);
+    });
+  } catch (error) {}
+};
 
-//declear listening port
-const PORT = process.env.PORT||5000
-
-
-//run the server
-app.listen(PORT, ()=>{
-    console.log(`Application running on port ${PORT}`)
-})
-
- 
+start();
