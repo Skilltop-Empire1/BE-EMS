@@ -13,6 +13,7 @@ router.route("/create").post(patient.patientClass.createPatient)
 router.route("/edit").put(patient.patientClass.patientEdit)
 router.route("/delete").delete(patient.patientClass.deletePatient)
 router.route('/upload').put(upload.single('file'), patient.patientClass.profilePics)
+router.route('/photo').post(patient.patientClass.photoDisplay)
 
 //export module
 module.exports = router

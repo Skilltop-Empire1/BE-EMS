@@ -6,8 +6,10 @@ const {
   patientUpdate,
   deletePatientValidity,
 } = require("../validations/patientFormValidation");
-// requiring multer library
 
+// requiring multer library
+const upload = require("../middleware/multerMiddleware");
+const { where } = require("sequelize");
 
 
 
@@ -21,7 +23,7 @@ class PatientClass {
   patientCount = async (req, res) => {
     try {
       const patientCount = await Patient.findAndCountAll({});
-      return res.send([patientCount.count]);
+      return res.json([patientCount.count]);
     } catch (error) {
       return console.log(error);
     }
@@ -164,11 +166,75 @@ class PatientClass {
     }
   };
 
-  //functionality to upload image
 
+  //image query
+  photoDisplay = async (req, res) =>{
+    const mobile_no = req.body.mobile_no;
+    try {
+      
+    //validate field
+    const check = deletePatientValidity.validate(req.body);
+    if (check.error) {
+      return res.status(404).send(check.error.details[0].message);
+    }
+
+    //query for photo
+    const display = await Patient.findOne({
+      attributes: ['picture'],
+    },{
+      where: {
+        mobile_no: req.body.mobile_no
+      }
+    })
+    console.log('File found')
+    res.json({message: "File found"})
+
+    } catch (error) {
+      throw error
+    }
+}
+
+  //functionality to upload image
   profilePics = async (req, res) => {
-    return res.send(req.file)  
-  };
+    try {
+      // 
+      const mobile_no = req.body.mobile_no;
+
+      //validate field
+      const check = deletePatientValidity.validate(req.body);
+      if (check.error) {
+        return res.status(404).send(check.error.details[0].message);
+    }
+
+    //check if patiebt exist
+      const patientExist = Patient.findOne({
+        where: { mobile_no: req.body.mobile_no },
+      })
+
+      const filePath = req.file.path
+      if(patientExist){
+        await Patient.update({
+          picture: filePath
+        },
+        {
+          where: { mobile_no: req.body.mobile_no },
+        }
+      )
+      console.log(req.file)
+      return res.status(200).json({message: 'File upload successful'})
+      }else{
+        res.status(404).json({message: 'Patient does not exist'})
+      }
+    } catch (error) {
+      throw error
+    }
+    
+  }
+   
+  
+
+  // Display profile image
+  
   
 } //class close
 
