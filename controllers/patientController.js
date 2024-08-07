@@ -72,7 +72,7 @@ class PatientClass {
           })
         );
       } else {
-        return res.status(404).send("Patient already exist");
+        return res.status(404).json({msg:"Patient already exist"});
       }
     } catch (error) {
       throw error;
@@ -128,7 +128,7 @@ class PatientClass {
           )
         );
       } else {
-        return res.status(404).send("Patient details not found for update");
+        return res.status(404).json({msg:"Patient details not found for update"});
       }
     } catch (error) {
       throw error;
@@ -157,9 +157,9 @@ class PatientClass {
             mobile_no: req.body.mobile_no,
           },
         });
-        return res.status(200).send("Patient data deleted successfully");
+        return res.status(200).json({msg:"Patient data deleted successfully"});
       } else {
-        return res.status(404).send("Patient does not exist");
+        return res.status(404).send({msg:"Patient does not exist"});
       }
     } catch (error) {
       throw error;
@@ -187,7 +187,7 @@ class PatientClass {
       }
     })
     console.log('File found')
-    res.json({message: "File found"})
+    return res.json({msg: "File found"})
 
     } catch (error) {
       throw error
