@@ -47,7 +47,7 @@ class PatientClass {
     //validate inputs
     const check = patientValidity.validate(req.body);
     if (check.error) {
-      return res.status(404).send(check.error.details[0].message);
+      return res.status(404).json(check.error.details[0].message);
     }
     try {
       //check if patient exist
@@ -96,7 +96,7 @@ class PatientClass {
     //validate inputs
     const check = patientUpdate.validate(req.body);
     if (check.error) {
-      return res.status(404).send(check.error.details[0].message);
+      return res.status(404).json(check.error.details[0].message);
     }
 
     try {
@@ -141,7 +141,7 @@ class PatientClass {
 
     const check = deletePatientValidity.validate(req.body);
     if (check.error) {
-      return res.status(404).send(check.error.details[0].message);
+      return res.status(404).json(check.error.details[0].message);
     }
 
     // delete patient data
@@ -159,7 +159,7 @@ class PatientClass {
         });
         return res.status(200).json({msg:"Patient data deleted successfully"});
       } else {
-        return res.status(404).send({msg:"Patient does not exist"});
+        return res.status(404).json({msg:"Patient does not exist"});
       }
     } catch (error) {
       throw error;
