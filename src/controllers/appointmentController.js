@@ -1,6 +1,7 @@
 
-
 const { Appointment, Patient, Staff, Organization } = require('../models');
+const {sendMail,sendSMS} = require("../utils/mail")
+
 
 const bookAppointment = async (req, res) => {
     const { patientId } = req.params;
@@ -14,6 +15,8 @@ const bookAppointment = async (req, res) => {
         }
 
         const patient = await Patient.findByPk(patientId);
+        const email = patient.patient_email
+        const phoneNo = patient.patient_mobile
         if (!patient) {
             return res.status(404).json({ message: 'Patient not found' });
         }
@@ -44,9 +47,22 @@ const bookAppointment = async (req, res) => {
                     org_id: org.org_id,
                     appointment_date: appointmentDate,
                     appointment_time: appointmentTime,
+                    address:org.org_address,
                     reason: reason || null,
                 });
 
+                const emailContent = `
+                    Dear ${patient.patient_name},
+                    Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
+                    Reason: ${reason || 'N/A'}
+                    Doctor: ${staff.staff_name}
+                `;
+
+                const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${staff.staff_name}.`;
+
+
+                await sendMail(email,"EMS Appointment",emailContent)
+                await sendSMS(smsContent,phoneNo)
                 return res.status(201).json({ message: 'Appointment booked successfully', appointment });
             }
         }

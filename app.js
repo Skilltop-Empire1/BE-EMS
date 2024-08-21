@@ -39,7 +39,7 @@ app.use("/api/v1/setting",settingRoute)
 const start = async () => {
     try {
         await sequelize.authenticate();
-        console.log('Database connected...');
+        console.log('Database connected...'); 
         
         // Sync models
         await sequelize.sync({ force: false/*true*/ });

@@ -43,6 +43,13 @@ const Appointment = sequelize.define("Appointment", {
             model: Organization,
             key: "org_id"
         }
+    },
+    address:{
+        type:DataTypes.STRING,
+        references:{
+            model:Organization,
+            key:"org_address"
+        }
     }
 }, {
     tableName: "appointment",
