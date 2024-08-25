@@ -1,8 +1,6 @@
 //import the required dependencies
 const express = require("express");
 const db = require("./config/dbConfig");
-
-//import patient model
 require("./models/PatientModel");
 cors = require("cors");
 const morgan = require("morgan");

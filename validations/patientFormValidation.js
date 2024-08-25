@@ -7,15 +7,13 @@ const patientValidity = Joi.object({
     id: Joi.string().required(),
     firstname: Joi.string().required(),
     surname: Joi.string().required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().email(),
     mobile_no: Joi.string().required(),
     gender: Joi.string().required(),
-    dob: Joi.string().required(),
-    address: Joi.string().required(),
-    education_qualification: Joi.string().required(),
-    organization: Joi.string().required(),
-
-
+    dob: Joi.string(),
+    address: Joi.string(),
+    education_qualification: Joi.string(),
+    organization: Joi.string(),
 })
 
 

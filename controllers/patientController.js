@@ -18,6 +18,17 @@ const { where } = require("sequelize");
 // Object for functionality
 
 class PatientClass {
+
+  //route too display all patient
+  patientdisplay = async (req, res) => {
+    try {
+      const patientCount = await Patient.findAndCountAll({});
+      return res.json(patientCount);
+    } catch (error) {
+      return console.log(error);
+    }
+  };
+
   //route to count number of patients
 
   patientCount = async (req, res) => {
@@ -167,38 +178,13 @@ class PatientClass {
   };
 
 
-  //image query
-  photoDisplay = async (req, res) =>{
-    const mobile_no = req.body.mobile_no;
-    try {
-      
-    //validate field
-    const check = deletePatientValidity.validate(req.body);
-    if (check.error) {
-      return res.status(404).send(check.error.details[0].message);
-    }
-
-    //query for photo
-    const display = await Patient.findOne({
-      attributes: ['picture'],
-    },{
-      where: {
-        mobile_no: req.body.mobile_no
-      }
-    })
-    console.log('File found')
-    return res.json({msg: "File found"})
-
-    } catch (error) {
-      throw error
-    }
-}
+ 
 
   //functionality to upload image
   profilePics = async (req, res) => {
     try {
       // 
-      const mobile_no = req.body.mobile_no;
+      const mobile_no = req.body.mobile_no
 
       //validate field
       const check = deletePatientValidity.validate(req.body);
@@ -234,6 +220,38 @@ class PatientClass {
   
 
   // Display profile image
+  displayPics = async (req, res) => {
+    try {
+      const mobile_no = req.body.mobile_no
+      const check = deletePatientValidity.validate(req.body);
+      if (check.error) {
+        return res.status(404).send(check.error.details[0].message);
+    }
+    //find patient 
+    const patientExist = Patient.findOne({
+
+      where: { mobile_no: req.body.mobile_no },
+    })
+    if(patientExist){
+     
+    res.send(resolve(patientExist.picture))
+    console.log("file found")
+      
+    }
+      
+    } catch (error) {
+      
+    }
+  
+  }
+  
+
+
+
+
+
+
+
   
   
 } //class close
@@ -245,3 +263,17 @@ const patientClass = new PatientClass();
 module.exports = {
   patientClass,
 };
+
+
+
+
+
+
+// Image.findByPk(req.params.id);
+//     if (!image) {
+//       return res.status(404).send('Image not found');
+//     }
+//     res.sendFile(path.join(__dirname, '../uploads/', image.filename)); // Adjust the path as necessary
+//   } catch (error) {
+//     res.status(500).json({ error: 'Failed to retrieve image' });
+//   }
