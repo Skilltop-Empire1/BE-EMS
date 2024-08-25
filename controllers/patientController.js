@@ -181,69 +181,69 @@ class PatientClass {
  
 
   //functionality to upload image
-  profilePics = async (req, res) => {
-    try {
-      // 
-      const mobile_no = req.body.mobile_no
+  // profilePics = async (req, res) => {
+  //   try {
+  //     // 
+  //     const mobile_no = req.body.mobile_no
 
-      //validate field
-      const check = deletePatientValidity.validate(req.body);
-      if (check.error) {
-        return res.status(404).send(check.error.details[0].message);
-    }
+  //     //validate field
+  //     const check = deletePatientValidity.validate(req.body);
+  //     if (check.error) {
+  //       return res.status(404).send(check.error.details[0].message);
+  //   }
 
-    //check if patiebt exist
-      const patientExist = Patient.findOne({
-        where: { mobile_no: req.body.mobile_no },
-      })
+  //   //check if patiebt exist
+  //     const patientExist = Patient.findOne({
+  //       where: { mobile_no: req.body.mobile_no },
+  //     })
 
-      const filePath = req.file.path
-      if(patientExist){
-        await Patient.update({
-          picture: filePath
-        },
-        {
-          where: { mobile_no: req.body.mobile_no },
-        }
-      )
-      console.log(req.file)
-      return res.status(200).json({message: 'File upload successful'})
-      }else{
-        res.status(404).json({message: 'Patient does not exist'})
-      }
-    } catch (error) {
-      throw error
-    }
+  //     const filePath = req.file.path
+  //     if(patientExist){
+  //       await Patient.update({
+  //         picture: filePath
+  //       },
+  //       {
+  //         where: { mobile_no: req.body.mobile_no },
+  //       }
+  //     )
+  //     console.log(req.file)
+  //     return res.status(200).json({message: 'File upload successful'})
+  //     }else{
+  //       res.status(404).json({message: 'Patient does not exist'})
+  //     }
+  //   } catch (error) {
+  //     throw error
+  //   }
     
-  }
+  // }
    
   
 
-  // Display profile image
-  displayPics = async (req, res) => {
-    try {
-      const mobile_no = req.body.mobile_no
-      const check = deletePatientValidity.validate(req.body);
-      if (check.error) {
-        return res.status(404).send(check.error.details[0].message);
-    }
-    //find patient 
-    const patientExist = Patient.findOne({
+  // // Display profile image
+  // displayPics = async (req, res) => {
+  //   try {
+  //     const mobile_no = req.body.mobile_no
+  //     const check = deletePatientValidity.validate(req.body);
+  //     if (check.error) {
+  //       return res.status(404).send(check.error.details[0].message);
+  //   }
+  //   //find patient 
+  //   const patientExist = Patient.findOne({
 
-      where: { mobile_no: req.body.mobile_no },
-    })
-    if(patientExist){
+  //     where: { mobile_no: req.body.mobile_no },
+  //   })
+  //   if(patientExist){
      
-    res.send(resolve(patientExist.picture))
-    console.log("file found")
+  //   res.send(resolve(patientExist.picture))
+  //   console.log("file found")
       
-    }
+  //   }
       
-    } catch (error) {
+  //   } catch (error) {
       
-    }
+  //   }
   
-  }
+  // }
   
 
 
