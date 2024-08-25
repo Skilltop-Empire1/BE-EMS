@@ -10,6 +10,7 @@ const bookAppointment = async (req, res) => {
     try {
        
         const org = await Organization.findOne({ where: { org_name: orgName } });
+        console.log("org",org.org_id)
         if (!org) {
             return res.status(400).json({ message: 'Organization not found' });
         }
@@ -17,6 +18,7 @@ const bookAppointment = async (req, res) => {
         const patient = await Patient.findByPk(patientId);
         const email = patient.patient_email
         const phoneNo = patient.patient_mobile
+        console.log("phone",phoneNo)
         if (!patient) {
             return res.status(404).json({ message: 'Patient not found' });
         }
@@ -54,8 +56,8 @@ const bookAppointment = async (req, res) => {
                 const emailContent = `
                     Dear ${patient.patient_name},
                     Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
-                    Reason: ${reason || 'N/A'}
-                    Doctor: ${staff.staff_name}
+                    Reason: ${reason || 'N/A'}.
+                    Doctor: ${staff.staff_name}.
                 `;
 
                 const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${staff.staff_name}.`;

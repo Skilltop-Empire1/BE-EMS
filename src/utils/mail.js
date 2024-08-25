@@ -1,10 +1,12 @@
-const nodemailer = require("nodemailer")
-const twilio = require("twilio")
 require("dotenv").config()
 
-const accoundSid = process.env.TWILIO_ACCOUND_SID
+const nodemailer = require("nodemailer")
+const twilio = require("twilio")
+
+
+const accountSid = process.env.TWILIO_ACCOUND_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
-const client = new twilio(accoundSid,authToken)
+const client = twilio(accountSid,authToken)
 
 
 const sendMail = async (email,subject,message) =>{
@@ -17,7 +19,7 @@ const sendMail = async (email,subject,message) =>{
     })
 
     const info = await transporter.sendMail({
-        from:`"Austech" <${process.env.NODEMAIL_USER}>`,
+        from:`"EMS" <${process.env.NODEMAIL_USER}>`,
         to:email,
         subject:subject,
         html:message
@@ -33,7 +35,7 @@ const sendSMS = async (message,clientNo) => {
     } 
     try {
         const msg = await client.messages.create(msgOptions)
-        console.log(msg)
+        console.log("sms",msg.sid)
     } catch (error) {
         console.log(error)
     }
