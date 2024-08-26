@@ -1,55 +1,28 @@
-const express = require("express")
-require("dotenv").config()
-cors = require("cors")
-const morgan  = require("morgan")
+//import the required dependencies
+const express = require("express");
+const db = require("./config/dbConfig");
+require("./models/PatientModel");
+const cors = require("cors");
+const morgan = require("morgan");
 
-const app = express()
+//create express app
+const app = express();
 
-const sqDb = require("./src/config/connect")
-const {sequelize,Patient,Organization,Staff,Appointment} = require("./src/models")
+//middleware
+app.use(express.urlencoded({ extended: false }));
 
+app.use(morgan("tiny"));
+const port = process.env.PORT || 5000;
 
-const organizationRoute = require("./src/routes/organizationRoute")
-const patientRoute = require("./src/routes/patientRoute")
-const staffRoute = require("./src/routes/staffRoute")
-const appointmentRoute = require("./src/routes/appointmentRoute")
-const settingRoute = require("./src/routes/settingRoute")
+//route
+app.use("/EMS/patients", require("./routes/patientRoute"));
 
-app.use(morgan("tiny"))
+const start = () => {
+  try {
+    app.listen(port, () => {
+      console.log(`app is listening to port ${port}`);
+    });
+  } catch (error) {}
+};
 
-const corsOptions = {
-    origin:["http://localhost:5000",`${process.env.CLIENT_URL}`],
-    methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials:true,
-    allowedHeaders:'Content-Type,Authorization'
-}
-app.use(cors(corsOptions))
-app.use(express.json())
-app.use(express.urlencoded({extended:false}))
-const port = process.env.PORT || 5000
-
-app.use("/api/v1/organization",organizationRoute)
-app.use("/api/v1/patient",patientRoute)
-app.use("/api/v1/staff",staffRoute)
-app.use("/api/v1/appointment",appointmentRoute)
-app.use("/api/v1/setting",settingRoute)
-
-
-
-const start = async () => {
-    try {
-        await sequelize.authenticate();
-        console.log('Database connected...');
-        
-        // Sync models
-        await sequelize.sync({ force: false/*true*/ });
-        console.log('Database synchronized...');
-        app.listen(port,() => {
-            console.log(`app is listening to port ${port}`)
-        })
-    } catch (error) {
-        
-    }
-}
-
-start()
+start();
