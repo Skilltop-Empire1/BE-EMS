@@ -2,7 +2,7 @@
 const express = require("express");
 const db = require("./config/dbConfig");
 require("./models/PatientModel");
-cors = require("cors");
+const cors = require("cors");
 const morgan = require("morgan");
 
 //create express app
