@@ -3,7 +3,7 @@ const router = express.Router();
 const AdminService = require('../controllers/StaffService.js');
 
 // Create a new staff
-router.post('/createStaff', async (req, res) => {
+router.route("/createStaff").post(async (req, res) => {
     try {
         await AdminService.createStaff(req.body);
         res.status(201).send('Staff created successfully');
@@ -11,6 +11,9 @@ router.post('/createStaff', async (req, res) => {
         res.status(500).send('Error creating staff: ' + error.message);
     }
 });
+
+//router.route("/create").post(patient.patientClass.createPatient)
+
 
 // Update a staff
 router.put('/updateStaff', async (req, res) => {

@@ -2,6 +2,15 @@ const StaffRepository = require('./StaffRepository.js');
 
 class AdminService {
     async createStaff(staffData) {
+        const existingStaff = await StaffRepository.findByEmailOrMobile(
+            staffData.email,
+            staffData.mobileNumber
+        );
+
+        if (existingStaff) {
+            throw new Error('Staff with this email or mobile number already exists');
+        }
+
         await StaffRepository.createStaff(staffData);
     }
 
