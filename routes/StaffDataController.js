@@ -44,7 +44,7 @@ router.get('/searchStaff', async (req, res) => {
         const staff = await AdminService.searchStaff(name, specialization, practice);
         res.status(200).json(staff);
     } catch (error) {
-        res.status(500).send('Error searching staff: ' + error.message);
+        res.status(404).json({ message: error.message });
     }
 });
 
