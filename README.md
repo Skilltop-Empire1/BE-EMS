@@ -17,43 +17,43 @@ Production: https://{production-url.com}/EMS/staff
 Development: http://localhost:5000/EMS/staff
 
 
-## Staff API
+# Staff API
 This API allow users to create, update, search, and delete staff members.
 
-## ENDPOINTS
-# https://{production-url.com}/EMS/staff/createStaff - Creates staff
+# ENDPOINTS
+ https://{production-url.com}/EMS/staff/createStaff - Creates staff
  Request method = Post 
 
-# https://{production-url.com}/EMS/staff/updateStaff?id={id} - Update Staff records 
+ https://{production-url.com}/EMS/staff/updateStaff?id={id} - Update Staff records 
  Request method = PUT
 
-# https://{production-url.com}/EMS/staff/deleteStaff?id={id} - Delete Staff records 
+ https://{production-url.com}/EMS/staff/deleteStaff?id={id} - Delete Staff records 
  Request method = DELETE
  
-# https://{production-url.com}/EMS/staff/searchStaff?name={name}&specialization={specialization}&practice={practice} - Search staff
+ https://{production-url.com}/EMS/staff/searchStaff?name={name}&specialization={specialization}&practice={practice} - Search staff
  Request method = GET
  Description: Searches for staff members by name, specialization, and practice. 
 
 
 
-## PATIENT API
+# PATIENT API
 This API allow users to create, update, search, and delete staff members.
 localhost:5000/EMS/patients/create
 
 
-# https://{production-url.com}/EMS/patients/list - query all patients from the database
+ https://{production-url.com}/EMS/patients/list - query all patients from the database
  Request method = GET 
 
-# https://{production-url.com}/EMS/patients/create - Creates patients
+ https://{production-url.com}/EMS/patients/create - Creates patients
   Request method = Post 
 
-# https://{production-url.com}/EMS/patients/count - count the patient database table and return the number of patients
+ https://{production-url.com}/EMS/patients/count - count the patient database table and return the number of patients
   Request method = Post
 
-# https://{production-url.com}/EMS/patients/edit - Update patients
+ https://{production-url.com}/EMS/patients/edit - Update patients
   Request method = PUT
 
-# https://{production-url.com}/EMS/patients/delete - Delete  patients records
+ https://{production-url.com}/EMS/patients/delete - Delete  patients records
   Request method = DELETE   
 
 
