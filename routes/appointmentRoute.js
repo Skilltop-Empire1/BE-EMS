@@ -1,5 +1,5 @@
 const express = require("express");
-const validate = require("../middlewares/validation");
+const validate = require("../validations/appointmentValidation");
 const appointmentValidation = require("../schema/appointmentSchema");
 const {bookAppointment, updateAppointment, deleteAppointment, getRecentAppointments} = require("../controllers/appointmentController")
 
