@@ -9,6 +9,7 @@ const morgan = require("morgan");
 const app = express();
 
 //middleware
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(morgan("tiny"));
@@ -16,6 +17,9 @@ const port = process.env.PORT || 5000;
 
 //route
 app.use("/EMS/patients", require("./routes/patientRoute"));
+app.use("/EMS/staff", require("./routes/StaffDataController"));
+
+
 
 const start = () => {
   try {
