@@ -1,4 +1,4 @@
-//import the dependencies
+// //import the dependencies
 
 const Sequelize = require("sequelize");
 require("dotenv").config();
@@ -40,5 +40,3 @@ try {
 }
 
 module.exports = db;
-
-
