@@ -27,7 +27,7 @@ router.put('/updateStaff', async (req, res) => {
 });
 
 // Delete a staff
-router.post('/deleteStaff', async (req, res) => {
+router.delete('/deleteStaff', async (req, res) => {
     const { id } = req.query;
     try {
         await AdminService.deleteStaff(id);
