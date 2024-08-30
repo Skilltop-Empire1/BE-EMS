@@ -11,6 +11,7 @@ const CONFIG = {
   DB_password: process.env.DB_password,
   DB_dialect: process.env.DB_dialect,
   DB_host: process.env.DB_host,
+  DB_port: process.env.DB_port, 
 };
 
 //database connection
@@ -21,16 +22,23 @@ const db = new Sequelize(
   {
     host: CONFIG.DB_host,
     dialect: CONFIG.DB_dialect,
+    port: CONFIG.DB_port,
+    logging: false, // Optionally disable logging 
+    dialectOptions: { 
+      connectTimeout: 60000, // 60 seconds 
+    }, 
   }
 );
 
 //check for errors
 try {
   db.authenticate();
-  db.sync({ force: false });
+  db.sync({ false: false });
   console.log("Connection to database successsfull and synced successfully");
 } catch (error) {
   throw error;
 }
 
 module.exports = db;
+
+
