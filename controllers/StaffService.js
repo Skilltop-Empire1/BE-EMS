@@ -35,7 +35,11 @@ class AdminService {
     async searchStaff(name, specialization, practice) {
         if (name || specialization || practice) {
             return await StaffRepository.searchStaff(name, specialization, practice);
-        } else {
+        } 
+        else if(name){
+            throw new Error('Invalid Staff name');
+        }
+        else {
             return await StaffRepository.findAll();
         }
     }
