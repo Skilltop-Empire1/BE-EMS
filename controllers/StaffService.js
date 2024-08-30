@@ -32,16 +32,29 @@ class AdminService {
         }
     }
 
+    // async searchStaff(name, specialization, practice) {
+    //     if (name || specialization || practice) {
+    //         return await StaffRepository.searchStaff(name, specialization, practice);
+    //     } else {
+    //         return await StaffRepository.findAll();
+    //     }
+    // }
     async searchStaff(name, specialization, practice) {
+        let results = [];
+    
+        // Search by name, specialization, or practice
         if (name || specialization || practice) {
-            return await StaffRepository.searchStaff(name, specialization, practice);
-        } 
-        else if(name){
-            throw new Error('Invalid Staff name');
+            results = await StaffRepository.searchStaff(name, specialization, practice);
+        } else {
+            results = await StaffRepository.findAll();
         }
-        else {
-            return await StaffRepository.findAll();
+    
+        // Check if results are found
+        if (results.length === 0) {
+            throw new Error("CREDENTIALS COULD NOT BE FOUND");
         }
+    
+        return results;
     }
 }
 
