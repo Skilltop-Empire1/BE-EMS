@@ -1,4 +1,4 @@
-const sequelize = require("../config/connect");
+const sequelize = require("../../config/connect");
 const Patient = require("./patientModel");
 const Appointment = require("./appointmentModel");
 const Organization = require("./organizationModel");

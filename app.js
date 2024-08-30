@@ -5,15 +5,15 @@ const morgan  = require("morgan")
 
 const app = express()
 
-const sqDb = require("./src/config/connect")
+const sqDb = require("./config/connect")
 const {sequelize,Patient,Organization,Staff,Appointment} = require("./src/models")
 
 
-const organizationRoute = require("./src/routes/organizationRoute")
-const patientRoute = require("./src/routes/patientRoute")
-const staffRoute = require("./src/routes/staffRoute")
-const appointmentRoute = require("./src/routes/appointmentRoute")
-const settingRoute = require("./src/routes/settingRoute")
+const organizationRoute = require("./routes/organizationRoute")
+const patientRoute = require("./routes/patientRoute")
+const staffRoute = require("./routes/staffRoute")
+const appointmentRoute = require("./routes/appointmentRoute")
+const settingRoute = require("./routes/settingRoute")
 
 app.use(morgan("tiny"))
 

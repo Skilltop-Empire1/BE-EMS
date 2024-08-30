@@ -1,6 +1,6 @@
 const {DataTypes} = require("sequelize")
 
-const sequelize = require("../config/connect")
+const sequelize = require("../../config/connect")
 
 
 const roles = ['admin', 'doctor', 'nurse', 'radiology', 'laboratory', 'pharmacy', 'finance'];
