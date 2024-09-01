@@ -1,69 +1,45 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/dbConfig.js');
-const { uniqueId } = require('lodash');
+const sequelize = require('../../config/connect');
 
 const Staff = sequelize.define('Staff', {
-    id: {
-        type: DataTypes.BIGINT,
-        autoIncrement: true,
-        primaryKey: true,
-    },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    profession: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-            isEmail: true, //Validate Mail format
-        }
-    },
-    gender: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    mobileNumber: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        // unique : true,
-        validate: {
-            isNumeric: true, // Validates its a number val
-            len: [10, 15],  // Set Lenght
-        }
-    },
-    practice: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    specialization: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    educationalQualification: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    organization: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    dateOfBirth: {
-        type: DataTypes.DATEONLY, // Uses Date format  YYYY-MM-DD
-        allowNull: false,
-        validate: {
-            isDate: true, // Validate it uses the date format
-        }
-    },
+  staff_id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
+  staff_surname: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  staff_name: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  staff_email: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true,
+  },
+  staff_gender: {
+    type: DataTypes.STRING(15),
+    allowNull: false,
+  },
+  staff_mobile: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+  },
+  specialization: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  role: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'user' 
+}
+}, {
+  tableName: 'staff',
+  timestamps: false
 });
 
 module.exports = Staff;

@@ -1,53 +1,36 @@
-const Sequelize = require("sequelize");
-const db = require("../config/dbConfig");
-const { allow } = require("joi");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../../config/connect');
 
-const Patient = db.define("Patient", {
-  id: {
-    type: Sequelize.INTEGER,
+const Patient = sequelize.define('Patient', {
+  patient_id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-    autoIncreament: true,
   },
-  firstname: {
-    type: Sequelize.STRING,
+  patient_surname: {
+    type: DataTypes.STRING(100),
     allowNull: false,
   },
-  surname: {
-    type: Sequelize.STRING,
+  patient_name: {
+    type: DataTypes.STRING(100),
     allowNull: false,
   },
-  email: {
-    type: Sequelize.STRING,
+  patient_email: {
+    type: DataTypes.STRING(50),
     allowNull: true,
   },
-  mobile_no: {
-    type: Sequelize.STRING,
+  patient_mobile: {
+    type: DataTypes.STRING(20),
     allowNull: false,
   },
-  gender: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  dob: {
-    type: Sequelize.DATE,
-    allowNull: true,
-  },
-  address: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  education_qualification: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  organization: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  picture: {
-    type: Sequelize.STRING, // Store the picture URL or path
-    allowNull: true,
-  },
+  role: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'user' 
+}
+}, {
+  tableName: 'patients',
+  timestamps: false
 });
 
 module.exports = Patient;
