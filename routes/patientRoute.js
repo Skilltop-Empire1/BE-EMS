@@ -1,3 +1,16 @@
+// <<<<<<< austin
+// const express = require("express");
+// //const validate = require("../middlewares/validation");
+// //const appointmentValidation = require("../schema/appointmentSchema");
+
+// const {createPatient} = require("../controllers/patientController")
+
+// const router = express.Router();
+
+// router.post("/create", createPatient)
+
+// module.exports = router
+// =======
 //require modules
 const express = require("express")
 const patient = require("../controllers/patientController")
@@ -24,3 +37,4 @@ module.exports = router
 //     // req.file is the name of your file in the form above, here 'uploaded_file'
 //     // req.body will hold the text fields, if there were any 
 //     console.log(req.file, req.body)
+
