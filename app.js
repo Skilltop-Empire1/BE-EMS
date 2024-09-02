@@ -38,11 +38,11 @@ app.use("/EMS/setting",settingRoute)
 
 const start = async () => {
     try {
-        //await sequelize.authenticate();
+        await sequelize.authenticate();
         console.log('Database connected...'); 
         
         // Sync models
-        //await sequelize.sync({ force: true/*true*/ });
+        await sequelize.sync({ force: true/*true*/ });
         console.log('Database synchronized...');
         app.listen(port,() => {
             console.log(`app is listening to port ${port}`)
