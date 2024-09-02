@@ -9,14 +9,14 @@ const setUpAssociation = () => {
     Organization.hasMany(Appointment, { foreignKey: "org_id" });
 
     Patient.belongsTo(Organization, { foreignKey: "org_id" });
-    Patient.hasMany(Appointment, { foreignKey: "patient_id" });
+    Patient.hasMany(Appointment, { foreignKey: "id" });
 
-    Appointment.belongsTo(Patient, { foreignKey: "patient_id" });
-    Appointment.belongsTo(Staff, { foreignKey: "doctor_id" });
+    Appointment.belongsTo(Patient, { foreignKey: "id" });
+    Appointment.belongsTo(Staff, { foreignKey: "id" });
     Appointment.belongsTo(Organization, { foreignKey: "org_id" });
 
     Staff.belongsTo(Organization, { foreignKey: "org_id" });
-    Staff.hasMany(Appointment, { foreignKey: "doctor_id" });
+    Staff.hasMany(Appointment, { foreignKey: "id" });
 };
 
 module.exports = setUpAssociation;

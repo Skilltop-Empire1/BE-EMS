@@ -16,8 +16,8 @@ const bookAppointment = async (req, res) => {
         }
 
         const patient = await Patient.findByPk(patientId);
-        const email = patient.patient_email
-        const phoneNo = patient.patient_mobile
+        const email = patient.email
+        const phoneNo = patient.mobile_no
         console.log("phone",phoneNo)
         if (!patient) {
             return res.status(404).json({ message: 'Patient not found' });
@@ -26,7 +26,7 @@ const bookAppointment = async (req, res) => {
         const availableStaff = await Staff.findAll({
             where: {
                 specialization: "doctor",
-                org_id: org.org_id,
+                org_id: org.id,
             },
         });
         if (availableStaff.length === 0) {
@@ -36,7 +36,7 @@ const bookAppointment = async (req, res) => {
         for (let staff of availableStaff) {
             const existingAppointments = await Appointment.findAll({
                 where: {
-                    doctor_id: staff.staff_id,
+                    doctor_id: staff.id,
                     appointment_date: appointmentDate,
                     appointment_time: appointmentTime,
                 },
@@ -44,8 +44,8 @@ const bookAppointment = async (req, res) => {
 
             if (existingAppointments.length === 0) {
                 const appointment = await Appointment.create({
-                    patient_id: patient.patient_id,
-                    doctor_id: staff.staff_id,
+                    patient_id: patient.id,
+                    doctor_id: staff.id,
                     org_id: org.org_id,
                     appointment_date: appointmentDate,
                     appointment_time: appointmentTime,
@@ -60,7 +60,7 @@ const bookAppointment = async (req, res) => {
                     Doctor: ${staff.staff_name}.
                 `;
 
-                const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${staff.staff_name}.`;
+                const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${staff.name}.`;
 
 
                 await sendMail(email,"EMS Appointment",emailContent)

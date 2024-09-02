@@ -31,11 +31,11 @@ const db = new Sequelize(
 );
 
 
-// Check for errors
+
 const connectToDatabase = async () => {
   try {
     await db.authenticate();
-    await db.sync({ force: false });
+    await db.sync({ force: false});
     console.log("Connection to database successful and synced successfully");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
