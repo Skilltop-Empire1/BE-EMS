@@ -54,10 +54,10 @@ const bookAppointment = async (req, res) => {
                 });
 
                 const emailContent = `
-                    Dear ${patient.patient_name},
+                    Dear ${patient.surname},
                     Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
                     Reason: ${reason || 'N/A'}.
-                    Doctor: ${staff.staff_name}.
+                    Doctor: ${staff.name}.
                 `;
 
                 const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${staff.name}.`;
