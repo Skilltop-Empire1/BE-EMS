@@ -30,13 +30,19 @@ const db = new Sequelize(
   }
 );
 
-//check for errors
-try {
-  db.authenticate();
-  db.sync({ false: false });
-  console.log("Connection to database successsfull and synced successfully");
-} catch (error) {
-  throw error;
-}
+
+// Check for errors
+const connectToDatabase = async () => {
+  try {
+    await db.authenticate();
+    await db.sync({ force: false });
+    console.log("Connection to database successful and synced successfully");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+    throw error;
+  }
+};
+
+connectToDatabase();
 
 module.exports = db;

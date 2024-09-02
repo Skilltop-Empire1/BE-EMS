@@ -1,7 +1,7 @@
 //require modules
 const express = require("express")
 const patient = require("../controllers/patientController")
-const upload = require("../middleware/multerMiddleware")
+const upload = require("../middlewares/multerMiddleware")
 
 //create express router
 const router = express.Router()

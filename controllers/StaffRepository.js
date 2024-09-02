@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const Staff = require('../models/StaffModel.js');
+const Staff = require('../models/settingModel');
 
 class StaffRepository {
     async createStaff(staffData) {

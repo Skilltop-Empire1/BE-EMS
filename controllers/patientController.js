@@ -1,6 +1,7 @@
+
 // require needed modules
 const Joi = require("joi");
-const Patient = require("../models/PatientModel");
+const Patient = require("../models/patientModel");
 const {
   patientValidity,
   patientUpdate,
@@ -8,7 +9,7 @@ const {
 } = require("../validations/patientFormValidation");
 
 // requiring multer library
-const upload = require("../middleware/multerMiddleware");
+const upload = require("../middlewares/multerMiddleware");
 const { where } = require("sequelize");
 
 
@@ -269,11 +270,3 @@ module.exports = {
 
 
 
-// Image.findByPk(req.params.id);
-//     if (!image) {
-//       return res.status(404).send('Image not found');
-//     }
-//     res.sendFile(path.join(__dirname, '../uploads/', image.filename)); // Adjust the path as necessary
-//   } catch (error) {
-//     res.status(500).json({ error: 'Failed to retrieve image' });
-//   }
