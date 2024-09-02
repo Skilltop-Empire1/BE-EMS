@@ -6,7 +6,7 @@ const Patient = db.define("Patient", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
-    autoIncreament: true,
+    autoIncrement: true,
   },
   firstname: {
     type: Sequelize.STRING,

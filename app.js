@@ -42,7 +42,7 @@ const start = async () => {
         console.log('Database connected...'); 
         
         // Sync models
-        await sequelize.sync({ force: true/*true*/ });
+        await sequelize.sync({ force: false/*true*/ });
         console.log('Database synchronized...');
         app.listen(port,() => {
             console.log(`app is listening to port ${port}`)
