@@ -1,12 +1,12 @@
 const express = require("express")
 require("dotenv").config()
-cors = require("cors")
+const cors = require("cors")
 const morgan  = require("morgan")
 
 const app = express()
 
 //const sqDb = require("./config/connect")
-const {sequelize,Patient,Organization,Staff,Appointment} = require("./models")
+const {sequelize:db,Patient,Organization,Staff,Appointment} = require("./models")
 
 
 const organizationRoute = require("./routes/organizationRoute")
@@ -30,7 +30,7 @@ const port = process.env.PORT || 5000
 
 app.use("/EMS/organization",organizationRoute)
 app.use("/EMS/patients",patientRoute)
-app.use("//EMS/staff",dataController)
+app.use("/EMS/staff",dataController)
 app.use("/EMS/appointment",appointmentRoute)
 app.use("/EMS/setting",settingRoute)
 
@@ -38,17 +38,18 @@ app.use("/EMS/setting",settingRoute)
 
 const start = async () => {
     try {
-        await sequelize.authenticate();
+        await db.authenticate();
         console.log('Database connected...'); 
         
         // Sync models
-        await sequelize.sync({ force: false/*true*/ });
+        await db.sync({ force: true/*true*/ });
         console.log('Database synchronized...');
         app.listen(port,() => {
             console.log(`app is listening to port ${port}`)
         })
     } catch (error) {
-        
+        console.error('Failed to start server:', error);
+        process.exit(1);
     }
 }
 
