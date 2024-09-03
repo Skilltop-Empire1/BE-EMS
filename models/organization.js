@@ -1,12 +1,12 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const db = require('../config/database');
 const Joi = require('joi')
 
-const Organization = sequelize.define('Organization', {
+const Organization = db.define('Organization', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
+    },  
     email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -27,10 +27,13 @@ const Organization = sequelize.define('Organization', {
     zip_code: {
         type: DataTypes.STRING,
     },
-    patient_id: {
+    patient_phone: {
         type: DataTypes.STRING,
     },
-    staff_id: {
+    password: {
+        type: DataTypes.STRING,
+    },
+    staff_email: {
         type: DataTypes.STRING,
     },
 
