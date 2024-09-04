@@ -38,11 +38,11 @@ app.use("/EMS/setting",settingRoute)
 
 const start = async () => {
     try {
-        //await db.authenticate();
+        await db.authenticate();
         console.log('Database connected...'); 
         
         // Sync models
-        //await db.sync({ force: true/*true*/ });
+        await db.sync({ force: false/*true*/ });
         console.log('Database synchronized...');
         app.listen(port,() => {
             console.log(`app is listening to port ${port}`)
