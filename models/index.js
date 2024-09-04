@@ -18,7 +18,6 @@ module.exports = {
     Organization,
     Staff,
     Setting
-   
 };
 
 
