@@ -1,40 +1,48 @@
+// //import the dependencies
 
-const {Sequelize} = require("sequelize");
+const Sequelize = require("sequelize");
+require("dotenv").config();
 
-require("dotenv").config()
+//declaring database configuration parameter
 
+const CONFIG = {
+  DB_name: process.env.DB_name,
+  DB_username: process.env.DB_username,
+  DB_password: process.env.DB_password,
+  DB_dialect: process.env.DB_dialect,
+  DB_host: process.env.DB_host,
+  DB_port: process.env.DB_port, 
+};
 
-console.log(process.env.PG_HOST)
-
-let localConfig = {
-    user:process.env.PG_USER,
-    password:process.env.PG_PASSWORD,
-    host:process.env.PG_HOST,
-    port:process.env.PG_PORT,
-    database:process.env.PG_DATABASE,
-    dialect:process.env.PG_DIALECT
-}
-
-let config = process.env.DATABASE_URL? {
-    url:process.env.DATABASE_URL,
-    dialect:process.env.PG_DIALECT,
-    dialectOptions:{
-        ssl:{
-            require: true,
-            rejectUnauthorized: false
-        }
-    }
-}: localConfig;
-
+//database connection
 const db = new Sequelize(
-    config.url || config.database,
-    config.user,
-    config.password,
-    config
-); 
+  CONFIG.DB_name,
+  CONFIG.DB_username,
+  CONFIG.DB_password,
+  {
+    host: CONFIG.DB_host,
+    dialect: CONFIG.DB_dialect,
+    port: CONFIG.DB_port,
+    logging: false, // Optionally disable logging 
+    dialectOptions: { 
+      connectTimeout: 60000, // 60 seconds 
+    }, 
+  }
+);
 
 
 
+const connectToDatabase = async () => {
+  try {
+    await db.authenticate();
+    await db.sync({ force: false});
+    console.log("Connection to database successful and synced successfully");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+    throw error;
+  }
+};
 
+connectToDatabase();
 
-module.exports = db
+module.exports = db;
