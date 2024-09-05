@@ -1,87 +1,70 @@
-// <<<<<<< austin
-// const express = require("express")
-// require("dotenv").config()
-// cors = require("cors")
-// const morgan  = require("morgan")
-
-// const app = express()
-
-// const sqDb = require("./config/connect")
-// const {sequelize,Patient,Organization,Staff,Appointment} = require("./src/models")
-
-
-// const organizationRoute = require("./routes/organizationRoute")
-// const patientRoute = require("./routes/patientRoute")
-// const staffRoute = require("./routes/staffRoute")
-// const appointmentRoute = require("./routes/appointmentRoute")
-// const settingRoute = require("./routes/settingRoute")
-
-// app.use(morgan("tiny"))
-
-// const corsOptions = {
-//     origin:["http://localhost:5000",`${process.env.CLIENT_URL}`],
-//     methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
-//     credentials:true,
-//     allowedHeaders:'Content-Type,Authorization'
-// }
-// app.use(cors(corsOptions))
-// app.use(express.json())
-// app.use(express.urlencoded({extended:false}))
-// const port = process.env.PORT || 5000
-
-// app.use("/api/v1/organization",organizationRoute)
-// app.use("/api/v1/patient",patientRoute)
-// app.use("/api/v1/staff",staffRoute)
-// app.use("/api/v1/appointment",appointmentRoute)
-// app.use("/api/v1/setting",settingRoute)
-
-
-
-// const start = async () => {
-//     try {
-//         await sequelize.authenticate();
-//         console.log('Database connected...'); 
-        
-//         // Sync models
-//         await sequelize.sync({ force: false/*true*/ });
-//         console.log('Database synchronized...');
-//         app.listen(port,() => {
-//             console.log(`app is listening to port ${port}`)
-//         })
-//     } catch (error) {
-        
-//     }
-// }
-
-// start()
-// =======
-//import the required dependencies
+// Import required dependencies
 const express = require("express");
-const db = require("./config/dbConfig");
-require("./models/PatientModel");
+const cron = require("node-cron");
+const axios = require("axios");
 const cors = require("cors");
 const morgan = require("morgan");
+require("dotenv").config();
 
-//create express app
-const app = express();
+// Database and models
+require("./models");
 
-//middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Import routes
+const organizationRoute = require("./routes/organizationRoute");
+const staffRoute = require("./routes/staffRoute");
+const patientRoute = require("./routes/patientRoute");
+const appointmentRoute = require("./routes/appointmentRoute");
+// const settingRoute = require("./routes/settingRoute");
 
-app.use(morgan("tiny"));
-const port = process.env.PORT || 5005;
-
-//route
-app.use("/EMS/patients", require("./routes/patientRoute"));
-app.use("/EMS/staff", require("./routes/StaffDataController"));
-
-const start = () => {
-  try {
-    app.listen(port, () => {
-      console.log(`app is listening to port ${port}`);
-    });
-  } catch (error) {}
+// Configure CORS
+const corsOptions = {
+  origin: [process.env.CLIENT_URL, "*"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  allowedHeaders: "Content-Type,Authorization",
 };
 
-start();
+// Create Express app
+const app = express();
+
+// Middleware setup
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors(corsOptions));
+app.use(morgan("tiny"));
+
+// Define the port
+const port = process.env.PORT || 5005;
+
+// Schedule tasks to ping the server every 30 minutes
+cron.schedule("*/30 * * * *", async () => {
+  try {
+    const response = await axios.get(
+      "https://be-ems-production-2721.up.railway.app/"
+    );
+    console.log("Ping successful:", response.status);
+  } catch (error) {
+    console.error("Ping failed:", error.message);
+  }
+});
+
+// Define routes
+app.use("/api/v1/organization", organizationRoute);
+app.use("/api/v1/staff", staffRoute);
+app.use("/api/v1/patient", patientRoute);
+app.use("/api/v1/appointment", appointmentRoute);
+// app.use("/api/v1/setting", settingRoute);
+
+// Synchronize models and start the server
+const startServer = async () => {
+  try {
+    app.listen(port, () => {
+      console.log(`App is listening on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Error starting the server:", error.message);
+  }
+};
+
+// Initialize the server
+startServer();

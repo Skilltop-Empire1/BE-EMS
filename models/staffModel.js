@@ -1,45 +1,70 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/connect');
+module.exports = (sequelize, DataTypes) => {
+  const Staff = sequelize.define(
+    "Staff",
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
+      lastName: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      firstName: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+        unique: true,
+      },
+      gender: {
+        type: DataTypes.STRING(15),
+        allowNull: false,
+      },
+      mobile: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+      },
+      educationalQualification: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      specialization: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      dateOfBirth: {
+        type: DataTypes.DATEONLY, // Uses Date format  YYYY-MM-DD
+        allowNull: false,
+        validate: {
+          isDate: true, // Validate it uses the date format
+        },
+      },
+      role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "staff",
+      },
+    },
+    {
+      timestamps: false,
+      underscored: true, // Use snake_case for column names
+    }
+  );
 
-const Staff = sequelize.define('Staff', {
-  staff_id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
-  staff_surname: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-  },
-  staff_name: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-  },
-  staff_email: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-    unique: true,
-  },
-  staff_gender: {
-    type: DataTypes.STRING(15),
-    allowNull: false,
-  },
-  staff_mobile: {
-    type: DataTypes.STRING(20),
-    allowNull: false,
-  },
-  specialization: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-  },
-  role: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: 'user' 
-}
-}, {
-  tableName: 'staff',
-  timestamps: false
-});
+  // Define associations here if needed
+  Staff.associate = (models) => {
+    Staff.belongsTo(models.Organization, { foreignKey: "org_id" });
+    Staff.hasMany(models.Appointment, { foreignKey: "doctor_id" });
+  };
 
-module.exports = Staff;
+  return Staff;
+};

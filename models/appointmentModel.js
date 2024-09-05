@@ -1,56 +1,52 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../../config/connect");
-
-const Patient = require("./patientModel");
-const Organization = require("./organizationModel");
-const Staff = require("./staffModel");
-
-const Appointment = sequelize.define("Appointment", {
-    appointment_id: {
+module.exports = (sequelize, DataTypes) => {
+  // Define the Appointment model
+  const Appointment = sequelize.define(
+    "Appointment",
+    {
+      id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
-    },
-    appointment_date: {
+        primaryKey: true,
+        allowNull: false,
+      },
+      appointment_date: {
         type: DataTypes.DATE,
-        allowNull: false
-    },
-    appointment_time: {
+        allowNull: false,
+      },
+      appointment_time: {
         type: DataTypes.TIME,
-        allowNull: false
-    },
-    reason: {
+        allowNull: false,
+      },
+      reason: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
+      },
+      address: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
-    patient_id: {
-        type: DataTypes.UUID,
-        references: {
-            model: Patient,
-            key: "patient_id"
-        }
-    },
-    doctor_id: {
-        type: DataTypes.UUID,
-        references: {
-            model: Staff,
-            key: "staff_id"
-        }
-    },
-    organization_id: {
-        type: DataTypes.UUID,
-        references: {
-            model: Organization,
-            key: "org_id"
-        }
-    },
-    address:{
-        type:DataTypes.STRING,
-        allowNull:true
+    {
+      timestamps: true, // Automatically adds createdAt and updatedAt fields
+      underscored: true, // Use snake_case for column names
     }
-}, {
-    tableName: "appointment",
-    timestamps: true
-});
+  );
 
-module.exports = Appointment;
+  // Define associations
+  Appointment.associate = (models) => {
+    Appointment.belongsTo(models.Patient, {
+      foreignKey: "patient_id",
+      as: "patient",
+    });
+    Appointment.belongsTo(models.Staff, {
+      foreignKey: "doctor_id",
+      as: "doctor",
+    });
+    Appointment.belongsTo(models.Organization, {
+      foreignKey: "organization_id",
+      as: "organization",
+    });
+  };
+
+  return Appointment;
+};
