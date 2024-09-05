@@ -4,7 +4,9 @@ const cron = require("node-cron");
 const axios = require("axios");
 const cors = require("cors");
 const morgan = require("morgan");
+
 const swaggerDocs = require("./swagger");
+
 require("dotenv").config();
 
 // Database and models
@@ -58,6 +60,7 @@ app.use("/api/v1/appointment", appointmentRoute);
 
 const client_url = process.env.CLIENT_URL || "http://localhost:5005";
 swaggerDocs(app, client_url);
+
 
 // Synchronize models and start the server
 const startServer = async () => {
