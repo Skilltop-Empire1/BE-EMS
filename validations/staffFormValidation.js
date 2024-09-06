@@ -11,6 +11,7 @@ const staffValidationSchema = Joi.object({
     .pattern(/^[0-9]{10,20}$/)
     .required(),
   educationalQualification: Joi.string().required(),
+  practice: Joi.string().max(100).required(),   ///Recently added practice.
   specialization: Joi.string().max(100).required(),
   address: Joi.string().required(),
   dateOfBirth: Joi.date().iso().required(), // Ensures YYYY-MM-DD format

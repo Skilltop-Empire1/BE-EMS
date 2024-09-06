@@ -9,5 +9,8 @@ router.route("/count").get(staff.staffClass.staffCount); // Changed to GET for c
 router.route("/create").post(staff.staffClass.createStaff);
 router.route("/edit").put(staff.staffClass.staffEdit);
 router.route("/delete").delete(staff.staffClass.deleteStaff);
+router.route("/search").get(staff.staffClass.searchStaff);
+
+
 
 module.exports = router;
