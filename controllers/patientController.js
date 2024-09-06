@@ -1,9 +1,10 @@
 const Joi = require("joi");
 const {
   patientValidity,
-  patientUpdate,
+  patientUpdateSchema,
   deletePatientValidity,
   patientCreateSchema,
+  patientDeleteSchema,
 } = require("../validations/patientFormValidation");
 
 // requiring multer library
@@ -90,19 +91,19 @@ class PatientClass {
   //Method for edit patient details
   patientEdit = async (req, res) => {
     const {
-      firstname,
-      surname,
+      firstName,
+      lastName,
       email,
-      mobile_no,
+      phone,
       gender,
-      dob,
+      dateOfBirth,
       address,
-      education_qualification,
+      educationQualification,
       organization,
     } = req.body;
 
     //validate inputs
-    const check = patientUpdate.validate(req.body);
+    const check = patientUpdateSchema.validate(req.body);
     if (check.error) {
       return res.status(404).json(check.error.details[0].message);
     }
@@ -110,7 +111,7 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { mobile_no: req.body.mobile_no },
+        where: { phone: req.body.phone },
       });
 
       //update logic
@@ -118,19 +119,19 @@ class PatientClass {
         return res.status(200).send(
           Patient.update(
             {
-              firstname,
-              surname,
+              firstName,
+              lastName,
               email,
-              mobile_no,
+              phone,
               gender,
-              dob,
+              dateOfBirth,
               address,
-              education_qualification,
+              educationQualification,
               organization,
             },
             {
               where: {
-                mobile_no: req.body.mobile_no,
+                phone: req.body.phone,
               },
             }
           )
@@ -147,9 +148,9 @@ class PatientClass {
 
   //method to delete patient
   deletePatient = async (req, res) => {
-    const mobile_no = req.body.mobile_no;
+    const phone = req.body.phone;
 
-    const check = deletePatientValidity.validate(req.body);
+    const check = patientDeleteSchema.validate(req.body);
     if (check.error) {
       return res.status(404).json(check.error.details[0].message);
     }
@@ -158,13 +159,13 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { mobile_no: req.body.mobile_no },
+        where: { phone: req.body.phone },
       });
 
       if (patientExist) {
         await Patient.destroy({
           where: {
-            mobile_no: req.body.mobile_no,
+            phone: req.body.phone,
           },
         });
         return res
