@@ -33,11 +33,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      practice: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        defaultValue:'Unknown'
-      },
       specialization: {
         type: DataTypes.STRING(100),
         allowNull: false,
