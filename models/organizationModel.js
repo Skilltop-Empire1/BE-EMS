@@ -1,44 +1,65 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/dbConfig");
-
-const Organization = sequelize.define('Organization', {
-    org_id: {
+module.exports = (sequelize, DataTypes) => {
+  // Define the Organization model
+  const Organization = sequelize.define(
+    "Organization",
+    {
+      id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
-    },
-    org_name: {
+        primaryKey: true,
+        allowNull: false,
+      },
+      name: {
         type: DataTypes.STRING(250),
         allowNull: false,
-        unique: true
-    },
-    org_username: {
+        unique: true,
+      },
+      username: {
         type: DataTypes.STRING(100),
-        allowNull: true
-    },
-    org_mobile: {
+        allowNull: true,
+      },
+      mobile: {
         type: DataTypes.STRING(20),
         allowNull: false,
-    },
-    org_address: {
+      },
+      address: {
         type: DataTypes.STRING(250),
         allowNull: false,
-    },
-    org_city: {
+      },
+      city: {
         type: DataTypes.STRING(50),
         allowNull: false,
-    },
-    org_state: {
+      },
+      state: {
         type: DataTypes.STRING(50),
         allowNull: false,
-    },
-    org_zip_code: {
+      },
+      zipCode: {
         type: DataTypes.STRING(20),
         allowNull: false,
+      },
+    },
+    {
+      timestamps: false, // No createdAt/updatedAt fields
+      underscored: true, // Use snake_case for column names
     }
-}, {
-    tableName: 'organizations',
-    timestamps: false
-});
+  );
 
-module.exports = Organization;
+  // Define associations
+  Organization.associate = (models) => {
+    Organization.hasMany(models.Patient, {
+      foreignKey: "patient_id",
+      as: "patients", // Alias for the relation
+    });
+    Organization.hasMany(models.Staff, {
+      foreignKey: "staff_id",
+      as: "staffs", // Alias for the relation
+    });
+    Organization.hasMany(models.Appointment, {
+      foreignKey: "appointment_id",
+      as: "appointments", // Alias for the relation
+    });
+  };
+
+  return Organization;
+};
