@@ -1,56 +1,77 @@
-const express = require("express")
-require("dotenv").config()
-const cors = require("cors")
-const morgan  = require("morgan")
+// Import required dependencies
+const express = require("express");
+const cron = require("node-cron");
+const axios = require("axios");
+const cors = require("cors");
+const morgan = require("morgan");
 
-const app = express()
+const swaggerDocs = require("./swagger");
 
-//const sqDb = require("./config/connect")
-const {sequelize:db,Patient,Organization,Staff,Appointment} = require("./models")
+require("dotenv").config();
 
+// Database and models
+require("./models");
 
-const organizationRoute = require("./routes/organizationRoute")
-const patientRoute = require("./routes/patientRoute")
-const appointmentRoute = require("./routes/appointmentRoute")
-const settingRoute = require("./routes/settingRoute")
-const dataController = require('./routes/StaffDataController.js'); 
+// Import routes
+const organizationRoute = require("./routes/organizationRoute");
+const staffRoute = require("./routes/staffRoute");
+const patientRoute = require("./routes/patientRoute");
+const appointmentRoute = require("./routes/appointmentRoute");
+// const settingRoute = require("./routes/settingRoute");
 
-app.use(morgan("tiny"))
-
+// Configure CORS
 const corsOptions = {
-    origin:["http://localhost:5000",`${process.env.CLIENT_URL}`],
-    methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials:true,
-    allowedHeaders:'Content-Type,Authorization'
-}
-app.use(cors(corsOptions))
-app.use(express.json())
-app.use(express.urlencoded({extended:false}))
-const port = process.env.PORT || 5000
+  origin: [process.env.CLIENT_URL, "*"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  allowedHeaders: "Content-Type,Authorization",
+};
 
-app.use("/EMS/organization",organizationRoute)
-app.use("/EMS/patients",patientRoute)
-app.use("/EMS/staff",dataController)
-app.use("/EMS/appointment",appointmentRoute)
-app.use("/EMS/setting",settingRoute)
+// Create Express app
+const app = express();
+
+// Middleware setup
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors(corsOptions));
+app.use(morgan("tiny"));
+
+// Define the port
+const port = process.env.PORT || 5005;
+
+// Schedule tasks to ping the server every 30 minutes
+cron.schedule("*/30 * * * *", async () => {
+  try {
+    const response = await axios.get(
+      "https://be-ems-production-2721.up.railway.app/"
+    );
+    console.log("Ping successful:", response.status);
+  } catch (error) {
+    console.error("Ping failed:", error.message);
+  }
+});
+
+// Define routes
+app.use("/api/v1/organization", organizationRoute);
+app.use("/api/v1/staff", staffRoute);
+app.use("/api/v1/patient", patientRoute);
+app.use("/api/v1/appointment", appointmentRoute);
+// app.use("/api/v1/setting", settingRoute);
+
+const client_url = process.env.CLIENT_URL || "http://localhost:5005";
+swaggerDocs(app, client_url);
 
 
+// Synchronize models and start the server
+const startServer = async () => {
+  try {
+    app.listen(port, () => {
+      console.log(`App is listening on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Error starting the server:", error.message);
+  }
+};
 
-const start = async () => {
-    try {
-        await db.authenticate();
-        console.log('Database connected...'); 
-        
-        // Sync models
-        await db.sync({ force: false/*true*/ });
-        console.log('Database synchronized...');
-        app.listen(port,() => {
-            console.log(`app is listening to port ${port}`)
-        })
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
-    }
-}
-
-start();
+// Initialize the server
+startServer();

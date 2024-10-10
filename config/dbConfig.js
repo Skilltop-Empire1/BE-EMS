@@ -1,40 +1,49 @@
+// Import dependencies
+const { Sequelize } = require("sequelize");
+require("dotenv").config(); // Ensure .env variables are loaded
 
-const {Sequelize} = require("sequelize");
+// Declaring database configuration parameters
+const CONFIG = {
+  DB_NAME: process.env.DB_NAME,
+  DB_USERNAME: process.env.DB_USERNAME,
+  DB_PASSWORD: process.env.DB_PASSWORD,
+  DB_DIALECT: process.env.DB_DIALECT || "postgres",
+  DB_HOST: process.env.DB_HOST || "localhost",
+  DB_PORT: parseInt(process.env.DB_PORT, 10) || 5432, // Default PostgreSQL port
+};
 
-require("dotenv").config()
+// Create a new Sequelize instance
+const sequelize = new Sequelize(
+  CONFIG.DB_NAME,
+  CONFIG.DB_USERNAME,
+  CONFIG.DB_PASSWORD,
+  {
+    host: CONFIG.DB_HOST,
+    dialect: CONFIG.DB_DIALECT, // Should be a string such as 'postgres'
+    port: CONFIG.DB_PORT,
+    logging: false, // Optionally disable logging
+    dialectOptions: {
+      connectTimeout: 60000, // 60 seconds
+    },
+  }
+);
 
+// Function to authenticate and sync the database
+const initializeDatabase = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection to PostgreSQL database successful");
 
-console.log(process.env.PG_HOST)
+    await sequelize.sync({ alter: true }); // Ensures database schema is up-to-date without altering
+    console.log("Database synchronized successfully");
+  } catch (error) {
+    console.error("Unable to connect to the PostgreSQL database:", error);
+    throw error;
+  }
+};
 
-let localConfig = {
-    user:process.env.PG_USER,
-    password:process.env.PG_PASSWORD,
-    host:process.env.PG_HOST,
-    port:process.env.PG_PORT,
-    database:process.env.PG_DATABASE,
-    dialect:process.env.PG_DIALECT
-}
+// Initialize the database
+initializeDatabase();
 
-let config = process.env.DATABASE_URL? {
-    url:process.env.DATABASE_URL,
-    dialect:process.env.PG_DIALECT,
-    dialectOptions:{
-        ssl:{
-            require: true,
-            rejectUnauthorized: false
-        }
-    }
-}: localConfig;
-
-const db = new Sequelize(
-    config.url || config.database,
-    config.user,
-    config.password,
-    config
-); 
-
-
-
-
-
-module.exports = db
+// Export the Sequelize instance
+module.exports = sequelize;

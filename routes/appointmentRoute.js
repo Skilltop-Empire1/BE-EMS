@@ -1,13 +1,20 @@
 const express = require("express");
-const validate = require("../validations/appointmentValidation");
-const appointmentValidation = require("../schema/appointmentSchema");
-const {bookAppointment, updateAppointment, deleteAppointment, getRecentAppointments} = require("../controllers/appointmentController")
+
+const {
+  bookAppointment,
+  updateAppointment,
+  deleteAppointment,
+  getRecentAppointments,
+} = require("../controllers/appointmentController");
+
+//  move validation into the controller please
+// const appointmentValidation = require("../validations/appointmentValidation");
 
 const router = express.Router();
 
-router.get("/recent", getRecentAppointments )
-router.post("/book/:patientId", validate(appointmentValidation), bookAppointment )
-router.put('/update/:appointmentId', validate(appointmentValidation),updateAppointment )
-router.delete('/delete/:appointmentId',deleteAppointment )
+router.get("/recent", getRecentAppointments);
+router.post("/book/:patientId", bookAppointment);
+router.put("/update/:appointmentId", updateAppointment);
+router.delete("/delete/:appointmentId", deleteAppointment);
 
-module.exports = router
+module.exports = router;
