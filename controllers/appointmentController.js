@@ -2,24 +2,38 @@ const { Appointment, Patient, Staff, Organization } = require("../models");
 // const { sendMail, sendSMS } = require("../utils/mail");
 
 const bookAppointment = async (req, res) => {
-  const { patientId } = req.params;
-  const { orgName, reason, appointmentDate, appointmentTime } = req.body;
+  
+  const { orgName,reason,firstname,phoneNo, appointmentDate, appointmentTime } = req.body;
 
   try {
+    // Find the organization
     const org = await Organization.findOne({ where: { org_name: orgName } });
-    console.log("org", org.org_id);
     if (!org) {
       return res.status(400).json({ message: "Organization not found" });
     }
 
-    const patient = await Patient.findByPk(patientId);
-    const email = patient.patient_email;
-    const phoneNo = patient.patient_mobile;
-    console.log("phone", phoneNo);
+    // Find the patient by either firstname or phoneNo
+    const patient = await Patient.findOne({
+      where: {
+        [Sequelize.Op.or]: [
+          { firstName: firstname },
+          { patient_mobile: phoneNo },
+        ],
+      },
+    });
+
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
+    // Gather patient details
+    const name = patient.firstName + " " + patient.lastName;
+    const patientPhoneNo = patient.patient_mobile; // Stored patient's phone number
+    const gender = patient.gender;
+    const dateOfBirth = patient.dateOfBirth;
+    const address = patient.address;
+
+    // Find available doctors from the staff
     const availableStaff = await Staff.findAll({
       where: {
         specialization: "doctor",
@@ -27,9 +41,10 @@ const bookAppointment = async (req, res) => {
       },
     });
     if (availableStaff.length === 0) {
-      return res.status(404).json({ message: "No available staff found" });
+      return res.status(404).json({ message: "No available doctors found" });
     }
 
+    // Check available appointments for doctors
     for (let staff of availableStaff) {
       const existingAppointments = await Appointment.findAll({
         where: {
@@ -40,39 +55,48 @@ const bookAppointment = async (req, res) => {
       });
 
       if (existingAppointments.length === 0) {
+        // Create the appointment if no existing appointments found
         const appointment = await Appointment.create({
           patient_id: patient.patient_id,
+          name,
+          phoneNo: patientPhoneNo,
+          gender,
+          dateOfBirth,
           doctor_id: staff.staff_id,
           org_id: org.org_id,
           appointment_date: appointmentDate,
           appointment_time: appointmentTime,
-          address: org.org_address,
+          address,
           reason: reason || null,
         });
 
+        // Send confirmation email and SMS (assuming you have mail/SMS setup)
         const emailContent = `
-                    Dear ${patient.patient_name},
-                    Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
-                    Reason: ${reason || "N/A"}.
-                    Doctor: ${staff.staff_name}.
-                `;
-
+          Dear ${name},
+          Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
+          Reason: ${reason || "N/A"}.
+          Doctor: ${staff.staff_name}.
+        `;
+        
         const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${staff.staff_name}.`;
 
-        // await sendMail(email, "EMS Appointment", emailContent);
-        // await sendSMS(smsContent, phoneNo);
-        return res
-          .status(201)
-          .json({ message: "Appointment booked successfully", appointment });
+        // await sendMail(patient.email, "EMS Appointment", emailContent);
+        // await sendSMS(smsContent, patientPhoneNo);
+
+        return res.status(201).json({
+          message: "Appointment booked successfully",
+          appointment,
+        });
       }
     }
 
-    res.status(500).json({ message: "Unable to schedule an appointment" });
+    res.status(500).json({ message: "Unable to schedule an appointment, no available slots" });
   } catch (error) {
     console.error("Error booking appointment:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 const updateAppointment = async (req, res) => {
   const { appointmentId } = req.params;
