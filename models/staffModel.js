@@ -1,8 +1,9 @@
+
 module.exports = (sequelize, DataTypes) => {
   const Staff = sequelize.define(
     "Staff",
     {
-      id: {
+      staffId: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
@@ -16,16 +17,44 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      profileUrl: {
+        type: DataTypes.STRING(200),
+        allowNull: true,
+      },
       email: {
         type: DataTypes.STRING(100),
         allowNull: false,
         unique: true,
       },
+      password: {
+        type: DataTypes.STRING, 
+        allowNull: false,
+      },
+      shiftSchedule: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+      },
+      vacationDays: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      dateOfHire: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
       gender: {
         type: DataTypes.STRING(15),
         allowNull: false,
       },
-      mobile: {
+      employStatus: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+      },
+      staffStatus: {
+        type: DataTypes.ENUM("active", "pending", "inactive"),
+        defaultValue: "pending",
+      },
+      phone: {
         type: DataTypes.STRING(20),
         allowNull: false,
       },
@@ -33,37 +62,61 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      yrOfExperience: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      licence: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       specialization: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      address: {
+      location: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       dateOfBirth: {
-        type: DataTypes.DATEONLY, // Uses Date format  YYYY-MM-DD
+        type: DataTypes.DATEONLY, 
         allowNull: false,
         validate: {
-          isDate: true, // Validate it uses the date format
+          isDate: true, 
         },
       },
+      permission: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+      },
       role: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM("Doctor", "Nurse"),
         allowNull: false,
-        defaultValue: "staff",
+        defaultValue: "Doctor",
       },
     },
     {
       timestamps: false,
-      underscored: true, // Use snake_case for column names
+      underscored: true, 
     }
   );
 
-  // Define associations here if needed
+  // Define associations
   Staff.associate = (models) => {
-    Staff.belongsTo(models.Organization, { foreignKey: "org_id" });
-    Staff.hasMany(models.Appointment, { foreignKey: "doctor_id" });
+    Staff.belongsTo(models.Department, {
+      foreignKey: "deptId", 
+      as: "department",
+    });
+
+    Staff.hasMany(models.Appointment, {
+      foreignKey: "staffId", 
+      as: "appointments",
+    });
+
+    Staff.hasMany(models.Report, {
+      foreignKey: "staffId", 
+      as: "reports",
+    });
   };
 
   return Staff;
