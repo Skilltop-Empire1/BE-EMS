@@ -1,18 +1,18 @@
-const Joi = require("joi");
+ const Joi = require("joi");
 
-// Validation schema for creating/updating an organization
+
 const departmentSchema = Joi.object({
-  name: Joi.string().max(250).required(),
-      hod: Joi.string().max(100).allow(null),
-      deptContact: Joi.number().required(),
-      operationHr: Joi.date().required(),
-      noOfStaff: Joi.number().required(),
-      location: Joi.string().max(250).required(),
-      bedCapacity: Joi.string().max(50).required(),
-      specialty: Joi.string().max(50).required(),
-      noOfPatient: Joi.number().required(),
-      equipment: Joi.string().max(20).required(),
-      deptBudget: Joi.number().required(),
+  name: Joi.string().max(250).required(),               
+  hod: Joi.string().max(100).allow(null, ''),           
+  deptContact: Joi.string().max(20).allow(null, ''),    
+  operationHr: Joi.string().allow(null, ''),            
+  noOfStaff: Joi.number().integer().allow(null),        
+  location: Joi.string().max(250).allow(null, ''),      
+  bedCapacity: Joi.string().max(50).allow(null, ''),    
+  specialty: Joi.string().max(50).required(),           
+  noOfPatient: Joi.number().integer().allow(null),      
+  equipment: Joi.array().items(Joi.string()).allow(null), 
+  deptBudget: Joi.number().precision(2).allow(null),    
 });
 
 module.exports = {
