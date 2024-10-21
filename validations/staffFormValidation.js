@@ -21,6 +21,7 @@ const staffValidationSchema = Joi.object({
   dateOfHire: Joi.string().max(100).optional(), // Optional field with default value in the model
   employStatus: Joi.string().max(100).optional(), // Optional field with default value in the model
   yrOfExperience: Joi.number().max(100).optional(), // Optional field with default value in the model
+  deptId: Joi.string().max(100).optional(), // Optional field with default value in the model
 });
 
 module.exports = {
