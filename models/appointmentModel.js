@@ -1,19 +1,20 @@
+
 module.exports = (sequelize, DataTypes) => {
   // Define the Appointment model
   const Appointment = sequelize.define(
     "Appointment",
     {
-      id: {
+      appointId: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false,
       },
-      appointment_date: {
+      appointDate: {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      appointment_time: {
+      appointTime: {
         type: DataTypes.TIME,
         allowNull: false,
       },
@@ -25,26 +26,53 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      patName: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      phone: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+      },
+      gender: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+      },
+      dateOfBirth: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     },
     {
-      timestamps: true, // Automatically adds createdAt and updatedAt fields
-      underscored: true, // Use snake_case for column names
+      timestamps: true, 
+      underscored: true, 
     }
   );
 
   // Define associations
   Appointment.associate = (models) => {
     Appointment.belongsTo(models.Patient, {
-      foreignKey: "patient_id",
+      foreignKey: "patId",
       as: "patient",
     });
+
+    
     Appointment.belongsTo(models.Staff, {
-      foreignKey: "doctor_id",
-      as: "doctor",
+      foreignKey: "staffId",
+      as: "staff", 
     });
-    Appointment.belongsTo(models.Organization, {
-      foreignKey: "organization_id",
-      as: "organization",
+
+    
+    Appointment.belongsTo(models.Department, {
+      foreignKey: "deptId",
+      as: "department",
     });
   };
 

@@ -8,7 +8,7 @@ const {
 } = require("../validations/patientFormValidation");
 
 // requiring multer library
-const upload = require("../middleware/multerMiddleware");
+const upload = require("../middlewares/multer");
 const { Patient } = require("../models");
 
 // Object for functionality

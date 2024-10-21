@@ -1,11 +1,12 @@
+
 module.exports = (sequelize, DataTypes) => {
   // Define the Patient model
   const Patient = sequelize.define(
     "Patient",
     {
-      id: {
+      patId: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4, // Automatically generate UUIDs
+        defaultValue: DataTypes.UUIDV4, 
         allowNull: false,
         primaryKey: true,
       },
@@ -33,35 +34,53 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       phone: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: true,
       },
-      role: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: "patient",
+      lastVisit: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      medCondition: {
+        type: DataTypes.STRING(250),
+        allowNull: true,
       },
       address: {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      // Additional fields can be added here
     },
     {
-      timestamps: true, // Automatically adds createdAt and updatedAt fields
-      underscored: true, // Use snake_case for column names
+      timestamps: true, 
+      underscored: true, 
     }
   );
 
   // Define associations
   Patient.associate = (models) => {
-    Patient.belongsTo(models.Organization, {
-      foreignKey: "org_id",
-      as: "organization", // Alias for the relation
+    Patient.belongsTo(models.Department, {
+      foreignKey: "deptId", 
+      as: "department", 
     });
+    
+    Patient.belongsTo(models.Staff, {
+      foreignKey: "staffId", 
+      as: "staff", 
+    });
+    
     Patient.hasMany(models.Appointment, {
-      foreignKey: "patient_id",
-      as: "appointments", // Alias for the relation
+      foreignKey: "patientId", 
+      as: "appointments",
+    });
+    
+    Patient.hasOne(models.Account, {
+      foreignKey: "patientId", 
+      as: "account",
+    });
+    
+    Patient.hasOne(models.Report, {
+      foreignKey: "patientId", 
+      as: "report",
     });
   };
 
