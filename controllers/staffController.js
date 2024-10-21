@@ -214,9 +214,9 @@ class StaffClass {
           .json({ success: false, message: error.details[0].message }); 
       } 
  
-      const { mobile } = req.body; 
+      const { phone } = req.body; 
  
-      const staffExist = await Staff.findOne({ where: { mobile } }); 
+      const staffExist = await Staff.findOne({ where: { phone } }); 
  
       if (staffExist) { 
         return res 
