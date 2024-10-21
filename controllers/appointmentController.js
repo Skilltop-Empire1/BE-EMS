@@ -25,7 +25,7 @@
      // Find the patient by either firstname or phoneNo
      const patient = await Patient.findOne({
        where: {
-         [Sequelize.Op.or]: [{ firstName: firstname }, { patient_mobile: phoneNo }],
+         [Sequelize.Op.or]: [{ firstName: firstname }, { phone: phoneNo }],
        },
      });
  
@@ -36,6 +36,8 @@
      // Gather patient details
      const name = patient.firstName + " " + patient.lastName;
      const patientPhoneNo = patient.phone
+     console.log("pho",patientPhoneNo)
+     console.log("id",patient.patId)
      const gender = patient.gender;
      const email = patient.email;
      const dateOfBirth = patient.dateOfBirth;
@@ -53,15 +55,15 @@
        return res.status(404).json({ message: "No available doctors found" });
      }
  
-     const consultant = availableStaff.find((staff) => staff.name === consultName);
+     const consultant = availableStaff.find((staff) => staff.firstName === consultName);
      if (!consultant) {
        return res.status(404).json({ message: `Consultant ${consultName} not found` });
      }
- 
+ console.log("CON",consultant)
      const appointmentCount = await Appointment.count({
        where: {
-         staffId: consultant.staffId,
-         appointment_date: appointmentDate,
+         staffId: consultant.dataValues.staffId,
+         appointDate: appointmentDate,
        },
      });
  
@@ -75,15 +77,15 @@
      // Create the appointment if the count is less than 20
      const appointment = await Appointment.create({
        patId: patient.patId,
-       name,
-       phoneNo: patientPhoneNo,
+       patName:name,
+       phone: patientPhoneNo,
        gender,
        email,
        dateOfBirth,
        staffId: consultant.staffId,
        deptId: dept.deptId,
-       appointment_date: appointmentDate,
-       appointment_time: appointmentTime,
+       appointDate: appointmentDate,
+       appointTime: appointmentTime,
        address,
        reason: reason || null,
      });
@@ -93,10 +95,10 @@
        Dear ${name},
        Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
        Reason: ${reason || "N/A"}.
-       Doctor: ${consultant.name}.
+       Doctor: ${consultant.dataValues.name}.
      `;
  
-     const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.name}.`;
+     const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.dataValues.name}.`;
      await sendMail(patient.email, "EMS Appointment", emailContent);
      await sendSMS(smsContent, patientPhoneNo);
 
