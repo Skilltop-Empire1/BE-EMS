@@ -28,11 +28,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING, 
-        allowNull: false,
+        allowNull: true,
       },
       shiftSchedule: {
         type: DataTypes.STRING(50),
-        allowNull: false,
+        allowNull: true,
       },
       vacationDays: {
         type: DataTypes.INTEGER,
@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       employStatus: {
         type: DataTypes.STRING(50),
-        allowNull: false,
+        allowNull: true,
       },
       staffStatus: {
         type: DataTypes.ENUM("active", "pending", "inactive"),
