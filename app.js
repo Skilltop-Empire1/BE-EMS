@@ -40,7 +40,7 @@ app.use(morgan("tiny"));
 app.use("/api/EMS/staff", staffRoute);
 
 // Define the port
-const port = process.env.PORT || 5005;
+const port = process.env.PORT || 5000;
 
 // Schedule tasks to ping the server every 30 minutes
 cron.schedule("*/30 * * * *", async () => {
