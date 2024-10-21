@@ -37,6 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use(morgan("tiny"));
+app.use("/api/EMS/staff", staffRoute);
 
 // Define the port
 const port = process.env.PORT || 5000;
