@@ -22,8 +22,8 @@ class PatientClass {
   //route too display all patient
   patientdisplay = async (req, res) => {
     try {
-      const patientCount = await Patient.findAndCountAll({});
-      return res.json(patientCount);
+      const patientdisplay = await Patient.findAll({});
+      return res.json(patientdisplay);
     } catch (error) {
       return console.log(error);
     }

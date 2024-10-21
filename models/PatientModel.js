@@ -6,7 +6,7 @@ const Patient = db.define("Patient", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
-    autoIncreament: true,
+    autoIncrement: true,
   },
   firstname: {
     type: Sequelize.STRING,
@@ -18,7 +18,7 @@ const Patient = db.define("Patient", {
   },
   email: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   mobile_no: {
     type: Sequelize.STRING,
@@ -26,23 +26,23 @@ const Patient = db.define("Patient", {
   },
   gender: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   dob: {
     type: Sequelize.DATE,
-    allowNull: false,
+    allowNull: true,
   },
   address: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   education_qualification: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   organization: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   picture: {
     type: Sequelize.STRING, // Store the picture URL or path
