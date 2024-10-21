@@ -1,4 +1,4 @@
-// //import the dependencies
+// // //import the dependencies
 
 const Sequelize = require("sequelize");
 require("dotenv").config();
@@ -11,6 +11,7 @@ const CONFIG = {
   DB_password: process.env.DB_password,
   DB_dialect: process.env.DB_dialect,
   DB_host: process.env.DB_host,
+  DB_port: process.env.DB_port, 
   DB_port: process.env.DB_port, 
 };
 
@@ -33,7 +34,7 @@ const db = new Sequelize(
 //check for errors
 try {
   db.authenticate();
-  db.sync({ false: true });
+  db.sync({ force: false });
   console.log("Connection to database successsfull and synced successfully");
 } catch (error) {
   throw error;
