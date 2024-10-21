@@ -118,7 +118,7 @@ router.get('/get', getAllAccounts);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', getAccountById);
+router.get('/get/:id', getAccountById);
 
 /**
  * @swagger
@@ -147,7 +147,7 @@ router.get('/:id', getAccountById);
  *       500:
  *         description: Internal Server Error
  */
-router.put('/:id', updateAccount);
+router.put('/update/:id', updateAccount);
 
 /**
  * @swagger
@@ -170,6 +170,6 @@ router.put('/:id', updateAccount);
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/:id', deleteAccount);
+router.delete('/delete/:id', deleteAccount);
 
 module.exports = router;
