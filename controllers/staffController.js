@@ -216,7 +216,7 @@
  
 //       const { mobile } = req.body; 
  
-//       const staffExist = await Staff.findOne({ where: { mobile } }); 
+      const staffExist = await Staff.findOne({ where: { mobile } }); 
  
 //       if (staffExist) { 
 //         return res 
