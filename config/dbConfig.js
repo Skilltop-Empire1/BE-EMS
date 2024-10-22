@@ -1,10 +1,8 @@
-// // //import the dependencies
+// Import dependencies
+const { Sequelize } = require("sequelize");
+require("dotenv").config(); // Ensure .env variables are loaded
 
-const Sequelize = require("sequelize");
-require("dotenv").config();
-
-//declaring database configuration parameter
-
+// Declaring database configuration parameters
 const CONFIG = {
   DB_name: process.env.DB_name,
   DB_username: process.env.DB_username,
@@ -12,32 +10,40 @@ const CONFIG = {
   DB_dialect: process.env.DB_dialect,
   DB_host: process.env.DB_host,
   DB_port: process.env.DB_port, 
-  DB_port: process.env.DB_port, 
 };
 
-//database connection
-const db = new Sequelize(
+// Create a new Sequelize instance
+const sequelize = new Sequelize(
   CONFIG.DB_name,
   CONFIG.DB_username,
   CONFIG.DB_password,
   {
     host: CONFIG.DB_host,
-    dialect: CONFIG.DB_dialect,
+    dialect: CONFIG.DB_dialect, // Should be a string such as 'postgres'
     port: CONFIG.DB_port,
-    logging: false, // Optionally disable logging 
-    dialectOptions: { 
-      connectTimeout: 60000, // 60 seconds 
-    }, 
+    logging: false, // Optionally disable logging
+    dialectOptions: {
+      connectTimeout: 60000, // 60 seconds
+    },
   }
 );
 
-//check for errors
-try {
-  db.authenticate();
-  db.sync({ force: false });
-  console.log("Connection to database successsfull and synced successfully");
-} catch (error) {
-  throw error;
-}
+// Function to authenticate and sync the database
+const initializeDatabase = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection to PostgreSQL database successful");
 
-module.exports = db;
+    await sequelize.sync({ alter: true }); // Ensures database schema is up-to-date without altering
+    console.log("Database synchronized successfully");
+  } catch (error) {
+    console.error("Unable to connect to the PostgreSQL database:", error);
+    throw error;
+  }
+};
+
+// Initialize the database
+initializeDatabase();
+
+// Export the Sequelize instance
+module.exports = sequelize;
