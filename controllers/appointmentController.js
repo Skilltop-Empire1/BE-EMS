@@ -3,6 +3,7 @@
  const { Appointment, Patient, Staff, Department } = require("../models");
  const { sendMail, sendSMS } = require("../utils/mail");
  
+
  const bookAppointment = async (req, res) => {
    const {
      deptName,
@@ -16,13 +17,11 @@
    } = req.body;
  
    try {
-     // Find the department
      const dept = await Department.findOne({ where: { name: deptName } });
      if (!dept) {
        return res.status(400).json({ message: "Department not found" });
      }
  
-     // Find the patient by either firstname or phoneNo
      const patient = await Patient.findOne({
        where: {
          [Sequelize.Op.or]: [{ firstName: firstname }, { phone: phoneNo }],
@@ -392,22 +391,22 @@ const getAllRecentAppointments = async (req, res) => {
   }
 };
 
+//staff get recent appointment
 const getStaffRecentAppointments = async (req, res) => {
-  const { staffId, date } = req.query;
+  const { staffId } = req.params;
+  const {  date } = req.query;
 
   try {
     // Validate staff ID and date
     if (!staffId || !date) {
       return res.status(400).json({ message: "Staff ID and date are required" });
     }
-
-    // Find the recent appointments related to the staff member on a particular date
     const appointments = await Appointment.findAll({
       where: {
-        staffId, // Match the staffId
-        appointDate: date, // Match the specified date
+        staffId, 
+        appointDate: date, 
       },
-      order: [["appointTime", "DESC"]], // Order by appointment time in descending order to get the most recent
+      order: [["appointTime", "DESC"]], 
       include: [
         {
           model: Patient,
@@ -422,12 +421,10 @@ const getStaffRecentAppointments = async (req, res) => {
       ],
     });
 
-    // If no appointments found, return a 404 message
     if (appointments.length === 0) {
       return res.status(404).json({ message: "No appointments found for this staff member on the given date" });
     }
-
-    // Return the found appointments
+   
     return res.status(200).json({
       message: `Recent appointments for staff member on ${date}`,
       appointments,
@@ -441,7 +438,11 @@ const getStaffRecentAppointments = async (req, res) => {
 
 module.exports = {
   bookAppointment,
+  getAllAppointments,
+  getAppointmentById,
   updateAppointment,
   deleteAppointment,
   getRecentAppointments,
+  getAllRecentAppointments,
+  getStaffRecentAppointments
 };
