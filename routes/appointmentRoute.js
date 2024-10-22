@@ -13,7 +13,7 @@ const {
 const router = express.Router();
 
 router.get("/recent", getRecentAppointments);
-router.post("/book/:patientId", bookAppointment);
+router.post("/book", bookAppointment);
 router.put("/update/:appointmentId", updateAppointment);
 router.delete("/delete/:appointmentId", deleteAppointment);
 

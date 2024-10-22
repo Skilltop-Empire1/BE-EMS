@@ -216,7 +216,7 @@
  
 //       const { mobile } = req.body; 
  
-//       const staffExist = await Staff.findOne({ where: { mobile } }); 
+    //  const staffExist = await Staff.findOne({ where: { mobile } }); 
  
 //       if (staffExist) { 
 //         return res 
@@ -352,7 +352,7 @@ exports.createStaff = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-  const {firstName, lastName, role, department, specialization, shiftSchedule, employStatus, location, dateOfHire, yrOfExperience, email, phone} = req.body;
+  const {firstName, lastName, role, deptId, specialization, shiftSchedule, employStatus, location, dateOfHire, yrOfExperience, email, phone,dateOfBirth,gender,licence,educationalQualification} = req.body;
  
   if (!validatePhoneNumber(phone)) {
     return res.status(400).json({ error: 'Invalid phone number format' });
@@ -368,7 +368,7 @@ exports.createStaff = async (req, res) => {
     firstName, 
     lastName, 
     role, 
-    department, 
+    deptId, 
     specialization, 
     shiftSchedule, 
     employStatus, 
@@ -376,7 +376,11 @@ exports.createStaff = async (req, res) => {
     dateOfHire, 
     yrOfExperience, 
     email, 
-    phone
+    phone,
+    dateOfBirth,
+    gender,
+    licence,
+    educationalQualification
 });
 res.status(201).json(staff);
 } catch (error) {
