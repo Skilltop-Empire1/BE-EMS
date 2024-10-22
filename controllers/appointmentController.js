@@ -2,6 +2,7 @@
  const { Sequelize } = require("sequelize");
  const { Appointment, Patient, Staff, Department } = require("../models");
  const { sendMail, sendSMS } = require("../utils/mail");
+ const formatPhoneNumber = require("../utils/formatNo")
  
 
  const bookAppointment = async (req, res) => {
@@ -59,6 +60,53 @@
        return res.status(404).json({ message: `Consultant ${consultName} not found` });
      }
  console.log("CON",consultant)
+ const appointExist = await Appointment.findAll({
+  where: {
+    [Sequelize.Op.or]: [{ patName: name }, { phone: phoneNo }]
+  }
+});
+
+if (appointExist.length > 0) {
+  console.log("appoint", appointExist);
+
+  const appointDateExist = appointExist.find((appointment) => appointment.appointDate === appointmentDate);
+
+  if (appointDateExist) {
+    return res.status(400).json({ msg: "The patient already booked an appointment for today." });
+  }
+}
+    // const appointExist = await Appointment.findAll({
+    //   where:{
+    //     [Sequelize.Op.or]:[{patName:name},{phone:phoneNo} ]
+    //   }
+    // }) 
+    // if(appointExist.length > 0){
+    //   console.log("appoint",appointExist)
+    //   const appointDateExist = appointExist.find((time) => time.appointDate === appointmentDate)
+    //   if(appointDateExist){
+    //     return res.status(404).json({ msg: "The patient already booked an appointment for today." })
+    //   }
+    // }
+
+    // const appointExist = await Appointment.findOne({
+    //   where: {
+    //     [Sequelize.Op.and]: [
+    //       {
+    //         [Sequelize.Op.or]: [
+    //           { patName: name }, // Assuming `patName` is the field name for the patient's name in your database
+    //           { phone: phoneNo }
+    //         ]
+    //       },
+    //       { appointDate: appointmentDate } // Check if the appointment date matches
+    //     ]
+    //   }
+    // });
+    
+    // if (appointExist) {
+    //   return res.status(404).json({ msg: "The patient already booked an appointment for today." });
+    // }
+    
+
      const appointmentCount = await Appointment.count({
        where: {
          staffId: consultant.dataValues.staffId,
@@ -66,7 +114,6 @@
        },
      });
  
-     // Check if the number of appointments exceeds 20
      if (appointmentCount >= 20) {
        return res
          .status(400)
@@ -96,10 +143,11 @@
        Reason: ${reason || "N/A"}.
        Doctor: ${consultant.dataValues.name}.
      `;
- 
-     const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.dataValues.name}.`;
+     const formattedPhoneNo = formatPhoneNumber(phoneNo)
+     console.log("sms",formattedPhoneNo)
+     const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.dataValues.lastName}.`;
      await sendMail(patient.email, "EMS Appointment", emailContent);
-     await sendSMS(smsContent, patientPhoneNo);
+     await sendSMS(smsContent, formattedPhoneNo);
 
     return res.status(201).json({
       message: "Appointment booked successfully",
@@ -281,7 +329,7 @@ const getAppointmentById = async (req, res) => {
 
   try {
     const appointment = await Appointment.findOne({
-      where: { id }, 
+      where: { appointId:id }, 
       include: [
         {
           model: Patient,
@@ -334,7 +382,7 @@ const deleteAppointment = async (req, res) => {
 };
 
 const getRecentAppointments = async (req, res) => {
-  const { limit = 1 } = req.query; // You can set a limit for how many recent appointments to fetch
+  const { limit = 1 } = req.query; 
 
   try {
     const appointments = await Appointment.findAll({
@@ -378,8 +426,8 @@ const getAllRecentAppointments = async (req, res) => {
   try {
     const recentAppointments = await Appointment.findAll({
       order: [
-        ["appointment_date", "DESC"],
-        ["appointment_time", "DESC"],
+        ["appointDate", "DESC"],
+        ["appointTime", "DESC"],
       ],
       limit: 10,
     });
