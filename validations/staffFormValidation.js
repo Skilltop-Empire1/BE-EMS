@@ -1,7 +1,7 @@
-// const Joi = require("joi");
+ const Joi = require("joi");
 
 // Validation schema for creating or updating staff
-const staffValidationSchema = Joi.object({
+const staffSchema = Joi.object({
   id: Joi.string().uuid().optional(), // UUID is optional for creation but should be included for updates
   lastName: Joi.string().min(1).max(100).required(),
   firstName: Joi.string().min(1).max(100).required(),
