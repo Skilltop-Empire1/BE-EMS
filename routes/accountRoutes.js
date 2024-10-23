@@ -6,7 +6,7 @@ const {
   getAccountById,
   updateAccount,
   deleteAccount,
-} = require('../controllers/accountController');
+} = require('../controllers/accountontroller');
 
 /**
  * @swagger
