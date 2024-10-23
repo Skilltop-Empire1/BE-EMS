@@ -47,8 +47,8 @@ class PatientClass {
         gender,
         dateOfBirth,
         address,
-        educationQualification,
-        organization,
+        lastVisit,
+        medCondition,
       } = req.body;
 
       // Validate input using Joi schema
@@ -75,8 +75,8 @@ class PatientClass {
         gender,
         dateOfBirth,
         address,
-        educationQualification,
-        organization,
+        lastVisit,
+        medCondition,
       });
 
       // Respond with the newly created patient data
