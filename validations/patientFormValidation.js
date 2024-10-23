@@ -6,15 +6,15 @@ const patientCreateSchema = Joi.object({
   firstName: Joi.string().min(1).max(100).required(),
   lastName: Joi.string().min(1).max(100).required(),
   email: Joi.string().email().optional(),
-  role: Joi.string(),
   phone: Joi.string()
+    .min(11)
     .pattern(/^[0-9]{10,15}$/)
     .required(),
   gender: Joi.string().valid("Male", "Female", "Other").required(),
-  dateOfBirth: Joi.date().iso().optional(),
+  dateOfBirth: Joi.date().iso().optional().required(),
   address: Joi.string().max(250).optional(),
-  educationQualification: Joi.string().max(250).optional(),
-  org_id: Joi.string().optional(),
+  medCondition: Joi.string().max(250).optional(),
+  lastVisit: Joi.date().iso().optional(),
 });
 
 // Validation schema for updating patient details
