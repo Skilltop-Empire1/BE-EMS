@@ -51,8 +51,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       staffStatus: {
-        type: DataTypes.ENUM("active", "pending", "inactive"),
-        defaultValue: "pending",
+        type: DataTypes.ENUM("active", "pending", "inactive","registered"),
+        defaultValue: "registered",
       },
       phone: {
         type: DataTypes.STRING(20),
