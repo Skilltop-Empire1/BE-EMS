@@ -1,27 +1,31 @@
-const jwt = require("jsonwebtoken")
-require("dotenv").config()
+//********import libraries */
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const userModel = require("../models/index");
 
-const auth = async (req,res,next) => {
-    const authHeader = req.headers.authorization
-    const token = authHeader && authHeader.split(' ')[1]
-    console.log("token",token)
-    if(!token) return res.status(404).json("token not found")
-        try {
-            console.log("jwt authorised")
-           const decoded = jwt.verify(token,process.env.JWT_TOKEN)
-           req.user = decoded
-           next()
-        } catch (error) {
-            res.status(404).json("not authorised")
-            console.log("jwt not authorised")
-        }
-}
+const loginJWTAthentication = async (req, res, next) => {
+  const authHeader = req.header('Authorization');
+  let token
+  if (authHeader && authHeader.startsWith('Bearer')){
+    token = authHeader.split(" ")[1]
+  }
 
-const isAdmin = (req,res,next) => {
-    if(req.user.role != "admin"){
-        res.status(404).json("access denied")
-    }
-    next()
-}
+  if (!token) {
+    return res.status(401).json({ message: "Access denied" });
+  }
 
-module.exports = {auth,isAdmin}
+  try {
+    // Verify the token
+    const verify = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(verify)
+    const {id,email,role,permission,userName} = verify
+    console.log("verify",verify,id,email,role,permission, userName)
+    req.user = {userId:id,email,role,permission,userName}
+    next();  
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ msg: "Invalid token" });
+  }
+};
+
+module.exports = loginJWTAthentication;
