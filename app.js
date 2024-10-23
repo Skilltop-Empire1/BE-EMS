@@ -18,7 +18,7 @@ const staffRoute = require("./routes/staffRoute");
 const patientRoute = require("./routes/patientRoute");
 const appointmentRoute = require("./routes/appointmentRoute");
 const reportRoute = require("./routes/reportRoute");
-const accountRoute = require("./routes/reportRoute");
+const accountRoute = require("./routes/accountRoutes");
 // const settingRoute = require("./routes/settingRoute");
 
 // Configure CORS
