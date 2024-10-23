@@ -1,7 +1,11 @@
 const { Staff,Department } = require("../models"); 
 const { staffSchema } = require("../validations/staffFormValidation"); 
 const { validatePhoneNumber } = require('../validations/numberValidator');
+const nodemailer = require('nodemailer')
 const { Op } = require("sequelize"); 
+const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken");
+
 
 
 let mailTransporter = nodemailer.createTransport({
@@ -454,117 +458,101 @@ exports.allNurses = async (req, res) => {
 };
 
 exports.inviteStaff = async (req, res) => {
-try {
-const user = req.user;
+  try {
+    const { email, password, username } = req.body;
+    if (!email || !password || !username) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
+    const existingStaff = await Staff.findOne({ where: { email: email } });
+    if (existingStaff) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      existingStaff.password = hashedPassword;
+      existingStaff.status = 'pending';
+      await existingStaff.save();
 
-const { email, password, username } = req.body;
-if (!email || !password, !username) {
-  return res.status(400).json({ message: 'Invalid credentials' });
-}
+      let mailOption = {
+        from: process.env.EMAIL_USER,
+        to: existingStaff.email,
+        subject: "You have been invited as a Staff Member",
+        html: `<h2>Hi ${existingStaff.username},</h2>
+        <p>You have been invited to join Our Hospital as a staff member.</p>
+        <p>Please use the credentials below to log in by clicking on this <a href="${process.env.CLIENT_URL}">link</a>:</p>
+        <p>Email: ${existingStaff.email}<br>Password: ${password}</p>`
+      };
 
-// Check if the email already exists in staff
-const existingStaff = await Staff.findOne({ where: { email: email } });
-if (existingStaff) {
-  return res.status(400).json({ message: 'Email already exists as a staff' });
-}
+      mailTransporter.sendMail(mailOption);
 
-const userExistingStaff = await User.findOne({ where: { email: email } });
-if (userExistingStaff) {
-  return res.status(400).json({ message: 'Email already exists as a user' });
-}
+      return res.status(200).json({
+        success: true,
+        message: 'Staff onboarded successfully and invite sent',
+        data: {
+          id: existingStaff.id,
+          email: existingStaff.email,
+          status: existingStaff.status,
+          role: existingStaff.role,
+        },
+      });
+    } else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newStaff = await Staff.create({
+        username,
+        email,
+        password: hashedPassword,
+        addedDate: new Date(),
+        status: 'active',
+        role: 'Doctor',
+      });
 
+      let mailOption = {
+        from: process.env.EMAIL_USER,
+        to: newStaff.email,
+        subject: "You have been invited as a Staff Member",
+        html: `<h2>Hi ${newStaff.username},</h2>
+        <p>You have been invited to join Our Hospital as a staff member.</p>
+        <p>Please use the credentials below to log in by clicking on this <a href="${process.env.CLIENT_URL}">link</a>:</p>
+        <p>Email: ${newStaff.email}<br>Password: ${password}</p>`
+      };
 
-// Hash the password before saving it
-const saltRounds = 10;
-const hashedPassword = await bcrypt.hash(password, saltRounds);
-const admin = req.user.username
+      mailTransporter.sendMail(mailOption);
 
-
-const url = process.env.CLIENT_URL ;
-const newStaff = await Staff.create({
-  userId:user.userId,
-  username,
-  email,
-  password: hashedPassword,  // Save the hashed password
-  addedDate: new Date(),
-  status: 'active',
-  role: 'Employee',
-  storeName: 'Store 1',
-});
-let mailOption = {
-  from: process.env.EMAIL_USER,
-  to: newStaff.email,
-  subject: "You have been invited as a Staff Member",
-  html: `<h2>Hi ${newStaff.username},</h2>
-  <p>You have been invited by ${admin} to join as a staff member.</p>
-  <p>Please use the credentials below to log in by clicking on this <a href="${url}">link</a>:</p>
-  <p>Email: ${newStaff.email}<br>
-  Password: ${password}</p>` 
-};
-
-// Sending the email
-mailTransporter.sendMail(mailOption, function (error, info) {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent to the staff account');
-  }
-});
-
-return res.status(201).json({
-  success: true,
-  message: 'Staff invited successfully, email has been sent to the staff email account',
-  data: {
-    user:req.user.username,
-    id: newStaff.id,
-    email: newStaff.email,
-    status: newStaff.status,
-    role: newStaff.role,
-  },
-});
-} catch (err) {
-console.error('Error inviting staff:', err);
-return res.status(500).json({ message: 'Internal Server Error' });
-}
+      return res.status(201).json({
+        success: true,
+        message: 'New staff created and invite sent',
+        data: {
+          id: newStaff.id,
+          email: newStaff.email,
+          status: newStaff.status,
+          role: newStaff.role,
+        },
+      });
+    }
+  } catch (err) {
+    // Log the error for debugging
+    console.error('Error inviting staff:', err);  }
 };
 
 exports.signIn = async (req, res) => {
   const { email, password } = req.body;
-  //validate user login
-  const { error } = userschema.validateLogin.validate(req.body);
-  if (error) {
-    return res.status(404).json(error.details[0].message);
-  }
+  // const { error } = userschema.validateLogin.validate(req.body);
+  // if (error) {
+  //   return res.status(404).json(error.details[0].message);
+  // }
 
-  //************check for user ************ */
-  const staff = await userModel.Staff.findOne({ where: { email } });
+  const staff = await Staff.findOne({ where: { email } });
   if (!staff) {
     return res.status(400).send("Email is not registered");
   }
-  const account =  staff
-  const isMatch = await bcrypt.compare(password, account.password);
-  try {
-    if (!isMatch) {
-      return res.status(404).json({ msg: "Incorrect login details" });
-    } else {
 
-       // ******************Create JWT token ***********************
-      let id;
-      if(staff){
-        id=staff.staffId
-      }
-      let permission
-      if (staff) {
-        permission=staff.permissions
-      };
-      console.log( "authpermission", permission);
-      console.log( "email", account.email);
-      const token = jwt.sign({id, username: account.username|| account.userName, email: account.email, role: account.role, permission}, process.env.SECRET_KEY, { expiresIn: '1h' })
-      res.json({token, id: id, username: account.username|| account.userName, email: account.email, role:account.role });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+  const isMatch = await bcrypt.compare(password, staff.password);
+  if (!isMatch) {
+    return res.status(404).json({ msg: "Incorrect login details" });
+  } else {
+    const token = jwt.sign(
+      { id: staff.staffId, username: staff.username, email: staff.email, role: staff.role, permission: staff.permissions },
+      process.env.SECRET_KEY,
+      { expiresIn: '1h' }
+    );
+    res.json({ token, id: staff.staffId, username: staff.username, email: staff.email, role: staff.role });
   }
 };
