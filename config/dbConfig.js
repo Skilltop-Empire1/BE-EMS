@@ -34,7 +34,7 @@ const initializeDatabase = async () => {
     await sequelize.authenticate();
     console.log("Connection to PostgreSQL database successful");
 
-    await sequelize.sync({ alter: true }); // Ensures database schema is up-to-date without altering
+    await sequelize.sync({ alter: false }); // Ensures database schema is up-to-date without altering
     console.log("Database synchronized successfully");
   } catch (error) {
     console.error("Unable to connect to the PostgreSQL database:", error);

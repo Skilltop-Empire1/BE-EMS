@@ -18,7 +18,7 @@ const staffRoute = require("./routes/staffRoute");
 const patientRoute = require("./routes/patientRoute");
 const appointmentRoute = require("./routes/appointmentRoute");
 const reportRoute = require("./routes/reportRoute");
-const accountRoute = require("./routes/reportRoute");
+const accountRoute = require("./routes/accountRoutes");
 // const settingRoute = require("./routes/settingRoute");
 
 // Configure CORS
@@ -37,10 +37,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use(morgan("tiny"));
-app.use("/api/EMS/staff", staffRoute);
+
 
 // Define the port
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5005;
 
 // Schedule tasks to ping the server every 30 minutes
 cron.schedule("*/30 * * * *", async () => {

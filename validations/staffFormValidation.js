@@ -14,9 +14,9 @@ const staffSchema = Joi.object({
         'any.required': 'role is required.',
         'string.base': 'role must be a valid string.'
   }),
-  deptId: Joi.string().required().messages({
+  departmentName: Joi.string().required().messages({
       'any.required': 'department is required.',
-      // 'string.base': 'department must be a string.'
+      'string.base': 'department must be a string.'
   }),
   specialization: Joi.string().required().messages({
     'any.required': 'specialization is required.',
