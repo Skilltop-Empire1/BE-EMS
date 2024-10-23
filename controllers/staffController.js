@@ -4,6 +4,19 @@ const { validatePhoneNumber } = require('../validations/numberValidator');
 const { Op } = require("sequelize"); 
 
 
+let mailTransporter = nodemailer.createTransport({
+  host: "mail.skilltopims.com",  
+  port: 587, 
+  secure: false, 
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
 const getDepartmentIdByName = async (departmentName) => {
   const department = await Department.findOne({
     where: { name: departmentName }, 
@@ -64,14 +77,14 @@ exports.createStaff = async (req, res) => {
     // Get the department name for the response
     const departmentNameResponse = await getDepartmentNameById(staff.deptId);
 
-    // Construct the response object
+    // response object
     const response = {
       staffId: staff.staffId,
       staffStatus: staff.staffStatus,
       firstName: staff.firstName,
       lastName: staff.lastName,
       role: staff.role,
-      departmentName: departmentNameResponse, // Add department name
+      departmentName: departmentNameResponse, 
       specialization: staff.specialization,
       shiftSchedule: staff.shiftSchedule,
       employStatus: staff.employStatus,
@@ -104,7 +117,7 @@ exports.viewStaff = async (req, res) => {
       include: [{
         model: Department,
         as: 'department',
-        attributes: ['name'] // Specify to fetch only the department name
+        attributes: ['name'] 
       }]
     });
 
@@ -117,7 +130,6 @@ exports.viewStaff = async (req, res) => {
       staffId: staff.staffId,
       firstName: staff.firstName,
       lastName: staff.lastName,
-      // profileUrl: staff.profileUrl,
       email: staff.email,
       shiftSchedule: staff.shiftSchedule,
       dateOfHire: staff.dateOfHire,
@@ -267,21 +279,21 @@ exports.searchStaff = async (req, res) => {
       return res.status(400).json({ error: "Search value is required" });
     }
 
-    // Define valid enum values for role
-    const validRoles = ['Doctor', 'Nurse', 'Admin']; // replace with your actual enum values
+    // Enum values for role
+    const validRoles = ['Doctor', 'Nurse', 'Admin']; 
 
-    // Build the search criteria to match multiple fields
+    //search criteria to match fields
     const searchCriteria = {
       [Op.or]: [
-        { firstName: { [Op.iLike]: `%${searchValue}%` } }, // Use iLike for case-insensitive match
-        { lastName: { [Op.iLike]: `%${searchValue}%` } },  // Use iLike for case-insensitive match
-        { email: { [Op.iLike]: `%${searchValue}%` } },     // Use iLike for case-insensitive match
+        { firstName: { [Op.iLike]: `%${searchValue}%` } }, 
+        { lastName: { [Op.iLike]: `%${searchValue}%` } },  
+        { email: { [Op.iLike]: `%${searchValue}%` } },    
       ]
     };
 
     // Check if the searchValue is a valid role
     if (validRoles.includes(searchValue)) {
-      searchCriteria[Op.or].push({ role: searchValue }); // Exact match for role
+      searchCriteria[Op.or].push({ role: searchValue }); 
     }
 
    // Fetch staff members including their department information
@@ -290,8 +302,8 @@ const staff = await Staff.findAll({
   include: [
     {
       model: Department,
-      as: 'department', // Specify the alias here
-      attributes: ['name'], // Include only the department name
+      as: 'department',
+      attributes: ['name'], 
     }
   ]
 });
@@ -400,9 +412,9 @@ exports.allNurses = async (req, res) => {
       offset: offset,
       include: [
         {
-          model: Department, // Assuming you have a Department model associated with Staff
-          as: 'department',   // Use the alias defined in the Staff model
-          attributes: ['name'] // Include only the department name
+          model: Department, 
+          as: 'department',   
+          attributes: ['name'] 
         }
       ]
     });
@@ -425,7 +437,7 @@ exports.allNurses = async (req, res) => {
         location: nurse.location,
         dateOfBirth: nurse.dateOfBirth,
         gender: nurse.gender,
-        departmentName: nurse.department ? nurse.department.name : null // Access department name
+        departmentName: nurse.department ? nurse.department.name : null 
       };
     });
 
@@ -434,9 +446,125 @@ exports.allNurses = async (req, res) => {
       totalNurses: count,
       currentPage: page,
       totalPages: Math.ceil(count / limit),
-      nurse: formattedNurses // Use formattedDoctors
+      nurse: formattedNurses 
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.inviteStaff = async (req, res) => {
+try {
+const user = req.user;
+
+
+const { email, password, username } = req.body;
+if (!email || !password, !username) {
+  return res.status(400).json({ message: 'Invalid credentials' });
+}
+
+// Check if the email already exists in staff
+const existingStaff = await Staff.findOne({ where: { email: email } });
+if (existingStaff) {
+  return res.status(400).json({ message: 'Email already exists as a staff' });
+}
+
+const userExistingStaff = await User.findOne({ where: { email: email } });
+if (userExistingStaff) {
+  return res.status(400).json({ message: 'Email already exists as a user' });
+}
+
+
+// Hash the password before saving it
+const saltRounds = 10;
+const hashedPassword = await bcrypt.hash(password, saltRounds);
+const admin = req.user.username
+
+
+const url = process.env.CLIENT_URL ;
+const newStaff = await Staff.create({
+  userId:user.userId,
+  username,
+  email,
+  password: hashedPassword,  // Save the hashed password
+  addedDate: new Date(),
+  status: 'active',
+  role: 'Employee',
+  storeName: 'Store 1',
+});
+let mailOption = {
+  from: process.env.EMAIL_USER,
+  to: newStaff.email,
+  subject: "You have been invited as a Staff Member",
+  html: `<h2>Hi ${newStaff.username},</h2>
+  <p>You have been invited by ${admin} to join as a staff member.</p>
+  <p>Please use the credentials below to log in by clicking on this <a href="${url}">link</a>:</p>
+  <p>Email: ${newStaff.email}<br>
+  Password: ${password}</p>` 
+};
+
+// Sending the email
+mailTransporter.sendMail(mailOption, function (error, info) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent to the staff account');
+  }
+});
+
+return res.status(201).json({
+  success: true,
+  message: 'Staff invited successfully, email has been sent to the staff email account',
+  data: {
+    user:req.user.username,
+    id: newStaff.id,
+    email: newStaff.email,
+    status: newStaff.status,
+    role: newStaff.role,
+  },
+});
+} catch (err) {
+console.error('Error inviting staff:', err);
+return res.status(500).json({ message: 'Internal Server Error' });
+}
+};
+
+exports.signIn = async (req, res) => {
+  const { email, password } = req.body;
+  //validate user login
+  const { error } = userschema.validateLogin.validate(req.body);
+  if (error) {
+    return res.status(404).json(error.details[0].message);
+  }
+
+  //************check for user ************ */
+  const staff = await userModel.Staff.findOne({ where: { email } });
+  if (!staff) {
+    return res.status(400).send("Email is not registered");
+  }
+  const account =  staff
+  const isMatch = await bcrypt.compare(password, account.password);
+  try {
+    if (!isMatch) {
+      return res.status(404).json({ msg: "Incorrect login details" });
+    } else {
+
+       // ******************Create JWT token ***********************
+      let id;
+      if(staff){
+        id=staff.staffId
+      }
+      let permission
+      if (staff) {
+        permission=staff.permissions
+      };
+      console.log( "authpermission", permission);
+      console.log( "email", account.email);
+      const token = jwt.sign({id, username: account.username|| account.userName, email: account.email, role: account.role, permission}, process.env.SECRET_KEY, { expiresIn: '1h' })
+      res.json({token, id: id, username: account.username|| account.userName, email: account.email, role:account.role });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
