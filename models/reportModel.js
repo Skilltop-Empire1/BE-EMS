@@ -170,6 +170,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "labId", 
       as: "lab",
     });
+    Report.belongsTo(models.Staff, {
+      foreignKey: "RadioId", 
+      as: "radio",
+    });
+    Report.belongsTo(models.Staff, {
+      foreignKey: "AdminId", 
+      as: "admin",
+    });
 
     Report.belongsTo(models.Account, {
       foreignKey: "acctId",

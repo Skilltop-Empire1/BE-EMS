@@ -150,8 +150,9 @@ const createReport = async (req, res) => {
       if (
         (role === 'Doctor' && report.doctorId !== userId) ||
         (role === 'Nurse' && report.nurseId !== userId) ||
-        (role === 'Lab' && report.labId !== userId) ||
-        (role === 'Pharmacy' && report.pharmacyId !== userId)
+        (role === 'LabTech' && report.labId !== userId) ||
+        (role === 'Pharmacist' && report.pharmacyId !== userId)
+        (role === 'Radiologist' && report.AdminId !== userId)
         (role === 'Admin' && report.AdminId !== userId)
         (role === 'Acct' && report.acctId !== userId)
       ) {
