@@ -5,7 +5,7 @@ const router = express.Router();
 const loginJWTAthentication = require('../middlewares/auth')
 
 // General routes
-router.post('/create',loginJWTAthentication, staffController.createStaff);
+router.post('/create', staffController.createStaff);
 router.get('/view/:staffId', staffController.viewStaff);
 router.put('/edit/:staffId',staffController.editStaff);
 router.delete('/delete/:staffId',staffController.deleteStaff);
