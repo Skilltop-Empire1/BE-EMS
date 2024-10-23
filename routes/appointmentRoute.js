@@ -22,7 +22,7 @@ router.get("/recent/all", getAllRecentAppointments);
 router.post("/book", bookAppointment);
 router.get("/:id", getAppointmentById);
 router.get("/staff/:staffId", getStaffRecentAppointments);
-router.put("/update/:appointmentId", updateAppointment);
-router.delete("/delete/:appointmentId", deleteAppointment);
+router.put("/update/:appointId", updateAppointment);
+router.delete("/delete/:appointId", deleteAppointment);
 
 module.exports = router;

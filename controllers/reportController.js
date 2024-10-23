@@ -1,32 +1,54 @@
+const {Report} = require("../models")
+
 const createReport = async (req, res) => {
     try {
-      const { role } = req.user; // Assuming `req.user` contains user info from authentication middleware
-      const { patient_id, diagnosis, treatment, prescription, testsOrdered, notes } = req.body;
-  
-      // Role-based checks
-      let reportData = {
-        patient_id,
-        reportDate: new Date(),
+      const { role,staffId } = req.user; 
+      const {patId,deptId} = req.params
+      const {
+        reportDate,
         diagnosis,
-        treatment,
         prescription,
+        consultDate,
         testsOrdered,
+        followupDate,
         notes,
+        vitalSign,
+        paymentRefNo
+       } = req.body;
+  
+      
+      let reportData = {
+        deptId,
+        patId,
+        staffId,
+        reportDate,
+        diagnosis,
+        prescription,
+        consultDate,
+        testsOrdered,
+        followupDate,
+        notes,
+        vitalSign,
+        paymentRefNo
       };
   
-      if (role === 'doctor') {
-        reportData.doctor_id = req.user.id; // Set doctor ID
-      } else if (role === 'nurse') {
-        reportData.nurse_id = req.user.id; // Set nurse ID
-      } else if (role === 'pharmacy') {
-        reportData.pharmacy_id = req.user.id; // Set pharmacy ID
-      } else if (role === 'lab') {
-        reportData.lab_id = req.user.id; // Set lab ID
+      if (role === 'Doctor') {
+        reportData.doctorId = req.user.id; 
+      } else if (role === 'Nurse') {
+        reportData.nurseId = req.user.id; 
+      } else if (role === 'Pharmacy') {
+        reportData.pharmacyId = req.user.id; 
+      } else if (role === 'Lab') {
+        reportData.labId = req.user.id; 
+      }else if (role === 'Admin') {
+        reportData.AdminId = req.user.id; 
+      }else if (role === 'Acct') {
+        reportData.acctId = req.user.id; 
       } else {
         return res.status(403).json({ message: 'Unauthorized. Only doctors, nurses, pharmacy, or lab staff can create reports.' });
       }
   
-      const report = await MedicalReport.create(reportData);
+      const report = await Report.create(reportData);
       res.status(201).json(report);
     } catch (error) {
       res.status(500).json({ message: 'Error creating report', error });
@@ -36,7 +58,7 @@ const createReport = async (req, res) => {
 
   const getAllReports = async (req, res) => {
     try {
-      const reports = await MedicalReport.findAll({
+      const reports = await Report.findAll({
         include: [{ model: Patient, as: 'patient' }],
       });
       res.status(200).json(reports);
@@ -48,7 +70,7 @@ const createReport = async (req, res) => {
 
   const getReportById = async (req, res) => {
     try {
-      const report = await MedicalReport.findByPk(req.params.id, {
+      const report = await Report.findByPk(req.params.reportId, {
         include: [{ model: Patient, as: 'patient' }],
       });
       if (!report) {
@@ -64,8 +86,8 @@ const createReport = async (req, res) => {
 
   const getReportsByPatient = async (req, res) => {
     try {
-      const reports = await MedicalReport.findAll({
-        where: { patient_id: req.params.patientId },
+      const reports = await Report.findAll({
+        where: { patId: req.params.patientId },
         include: [{ model: Patient, as: 'patient' }],
       });
       res.status(200).json(reports);
@@ -77,8 +99,8 @@ const createReport = async (req, res) => {
   
   const getReportsByDoctor = async (req, res) => {
     try {
-      const reports = await MedicalReport.findAll({
-        where: { doctor_id: req.params.doctorId },
+      const reports = await Report.findAll({
+        where: { doctorId: req.params.doctorId },
         include: [{ model: Patient, as: 'patient' }],
       });
       res.status(200).json(reports);
@@ -91,18 +113,20 @@ const createReport = async (req, res) => {
 
   const updateReport = async (req, res) => {
     try {
-      const report = await MedicalReport.findByPk(req.params.id);
+      const report = await Report.findByPk(req.params.id);
       if (!report) {
         return res.status(404).json({ message: 'Report not found' });
       }
   
-      // Check if the user is authorized to update this report
+     
       const { role, id: userId } = req.user;
       if (
-        (role === 'doctor' && report.doctor_id !== userId) ||
-        (role === 'nurse' && report.nurse_id !== userId) ||
-        (role === 'lab' && report.lab_id !== userId) ||
-        (role === 'pharmacy' && report.pharmacy_id !== userId)
+        (role === 'Doctor' && report.doctorId !== userId) ||
+        (role === 'Nurse' && report.nurseId !== userId) ||
+        (role === 'Lab' && report.labId !== userId) ||
+        (role === 'Pharmacy' && report.pharmacyId !== userId)
+        (role === 'Admin' && report.AdminId !== userId)
+        (role === 'Acct' && report.acctId !== userId)
       ) {
         return res.status(403).json({ message: 'Unauthorized to update this report' });
       }
@@ -122,13 +146,15 @@ const createReport = async (req, res) => {
         return res.status(404).json({ message: 'Report not found' });
       }
   
-      // Check if the user is authorized to delete this report
       const { role, id: userId } = req.user;
       if (
-        (role === 'doctor' && report.doctor_id !== userId) ||
-        (role === 'nurse' && report.nurse_id !== userId) ||
-        (role === 'lab' && report.lab_id !== userId) ||
-        (role === 'pharmacy' && report.pharmacy_id !== userId)
+        (role === 'Doctor' && report.doctorId !== userId) ||
+        (role === 'Nurse' && report.nurseId !== userId) ||
+        (role === 'LabTech' && report.labId !== userId) ||
+        (role === 'Pharmacist' && report.pharmacyId !== userId)
+        (role === 'Radiologist' && report.AdminId !== userId)
+        (role === 'Admin' && report.AdminId !== userId)
+        (role === 'Acct' && report.acctId !== userId)
       ) {
         return res.status(403).json({ message: 'Unauthorized to delete this report' });
       }

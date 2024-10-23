@@ -117,7 +117,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       consultDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: true,
       },
       testsOrdered: {
@@ -169,6 +169,14 @@ module.exports = (sequelize, DataTypes) => {
     Report.belongsTo(models.Staff, {
       foreignKey: "labId", 
       as: "lab",
+    });
+    Report.belongsTo(models.Staff, {
+      foreignKey: "RadioId", 
+      as: "radio",
+    });
+    Report.belongsTo(models.Staff, {
+      foreignKey: "AdminId", 
+      as: "admin",
     });
 
     Report.belongsTo(models.Account, {
