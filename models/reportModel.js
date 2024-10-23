@@ -117,7 +117,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       consultDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: true,
       },
       testsOrdered: {
