@@ -88,6 +88,8 @@ class PatientClass {
     }
   };
 
+
+
   //Method for edit patient details
   patientEdit = async (req, res) => {
     const {
@@ -98,8 +100,8 @@ class PatientClass {
       gender,
       dateOfBirth,
       address,
-      educationQualification,
-      organization,
+      lastVisit,
+      medCondition,
     } = req.body;
 
     //validate inputs
@@ -114,10 +116,11 @@ class PatientClass {
         where: { phone: req.body.phone },
       });
 
+       
       //update logic
       if (patientExist) {
-        return res.status(200).send(
-          Patient.update(
+        let patientUpdate
+          patientUpdate = await Patient.update(
             {
               firstName,
               lastName,
@@ -126,8 +129,8 @@ class PatientClass {
               gender,
               dateOfBirth,
               address,
-              educationQualification,
-              organization,
+              lastVisit,
+              medCondition,
             },
             {
               where: {
@@ -135,11 +138,18 @@ class PatientClass {
               },
             }
           )
-        );
+          return res.status(201).json({
+            msg: "Patient data updated successfully",
+            patientUpdate
+          })
       } else {
         return res
           .status(404)
-          .json({ msg: "Patient details not found for update" });
+          .json(
+            { 
+            msg: "Patient record not found for update", 
+          }
+        );
       }
     } catch (error) {
       throw error;
@@ -169,10 +179,10 @@ class PatientClass {
           },
         });
         return res
-          .status(200)
-          .json({ msg: "Patient data deleted successfully" });
+          .status(201)
+          .json({ msg: "Patient deleted successfully" });
       } else {
-        return res.status(404).json({ msg: "Patient does not exist" });
+        return res.status(404).json({ msg: "Patient's record not found" });
       }
     } catch (error) {
       throw error;
