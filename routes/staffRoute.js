@@ -3,10 +3,23 @@ const express = require("express");
 const staffController = require("../controllers/staffController");
 const router = express.Router();
 
-// Routes for staff
+// General routes
 router.post('/create', staffController.createStaff);
+router.get('/view/:staffId', staffController.viewStaff);
+router.put('/edit/:staffId',staffController.editStaff);
+router.delete('/delete/:staffId',staffController.deleteStaff);
+router.get('/search',staffController.searchStaff);
 
 
+
+
+
+//Routes for doctors
+router.get('/doctor/all', staffController.allDoctors);
+
+
+//Routes for nurses
+router.get('/nurses/all', staffController.allNurses);
 
 
 
