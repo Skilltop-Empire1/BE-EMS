@@ -610,6 +610,11 @@ exports.updateStaff = async (req, res) => {
     // Extract only the fields that are provided in the request body
     const { userName,email, departmentName,role, staffStatus} = req.body;
 
+    const existingUserName = await Staff.findOne({ where: { userName: userName } });
+    if (existingUserName) {
+      return res.status(409).json({ message: 'User name already exists. Please choose a different one.' });
+    }
+
     // If email is provided and different from current, check for duplicates
     if (email && email !== staff.email) {
       const emailExists = await Staff.findOne({ where: { email } });
