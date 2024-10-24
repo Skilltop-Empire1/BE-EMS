@@ -649,7 +649,7 @@ exports.createSuperAdmin = async function createSuperAdmin() {
       
       // Create Super Admin , all values are customizable
       const newSuperAdmin = await Staff.create({
-        username: 'superadmin1',
+        userName: 'superadmin1',
         email: 'superadmin@example.com', 
         password: hashedPassword,
         role: 'Super Admin',
