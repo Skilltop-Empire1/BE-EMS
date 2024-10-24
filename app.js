@@ -4,6 +4,8 @@ const cron = require("node-cron");
 const axios = require("axios");
 const cors = require("cors");
 const morgan = require("morgan");
+const { createSuperAdmin } = require("../BE-EMS/controllers/staffController");
+
 
 const swaggerDocs = require("./swagger");
 
@@ -78,5 +80,9 @@ const startServer = async () => {
   }
 };
 
+
+
 // Initialize the server
 startServer();
+// Call createSuperAdmin when the app starts
+createSuperAdmin();
