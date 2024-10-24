@@ -10,9 +10,10 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      patName: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+      patId: {
+        type: DataTypes.UUID,
+        references: { model: 'Patient', key: 'patId' }, 
+        allowNull:false
       },
       paymentMethod: {
         type: DataTypes.ENUM("HMO", "Insurance", "NHIS", "Direct"),

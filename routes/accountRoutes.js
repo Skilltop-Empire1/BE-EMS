@@ -15,7 +15,7 @@ const {
  *     Account:
  *       type: object
  *       required:
- *         - patName
+ *         - patId
  *         - paymentMethod
  *         - paymentProvider
  *         - treatmentType
@@ -23,30 +23,33 @@ const {
  *         acctId:
  *           type: string
  *           description: UUID of the account
- *         patName:
+ *         patId:
  *           type: string
- *           description: Name of the patient
+ *           description: UUID of the associated patient (foreign key)
  *         paymentMethod:
  *           type: string
  *           enum: [HMO, Insurance, NHIS, Direct]
+ *           description: Payment method used by the patient
  *         paymentProvider:
  *           type: string
  *           enum: [Hires, HMO, Federal Health Care]
+ *           description: Provider for the payment method
  *         outstandBal:
  *           type: number
- *           description: Outstanding balance
+ *           description: Outstanding balance amount
  *         amount:
  *           type: number
- *           description: Payment amount
+ *           description: Payment amount made
  *         total:
  *           type: number
- *           description: Total amount
+ *           description: Total amount involved in the transaction
  *         treatmentType:
  *           type: string
- *           description: Type of treatment
+ *           description: Type of treatment provided
  *         paymentStatus:
  *           type: string
  *           enum: [incomplete, completed]
+ *           description: Status of the payment
  *         nextPayDueDate:
  *           type: string
  *           format: date
@@ -55,7 +58,7 @@ const {
 
 /**
  * @swagger
- * /accounts:
+ * /api/v1/account/create:
  *   post:
  *     summary: Create a new account
  *     tags: [Accounts]
@@ -75,7 +78,7 @@ router.post('/create', createAccount);
 
 /**
  * @swagger
- * /accounts:
+ * /api/v1/account:
  *   get:
  *     summary: Get all accounts
  *     tags: [Accounts]
@@ -91,11 +94,11 @@ router.post('/create', createAccount);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/get', getAllAccounts);
+router.get('/', getAllAccounts);
 
 /**
  * @swagger
- * /accounts/{id}:
+ * /api/v1/account/{id}:
  *   get:
  *     summary: Get an account by ID
  *     tags: [Accounts]
@@ -118,11 +121,11 @@ router.get('/get', getAllAccounts);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/get/:id', getAccountById);
+router.get('/:id', getAccountById);
 
 /**
  * @swagger
- * /accounts/{id}:
+ * /api/v1/account/{id}:
  *   put:
  *     summary: Update an account
  *     tags: [Accounts]
@@ -147,11 +150,11 @@ router.get('/get/:id', getAccountById);
  *       500:
  *         description: Internal Server Error
  */
-router.put('/update/:id', updateAccount);
+router.put('/:id', updateAccount);
 
 /**
  * @swagger
- * /accounts/{id}:
+ * /api/v1/account/{id}:
  *   delete:
  *     summary: Delete an account
  *     tags: [Accounts]
@@ -170,6 +173,6 @@ router.put('/update/:id', updateAccount);
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/delete/:id', deleteAccount);
+router.delete('/:id', deleteAccount);
 
 module.exports = router;
