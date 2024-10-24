@@ -3,6 +3,7 @@ const staffController = require("../controllers/staffController");
 const router = express.Router();
 const loginJWTAthentication = require('../middlewares/auth');
 const checkRole = require('../middlewares/checkRole');
+const chekPerm = require('../middlewares/permissionMiddleware')
 
 /**
  * @swagger
@@ -167,7 +168,7 @@ const checkRole = require('../middlewares/checkRole');
  *       404:
  *         description: Invalid input or missing required field
  */
-router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.createStaff);
+router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','create']), staffController.createStaff);
 /**
  * @swagger
  * /staff/view/{staffId}:
@@ -276,9 +277,8 @@ router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']
  *       404:
  *         description: Invalid input or missing required field
  */
-router.get('/view/:staffId', loginJWTAthentication, staffController.viewStaff);
-
-/**
+router.get('/view/:staffId', loginJWTAthentication,chekPerm(['Staff','view']), staffController.viewStaff);
+/*
  * @swagger
  * /staff/edit/{staffId}:
  *   put:
@@ -441,8 +441,7 @@ router.get('/view/:staffId', loginJWTAthentication, staffController.viewStaff);
  *       404:
  *         description: staff not found
  */
-router.put('/edit/:staffId', loginJWTAthentication, staffController.editStaff);
-
+router.put('/edit/:staffId', loginJWTAthentication,chekPerm(['Staff','edit']), staffController.editStaff);
 /**
  * @swagger
  * /staff/delete/{staffId}:
@@ -462,8 +461,7 @@ router.put('/edit/:staffId', loginJWTAthentication, staffController.editStaff);
  *       404:
  *         description: Staff member not found
  */
-router.delete('/delete/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.deleteStaff);
-
+router.delete('/delete/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','delete']), staffController.deleteStaff);
 /**
  * @swagger
  * /staff/search:
@@ -1024,6 +1022,95 @@ router.post('/invite', loginJWTAthentication, checkRole(['Admin', 'Super Admin']
  *                   type: string
  *                   description: Detailed error message
  */
-router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.updateStaff);
+router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','edit','create']), staffController.updateStaff);
+/**
+ * @swagger
+ * /update-permissions/{staffId}:
+ *   put:
+ *     summary: Update staff permissions
+ *     description: Updates the permissions of a staff member.
+ *     tags:
+ *       - Staff
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - name: staffId
+ *         in: path
+ *         required: true
+ *         description: ID of the staff member whose permissions will be updated.
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Permission'
+ *             required:
+ *               - permissions
+ *     responses:
+ *       200:
+ *         description: Permissions updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Permissions updated successfully"
+ *                 data:
+ *                   $ref: '#/components/schemas/Staff'
+ *       400:
+ *         description: Invalid permissions format.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid permissions format"
+ *       403:
+ *         description: Access denied. No permissions found or missing required permissions.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Access denied. No permissions found."
+ *       404:
+ *         description: Staff not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Staff not found"
+ *       500:
+ *         description: An error occurred while updating permissions.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while updating permissions"
+ */
+router.put('/update-permissions/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','edit','create']), staffController.updatePermissions);
 
 module.exports = router;
