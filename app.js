@@ -4,7 +4,7 @@ const cron = require("node-cron");
 const axios = require("axios");
 const cors = require("cors");
 const morgan = require("morgan");
-const { createSuperAdmin } = require("../BE-EMS/controllers/staffController");
+const { createSuperAdmin } = require("./controllers/staffController");
 
 
 const swaggerDocs = require("./swagger");
