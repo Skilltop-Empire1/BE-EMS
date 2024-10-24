@@ -47,6 +47,7 @@ exports.createStaff = async (req, res) => {
   
   const {firstName, lastName, role, departmentName, specialization, shiftSchedule, employStatus, location, dateOfHire, yrOfExperience, email, phone,dateOfBirth,gender,licence,educationalQualification} = req.body;
   const deptId = await getDepartmentIdByName(departmentName);
+
   if (!deptId) {
     return res.status(400).json({ error: "Invalid department name" });
   }
@@ -115,66 +116,179 @@ res.status(201).json(response);
 
 exports.viewStaff = async (req, res) => {
   try {
-    const staffId = req.params.staffId;
+    // Extracting user information from the JWT token
+    const { userId, role } = req.user;
+    const { staffId } = req.params;
+
+    // Fetch the staff details along with the department name
     const staff = await Staff.findOne({
       where: { staffId },
       include: [{
         model: Department,
         as: 'department',
-        attributes: ['name'] 
+        attributes: ['name'] // Only fetch the department's name
       }]
     });
 
+    // Check if staff member exists
     if (!staff) {
       return res.status(404).json({ error: "Staff not found" });
     }
 
-    // Prepare the response to include only the necessary attributes
-    const response = {
-      staffId: staff.staffId,
-      firstName: staff.firstName,
-      lastName: staff.lastName,
-      email: staff.email,
-      shiftSchedule: staff.shiftSchedule,
-      dateOfHire: staff.dateOfHire,
-      gender: staff.gender,
-      employStatus: staff.employStatus,
-      staffStatus: staff.staffStatus,
-      phone: staff.phone,
-      educationalQualification: staff.educationalQualification,
-      yrOfExperience: staff.yrOfExperience,
-      licence: staff.licence,
-      specialization: staff.specialization,
-      location: staff.location,
-      dateOfBirth: staff.dateOfBirth,
-      role: staff.role,
-      departmentName: staff.department ? staff.department.name : null // Add only the department name
-    };
+    // Authorize the request: only Super Admin, Admin, or the staff member themselves can view the profile
+    if (role === 'Super Admin' || role === 'admin' || userId === staffId) {
+      
+      // Prepare the response object, including only the necessary staff details and department name
+      const response = {
+        staffId: staff.staffId,
+        firstName: staff.firstName,
+        lastName: staff.lastName,
+        email: staff.email,
+        shiftSchedule: staff.shiftSchedule,
+        dateOfHire: staff.dateOfHire,
+        gender: staff.gender,
+        employStatus: staff.employStatus,
+        staffStatus: staff.staffStatus,
+        phone: staff.phone,
+        educationalQualification: staff.educationalQualification,
+        yrOfExperience: staff.yrOfExperience,
+        licence: staff.licence,
+        specialization: staff.specialization,
+        location: staff.location,
+        dateOfBirth: staff.dateOfBirth,
+        role: staff.role,
+        departmentName: staff.department ? staff.department.name : null // Add department name if available
+      };
 
-    res.status(200).json(response);
+      // Send the response
+      return res.status(200).json(response);
+    }
+
+    // If the user is not authorized, send a forbidden status
+    return res.status(403).json({ error: "Access denied. You do not have permission to view this profile." });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Handle any unexpected errors
+    return res.status(500).json({ error: error.message });
   }
 };
 
 
+
+// exports.editStaff = async (req, res) => {
+//   try {
+//     // Get the staff ID from the request params
+//     const staffId = req.params.staffId;
+
+//     // Find the staff by ID first
+//     const staff = await Staff.findByPk(staffId);
+//     if (!staff) {
+//       return res.status(404).json({ error: "Staff not found" });
+//     }
+
+//     // Extract only the fields that are provided in the request body
+//     const { 
+//       firstName, lastName, role, departmentName, specialization, shiftSchedule, employStatus, 
+//       location, dateOfHire, yrOfExperience, email, phone, dateOfBirth, gender, 
+//       licence, educationalQualification 
+//     } = req.body;
+
+//     // If email is provided and different from current, check for duplicates
+//     if (email && email !== staff.email) {
+//       const emailExists = await Staff.findOne({ where: { email } });
+//       if (emailExists) {
+//         return res.status(400).json({ error: 'Email already exists' });
+//       }
+//     }
+
+//     // If phone is provided and different from current, check for duplicates
+//     if (phone && phone !== staff.phone) {
+//       if (!validatePhoneNumber(phone)) {
+//         return res.status(400).json({ error: 'Invalid phone number format' });
+//       }
+//       const phoneExists = await Staff.findOne({ where: { phone } });
+//       if (phoneExists) {
+//         return res.status(400).json({ error: 'Phone number already exists' });
+//       }
+//     }
+//      // Get the departmentId by departmentName
+//      let deptId;
+//      if (departmentName) {
+//        deptId = await getDepartmentIdByName(departmentName);
+//        if (!deptId) {
+//          return res.status(400).json({ error: "Invalid department name" });
+//        }
+//      }
+
+//     // Update only the fields that are provided (undefined fields will be ignored)
+//     await staff.update({
+//       firstName: firstName || staff.firstName,
+//       lastName: lastName || staff.lastName,
+//       role: role || staff.role,
+//       deptId: deptId || staff.deptId,
+//       specialization: specialization || staff.specialization,
+//       shiftSchedule: shiftSchedule || staff.shiftSchedule,
+//       employStatus: employStatus || staff.employStatus,
+//       location: location || staff.location,
+//       dateOfHire: dateOfHire || staff.dateOfHire,
+//       yrOfExperience: yrOfExperience || staff.yrOfExperience,
+//       email: email || staff.email,
+//       phone: phone || staff.phone,
+//       dateOfBirth: dateOfBirth || staff.dateOfBirth,
+//       gender: gender || staff.gender,
+//       licence: licence || staff.licence,
+//       educationalQualification: educationalQualification || staff.educationalQualification
+//     });
+
+//     // Return the updated staff data, with departmentName included
+//     const response = {
+//       staffId: staff.staffId,
+//       firstName: staff.firstName,
+//       lastName: staff.lastName,
+//       email: staff.email,
+//       shiftSchedule: staff.shiftSchedule,
+//       dateOfHire: staff.dateOfHire,
+//       gender: staff.gender,
+//       employStatus: staff.employStatus,
+//       phone: staff.phone,
+//       educationalQualification: staff.educationalQualification,
+//       yrOfExperience: staff.yrOfExperience,
+//       licence: staff.licence,
+//       specialization: staff.specialization,
+//       location: staff.location,
+//       dateOfBirth: staff.dateOfBirth,
+//       role: staff.role,
+//       departmentName: departmentName || (staff.department ? staff.department.name : null) // Set departmentName from request or keep existing
+//     };
+
+//     // Return the updated staff data
+//     res.status(200).json(response);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 exports.editStaff = async (req, res) => {
   try {
-    // Get the staff ID from the request params
-    const staffId = req.params.staffId;
+    const { userId, role: userRole } = req.user;  // Get the current user's ID and role
+    const { staffId } = req.params;  // The ID of the staff being edited
 
-    // Find the staff by ID first
+    // Find the staff by ID
     const staff = await Staff.findByPk(staffId);
     if (!staff) {
       return res.status(404).json({ error: "Staff not found" });
     }
 
-    // Extract only the fields that are provided in the request body
-    const { 
-      firstName, lastName, role, departmentName, specialization, shiftSchedule, employStatus, 
+    // Only allow Superadmin, Admin, or the staff member themselves to edit the profile
+    if (userRole !== 'Super Admin' && userRole !== 'Admin' && userId !== staff.userId) {
+      return res.status(403).json({ error: "You do not have permission to edit this staff profile" });
+    }
+
+    // Extract fields from the request body
+    const {
+      firstName, lastName, newRole, departmentName, specialization, shiftSchedule, employStatus, 
       location, dateOfHire, yrOfExperience, email, phone, dateOfBirth, gender, 
-      licence, educationalQualification 
-    } = req.body;
+      licence, educationalQualification
+    } = req.body;  // Changed role to newRole to avoid conflict
 
     // If email is provided and different from current, check for duplicates
     if (email && email !== staff.email) {
@@ -194,20 +308,21 @@ exports.editStaff = async (req, res) => {
         return res.status(400).json({ error: 'Phone number already exists' });
       }
     }
-     // Get the departmentId by departmentName
-     let deptId;
-     if (departmentName) {
-       deptId = await getDepartmentIdByName(departmentName);
-       if (!deptId) {
-         return res.status(400).json({ error: "Invalid department name" });
-       }
-     }
+
+    // Get the departmentId by departmentName
+    let deptId;
+    if (departmentName) {
+      deptId = await getDepartmentIdByName(departmentName);
+      if (!deptId) {
+        return res.status(400).json({ error: "Invalid department name" });
+      }
+    }
 
     // Update only the fields that are provided (undefined fields will be ignored)
     await staff.update({
       firstName: firstName || staff.firstName,
       lastName: lastName || staff.lastName,
-      role: role || staff.role,
+      role: newRole || staff.role,  // Use newRole here
       deptId: deptId || staff.deptId,
       specialization: specialization || staff.specialization,
       shiftSchedule: shiftSchedule || staff.shiftSchedule,
@@ -240,14 +355,15 @@ exports.editStaff = async (req, res) => {
       specialization: staff.specialization,
       location: staff.location,
       dateOfBirth: staff.dateOfBirth,
-      role: staff.role,
-      departmentName: departmentName || (staff.department ? staff.department.name : null) // Set departmentName from request or keep existing
+      role: staff.role,  // Ensure this returns the updated role
+      departmentName: departmentName || (staff.department ? staff.department.name : null)  // Set departmentName from request or keep existing
     };
 
     // Return the updated staff data
-    res.status(200).json(response);
+    return res.status(200).json(response);
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -528,8 +644,14 @@ exports.inviteStaff = async (req, res) => {
       });
     }
   } catch (err) {
-    // Log the error for debugging
-    console.error('Error inviting staff:', err);  }
+    // Catch and log any unexpected errors
+    console.error('Error inviting staff:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while trying to invite staff , kindly ensure the staff is registered before onboarding ',
+      error: err.message,
+    });
+  }
 };
 
 exports.signIn = async (req, res) => {
@@ -556,3 +678,104 @@ exports.signIn = async (req, res) => {
     res.json({ token, id: staff.staffId, username: staff.username, email: staff.email, role: staff.role });
   }
 };
+
+
+exports.updateStaff = async (req, res) => {
+  try {
+    // Get the staff ID from the request params
+    const staffId = req.params.staffId;
+
+    // Find the staff by ID first
+    const staff = await Staff.findByPk(staffId);
+    if (!staff) {
+      return res.status(404).json({ error: "Staff not found" });
+    }
+
+    // Extract only the fields that are provided in the request body
+    const { userName,email, departmentName,role, staffStatus} = req.body;
+
+    // If email is provided and different from current, check for duplicates
+    if (email && email !== staff.email) {
+      const emailExists = await Staff.findOne({ where: { email } });
+      if (emailExists) {
+        return res.status(400).json({ error: 'Email already exists' });
+      }
+    }
+
+     // Get the departmentId by departmentName
+     let deptId;
+     if (departmentName) {
+       deptId = await getDepartmentIdByName(departmentName);
+       if (!deptId) {
+         return res.status(400).json({ error: "Invalid department name" });
+       }
+     }
+
+    // Update only the fields that are provided (undefined fields will be ignored)
+    await staff.update({
+      userName : userName || staff.userName,
+      email: email || staff.email,
+      deptId: deptId || staff.deptId,
+      role: role || staff.role,
+      staffStatus : staffStatus || staff.staffStatus
+    });
+
+    // Return the updated staff data, with departmentName included
+    const response = {
+      staffId: staff.staffId,
+      userName : staff.userName,
+      email: staff.email,
+      departmentName: departmentName || (staff.department ? staff.department.name : null),
+      role: staff.role,
+      staffStatus : staff.staffStatus
+    };
+
+    // Return the updated staff data
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.createSuperAdmin = async function createSuperAdmin() {
+  try {
+    // Check if Super Admin already exists
+    const superAdmin = await Staff.findOne({ where: { role: 'Super Admin' } });
+    
+    if (!superAdmin) {
+      // Hash password
+      const hashedPassword = await bcrypt.hash('supersecretpassword', 10);  // Customize password as needed
+      
+      // Create Super Admin
+      const newSuperAdmin = await Staff.create({
+        username: 'superadmin',
+        email: 'superadmin@example.com',  // Customize email if necessary
+        password: hashedPassword,
+        role: 'Super Admin',
+        status: 'active',
+        addedDate: new Date(),
+        firstName: 'Super',              // Default values
+        lastName: 'Admin',
+        dateOfHire: new Date(),
+        gender: 'Other',
+        phone: '0000000000',
+        educationalQualification: 'N/A',
+        yrOfExperience: 0,
+        specialization: 'N/A',
+        dateOfBirth: new Date(1970, 0, 1),
+      });
+
+      console.log('Super Admin created successfully');
+    } else {
+      // If Super Admin already exists, log a message instead of attempting to recreate it
+      console.log('Super Admin already exists');
+    }
+  } catch (error) {
+    console.error('Error creating Super Admin:', error);
+  }
+}
+  
+
+// Call createSuperAdmin when the app starts
+// createSuperAdmin();
