@@ -167,10 +167,7 @@ const checkRole = require('../middlewares/checkRole');
  *       404:
  *         description: Invalid input or missing required field
  */
-
-
 router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.createStaff);
-
 /**
  * @swagger
  * /staff/view/{staffId}:
