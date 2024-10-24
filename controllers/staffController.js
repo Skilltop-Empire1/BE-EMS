@@ -480,14 +480,26 @@ exports.allNurses = async (req, res) => {
 
 exports.inviteStaff = async (req, res) => {
   try {
-    const { email, password, username } = req.body;
-    if (!email || !password || !username) {
+    const { email, password, userName } = req.body;
+    if (!email || !password || !userName) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-
-    const existingStaff = await Staff.findOne({ where: { email: email } });
-    if (existingStaff) {
+     // Check if the userName is already in use by someone else
+    const existingUserName = await Staff.findOne({ where: { userName: userName } });
+    if (existingUserName) {
+      return res.status(409).json({ message: 'User name already exists. Please choose a different one.' });
+    }
+     // Check if the user already exists by email
+     const existingStaff = await Staff.findOne({ where: { email: email } });
+   
+     // If staff exists, check if they have already been invited
+     if (existingStaff) {
+       if (existingStaff.userName) {
+         // userName is not null, so this staff member has already been invited
+         return res.status(409).json({ message: `Staff with email ${email} has previously been invited, kindly verify the email and try again` });
+       }
       const hashedPassword = await bcrypt.hash(password, 10);
+      existingStaff.userName = userName || staff.userName;
       existingStaff.password = hashedPassword;
       existingStaff.status = 'pending';
       await existingStaff.save();
@@ -496,7 +508,7 @@ exports.inviteStaff = async (req, res) => {
         from: process.env.EMAIL_USER,
         to: existingStaff.email,
         subject: "You have been invited as a Staff Member",
-        html: `<h2>Hi ${existingStaff.username},</h2>
+        html: `<h2>Hi ${existingStaff.userName},</h2>
         <p>You have been invited to join Our Hospital as a staff member.</p>
         <p>Please use the credentials below to log in by clicking on this <a href="${process.env.CLIENT_URL}">link</a>:</p>
         <p>Email: ${existingStaff.email}<br>Password: ${password}</p>`
@@ -517,7 +529,7 @@ exports.inviteStaff = async (req, res) => {
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
       const newStaff = await Staff.create({
-        username,
+        userName,
         email,
         password: hashedPassword,
         addedDate: new Date(),
@@ -529,7 +541,7 @@ exports.inviteStaff = async (req, res) => {
         from: process.env.EMAIL_USER,
         to: newStaff.email,
         subject: "You have been invited as a Staff Member",
-        html: `<h2>Hi ${newStaff.username},</h2>
+        html: `<h2>Hi ${newStaff.userName},</h2>
         <p>You have been invited to join Our Hospital as a staff member.</p>
         <p>Please use the credentials below to log in by clicking on this <a href="${process.env.CLIENT_URL}">link</a>:</p>
         <p>Email: ${newStaff.email}<br>Password: ${password}</p>`
@@ -571,11 +583,11 @@ exports.signIn = async (req, res) => {
     return res.status(404).json({ msg: "Incorrect login details" });
   } else {
     const token = jwt.sign(
-      { id: staff.staffId, username: staff.username, email: staff.email, role: staff.role, permission: staff.permission },
+      { id: staff.staffId, username: staff.userName, email: staff.email, role: staff.role, permission: staff.permission },
       process.env.SECRET_KEY,
       { expiresIn: '1h' }
     );
-    res.json({ token, id: staff.staffId, username: staff.username, email: staff.email, role: staff.role });
+    res.json({ token, id: staff.staffId, userName: staff.userName, email: staff.email, role: staff.role });
   }
 };
 
@@ -591,8 +603,17 @@ exports.updateStaff = async (req, res) => {
       return res.status(404).json({ error: "Staff not found" });
     }
 
+    if (!staff.userName) {
+      return res.status(400).json({ error: "Staff has not been invited yet. You cannot update their details." });
+    }
+
     // Extract only the fields that are provided in the request body
     const { userName,email, departmentName,role, staffStatus} = req.body;
+
+    const existingUserName = await Staff.findOne({ where: { userName: userName } });
+    if (existingUserName) {
+      return res.status(409).json({ message: 'User name already exists. Please choose a different one.' });
+    }
 
     // If email is provided and different from current, check for duplicates
     if (email && email !== staff.email) {

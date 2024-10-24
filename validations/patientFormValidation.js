@@ -23,15 +23,15 @@ const patientUpdateSchema = Joi.object({
   lastName: Joi.string().min(1).max(100).optional(),
   email: Joi.string().email().optional(),
   phone: Joi.string()
+    .min(11)
     .pattern(/^[0-9]{10,15}$/)
     .optional(),
   gender: Joi.string().valid("Male", "Female", "Other").optional(),
   dateOfBirth: Joi.date().iso().optional(),
   address: Joi.string().max(250).optional(),
-  educationQualification: Joi.string().max(250).optional(),
-  organization: Joi.string().optional(),
+  lastVisit: Joi.string().max(250).optional(),
+  medCondition: Joi.string().optional(),
 });
-
 // Validation schema for deleting a patient
 const patientDeleteSchema = Joi.object({
   phone: Joi.string()

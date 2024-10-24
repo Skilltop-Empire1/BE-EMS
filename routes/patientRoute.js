@@ -1,8 +1,12 @@
 const express = require("express");
 const patient = require("../controllers/patientController");
+const loginJWTAthentication = require('../middlewares/auth');
+const checkRole = require('../middlewares/checkRole');
 
 //create express router
 const router = express.Router();
+
+
 
 /**
  * @swagger
@@ -33,7 +37,7 @@ const router = express.Router();
  *                     description: The patient's last name.
  *                     example: Doe
  */
-router.route("/list").get(patient.patientClass.patientdisplay);
+router.route("/list").get(loginJWTAthentication,patient.patientClass.patientdisplay);
 
 /**
  * @swagger
@@ -84,7 +88,7 @@ router.route("/list").get(patient.patientClass.patientdisplay);
  *       409:
  *         description: Patient already exists.
  */
-router.route("/create").post(patient.patientClass.createPatient);
+router.route("/create").post(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.createPatient);
 
 /**
  * @swagger
@@ -150,7 +154,7 @@ router.route("/count").post(patient.patientClass.patientCount);
  *       404:
  *         description: Patient not found.
  */
-router.route("/edit").put(patient.patientClass.patientEdit);
+router.route("/edit").put(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.patientEdit);
 
 /**
  * @swagger
@@ -174,6 +178,6 @@ router.route("/edit").put(patient.patientClass.patientEdit);
  *       404:
  *         description: Patient not found.
  */
-router.route("/delete").delete(patient.patientClass.deletePatient);
+router.route("/delete").delete(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.deletePatient);
 
 module.exports = router;
