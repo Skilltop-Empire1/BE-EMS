@@ -3,6 +3,7 @@
  const { Appointment, Patient, Staff, Department } = require("../models");
  const { sendMail, sendSMS } = require("../utils/mail");
  const formatPhoneNumber = require("../utils/formatNo")
+ const {appointmentValidationSchema} = require("../validations/appointmentValidation")
  
 
  const bookAppointment = async (req, res) => {
@@ -18,6 +19,10 @@
    } = req.body;
  
    try {
+    const { error } = appointmentValidationSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
      const dept = await Department.findOne({ where: { name: deptName } });
      if (!dept) {
        return res.status(400).json({ message: "Department not found" });
@@ -57,7 +62,7 @@
      if (!consultant) {
        return res.status(404).json({ message: `Consultant ${consultName} not found` });
      }
- console.log("CON",consultant)
+ 
  const appointExist = await Appointment.findAll({
   where: {
     [Sequelize.Op.or]: [{ patName: name }, { phone: phoneNo }]
@@ -125,6 +130,7 @@ if (appointExist.length > 0) {
 };
  
 
+
 const updateAppointment = async (req, res) => {
   const {
     deptName,
@@ -139,11 +145,13 @@ const updateAppointment = async (req, res) => {
 
   try {
     const { appointId } = req.params;
-    console.log("id",appointId)
+    console.log("id", appointId);
+    
     const appointment = await Appointment.findByPk(appointId);
     if (!appointment) {
-      return res.status(404).json({ msg: "Appointment not found" });
+      return res.status(404).json({ message: "Appointment not found" });
     }
+
     let deptId;
     if (deptName) {
       const dept = await Department.findOne({ where: { name: deptName } });
@@ -195,6 +203,7 @@ const updateAppointment = async (req, res) => {
     }
 
     appointment.appointTime = appointmentTime || appointment.appointTime;
+    appointment.appointDate = appointmentDate || appointment.appointDate;
     appointment.reason = reason || appointment.reason;
     appointment.deptId = deptId || appointment.deptId;
     if (patient) {
@@ -203,20 +212,27 @@ const updateAppointment = async (req, res) => {
     if (consultant) {
       appointment.staffId = consultant.staffId; 
     }
-    
+
     await appointment.save();
 
-    // Send notification email/SMS if required
-    const emailContent = `
-      Dear ${patient.firstName},
-      Your appointment has been updated to ${appointmentDate} at ${appointmentTime}.
-      Reason: ${reason || "N/A"}.
-      Doctor: ${consultant ? consultant.firstName : "N/A"}.
-    `;
-    const smsContent = `Appointment updated: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant ? consultant.firstName : "N/A"}.`;
-    
-    await sendMail(patient.email, "EMS Appointment Update", emailContent);
-    await sendSMS(smsContent, patient.phone);
+    // Check if email or SMS needs to be sent
+    if (patient && (appointmentDate || appointmentTime)) {
+      const emailContent = `
+        Dear ${patient.firstName},
+        Your appointment has been updated to ${appointmentDate} at ${appointmentTime}.
+        Reason: ${reason || "N/A"}.
+        Doctor: ${consultant ? consultant.firstName : "N/A"}.
+      `;
+      const smsContent = `Appointment updated: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant ? consultant.firstName : "N/A"}.`;
+
+      try {
+        await sendMail(patient.email, "EMS Appointment Update", emailContent);
+        await sendSMS(smsContent, patient.phone);
+      } catch (error) {
+        console.error("Error sending email/SMS:", error);
+        return res.status(500).json({ message: "Appointment updated but failed to send notifications" });
+      }
+    }
 
     return res.status(200).json({
       message: "Appointment updated successfully",
@@ -228,7 +244,6 @@ const updateAppointment = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 
 
