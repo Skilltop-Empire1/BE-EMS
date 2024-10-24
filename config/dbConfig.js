@@ -1,29 +1,33 @@
 // Import dependencies
 const { Sequelize } = require("sequelize");
-require("dotenv").config(); // Ensure .env variables are loaded
+require("dotenv").config(); 
 
-// Declaring database configuration parameters
+
 const CONFIG = {
   DB_NAME: process.env.DB_NAME,
   DB_USERNAME: process.env.DB_USERNAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_DIALECT: process.env.DB_DIALECT || "postgres",
   DB_HOST: process.env.DB_HOST || "localhost",
-  DB_PORT: parseInt(process.env.DB_PORT, 10) || 5432, // Default PostgreSQL port
+  DB_PORT: parseInt(process.env.DB_PORT, 10) || 5432, 
 };
 
-// Create a new Sequelize instance
+
 const sequelize = new Sequelize(
   CONFIG.DB_NAME,
   CONFIG.DB_USERNAME,
   CONFIG.DB_PASSWORD,
   {
     host: CONFIG.DB_HOST,
-    dialect: CONFIG.DB_DIALECT, // Should be a string such as 'postgres'
+    dialect: CONFIG.DB_DIALECT, 
     port: CONFIG.DB_PORT,
-    logging: false, // Optionally disable logging
+    logging: false, 
     dialectOptions: {
-      connectTimeout: 60000, // 60 seconds
+      ssl: {
+        require: true, 
+        rejectUnauthorized: false 
+      },
+      connectTimeout: 60000,
     },
   }
 );
