@@ -5,20 +5,20 @@ const {
   getAllReports,
   getReportById,
   getReportsByPatient,
-  getReportsByDoctor,
+  getReportsByRole,
   updateReport,
   deleteReport,
 } = require('../controllers/reportController');
-const { authenticateUser } = require('../middlewares/auth');
+const loginJWTAthentication = require('../middlewares/auth');
 
 // Define routes for medical reports
-router.post('/reports', createReport); // Create report (with role-based permission)
-router.get('/reports', getAllReports); // Get all reports
-router.get('/reports/:id', getReportById); // Get single report by ID
-router.get('/reports/patient/:patientId', getReportsByPatient); // Get reports by patient ID
-router.get('/reports/doctor/:doctorId', getReportsByDoctor); // Get reports by doctor ID
-router.put('/reports/:id',updateReport); // Update report
-router.delete('/reports/:id',deleteReport); // Delete report
+router.post('/create/:deptId/:patId',loginJWTAthentication, createReport); 
+router.get('/list', getAllReports); 
+router.get('/:reportId', getReportById); 
+router.get('/patient/:patId', getReportsByPatient); 
+router.get('/:roleType/:roleId', getReportsByRole); 
+router.put('/:reportId',loginJWTAthentication, updateReport); 
+router.delete('/:reportId',deleteReport); 
 
 module.exports = router;
 
