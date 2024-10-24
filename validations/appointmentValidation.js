@@ -2,14 +2,14 @@ const Joi = require('joi');
 
 const appointmentValidationSchema = Joi.object({
 
-  appointDate: Joi.date()
+  appointmentDate: Joi.date()
     .required()
     .messages({
       'any.required': 'Appointment date is required',
       'date.base': 'Appointment date must be a valid date',
     }),
 
-  appointTime: Joi.string()
+  appointmentTime: Joi.string()
     .pattern(/^([0-9]{2}):([0-9]{2})(:[0-9]{2})?$/)
     .required()
     .messages({
