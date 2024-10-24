@@ -88,8 +88,6 @@ class PatientClass {
     }
   };
 
-
-
   //Method for edit patient details
   patientEdit = async (req, res) => {
     const {
@@ -116,40 +114,35 @@ class PatientClass {
         where: { phone: req.body.phone },
       });
 
-       
       //update logic
       if (patientExist) {
-        let patientUpdate
-          patientUpdate = await Patient.update(
-            {
-              firstName,
-              lastName,
-              email,
-              phone,
-              gender,
-              dateOfBirth,
-              address,
-              lastVisit,
-              medCondition,
+        let patientUpdate;
+        patientUpdate = await Patient.update(
+          {
+            firstName,
+            lastName,
+            email,
+            phone,
+            gender,
+            dateOfBirth,
+            address,
+            lastVisit,
+            medCondition,
+          },
+          {
+            where: {
+              phone: req.body.phone,
             },
-            {
-              where: {
-                phone: req.body.phone,
-              },
-            }
-          )
-          return res.status(201).json({
-            msg: "Patient data updated successfully",
-            patientUpdate
-          })
-      } else {
-        return res
-          .status(404)
-          .json(
-            { 
-            msg: "Patient record not found for update", 
           }
         );
+        return res.status(201).json({
+          msg: "Patient data updated successfully",
+          patientUpdate,
+        });
+      } else {
+        return res.status(404).json({
+          msg: "Patient record not found for update",
+        });
       }
     } catch (error) {
       throw error;
@@ -178,9 +171,7 @@ class PatientClass {
             phone: req.body.phone,
           },
         });
-        return res
-          .status(201)
-          .json({ msg: "Patient deleted successfully" });
+        return res.status(201).json({ msg: "Patient deleted successfully" });
       } else {
         return res.status(404).json({ msg: "Patient's record not found" });
       }
