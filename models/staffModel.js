@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      userName: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
       profileUrl: {
         type: DataTypes.STRING(200),
         allowNull: true,
@@ -51,8 +55,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       staffStatus: {
-        type: DataTypes.ENUM("active", "pending", "inactive"),
-        defaultValue: "pending",
+        type: DataTypes.ENUM("active", "pending", "inactive","registered"),
+        defaultValue: "registered",
       },
       phone: {
         type: DataTypes.STRING(20),
@@ -90,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       role: {
-        type: DataTypes.ENUM("Doctor", "Nurse"),
+        type: DataTypes.ENUM("Doctor", "Nurse","Admin","Account","LabTech","Pharmacist","Radiologist","Super Admin"),
         allowNull: false,
         defaultValue: "Doctor",
       },

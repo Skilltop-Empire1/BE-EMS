@@ -36,8 +36,6 @@
      // Gather patient details
      const name = patient.firstName + " " + patient.lastName;
      const patientPhoneNo = patient.phone
-     console.log("pho",patientPhoneNo)
-     console.log("id",patient.patId)
      const gender = patient.gender;
      const email = patient.email;
      const dateOfBirth = patient.dateOfBirth;
@@ -67,46 +65,12 @@
 });
 
 if (appointExist.length > 0) {
-  console.log("appoint", appointExist);
-
   const appointDateExist = appointExist.find((appointment) => appointment.appointDate === appointmentDate);
-
   if (appointDateExist) {
     return res.status(400).json({ msg: "The patient already booked an appointment for today." });
   }
 }
-    // const appointExist = await Appointment.findAll({
-    //   where:{
-    //     [Sequelize.Op.or]:[{patName:name},{phone:phoneNo} ]
-    //   }
-    // }) 
-    // if(appointExist.length > 0){
-    //   console.log("appoint",appointExist)
-    //   const appointDateExist = appointExist.find((time) => time.appointDate === appointmentDate)
-    //   if(appointDateExist){
-    //     return res.status(404).json({ msg: "The patient already booked an appointment for today." })
-    //   }
-    // }
-
-    // const appointExist = await Appointment.findOne({
-    //   where: {
-    //     [Sequelize.Op.and]: [
-    //       {
-    //         [Sequelize.Op.or]: [
-    //           { patName: name }, // Assuming `patName` is the field name for the patient's name in your database
-    //           { phone: phoneNo }
-    //         ]
-    //       },
-    //       { appointDate: appointmentDate } // Check if the appointment date matches
-    //     ]
-    //   }
-    // });
-    
-    // if (appointExist) {
-    //   return res.status(404).json({ msg: "The patient already booked an appointment for today." });
-    // }
-    
-
+   
      const appointmentCount = await Appointment.count({
        where: {
          staffId: consultant.dataValues.staffId,
@@ -161,7 +125,6 @@ if (appointExist.length > 0) {
 };
  
 
-
 const updateAppointment = async (req, res) => {
   const {
     deptName,
@@ -175,108 +138,93 @@ const updateAppointment = async (req, res) => {
   } = req.body;
 
   try {
-    const dept = await Department.findOne({ where: { name: deptName } });
-    if (!dept) {
-      return res.status(400).json({ message: "Department not found" });
+    const { appointId } = req.params;
+    console.log("id",appointId)
+    const appointment = await Appointment.findByPk(appointId);
+    if (!appointment) {
+      return res.status(404).json({ msg: "Appointment not found" });
     }
-    const patient = await Patient.findOne({
-      where: {
-        [Sequelize.Op.or]: [{ firstName: firstname }, { phone: phoneNo }],
-      },
-    });
-
-    if (!patient) {
-      return res.status(404).json({ message: "Patient not found" });
-    }
-    const name = patient.firstName + " " + patient.lastName;
-    const patientPhoneNo = patient.phone;
-    const gender = patient.gender;
-    const email = patient.email;
-    const dateOfBirth = patient.dateOfBirth;
-    const address = patient.address;
-
-    const availableStaff = await Staff.findAll({
-      where: {
-        specialization: specialty,
-        deptId: dept.deptId,
-      },
-    });
-
-    if (availableStaff.length === 0) {
-      return res.status(404).json({ message: "No available doctors found" });
+    let deptId;
+    if (deptName) {
+      const dept = await Department.findOne({ where: { name: deptName } });
+      if (!dept) {
+        return res.status(400).json({ message: "Department not found" });
+      }
+      deptId = dept.deptId; 
     }
 
-    const consultant = availableStaff.find((staff) => staff.firstName === consultName);
-    if (!consultant) {
-      return res.status(404).json({ message: `Consultant ${consultName} not found` });
+    let patient;
+    if (firstname || phoneNo) {
+      patient = await Patient.findOne({
+        where: {
+          [Sequelize.Op.or]: [{ firstName: firstname }, { phone: phoneNo }],
+        },
+      });
+      if (!patient) {
+        return res.status(404).json({ message: "Patient not found" });
+      }
     }
 
-    const appointmentCount = await Appointment.count({
-      where: {
-        staffId: consultant.dataValues.staffId,
-        appointDate: appointmentDate,
-      },
-    });
+    let consultant;
+    if (specialty || consultName) {
+      const availableStaff = await Staff.findAll({
+        where: {
+          specialization: specialty,
+          ...(deptId && { deptId }), 
+        },
+      });
+      if (availableStaff.length === 0) {
+        return res.status(404).json({ message: "No available doctors found" });
+      }
 
-    if (appointmentCount >= 20) {
-      return res
-        .status(400)
-        .json({ message: "Consultant has reached the maximum number of appointments for the day (20 patients)." });
-    }
+      consultant = availableStaff.find((staff) => staff.firstName === consultName);
+      if (!consultant) {
+        return res.status(404).json({ message: `Consultant ${consultName} not found` });
+      }
 
-    let appointment = await Appointment.findOne({
-      where: {
-        patId: patient.patId,
-        appointDate: appointmentDate,
-        staffId: consultant.staffId,
-      },
-    });
-
-    if (appointment) {
-      appointment = await appointment.update({
-        appointTime: appointmentTime,
-        reason: reason || null,
-        deptId: dept.deptId,
+      const appointmentCount = await Appointment.count({
+        where: {
+          staffId: consultant.staffId,
+          appointDate: appointmentDate,
+        },
       });
 
-      return res.status(200).json({
-        message: "Appointment updated successfully",
-        appointment,
-      });
-    } else {
-      appointment = await Appointment.create({
-        patId: patient.patId,
-        patName: name,
-        phone: patientPhoneNo,
-        gender,
-        email,
-        dateOfBirth,
-        staffId: consultant.staffId,
-        deptId: dept.deptId,
-        appointDate: appointmentDate,
-        appointTime: appointmentTime,
-        address,
-        reason: reason || null,
-      });
-
-      const emailContent = `
-        Dear ${name},
-        Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
-        Reason: ${reason || "N/A"}.
-        Doctor: ${consultant.dataValues.firstName}.
-      `;
-
-      const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.dataValues.firstName}.`;
-      await sendMail(patient.email, "EMS Appointment", emailContent);
-      await sendSMS(smsContent, patientPhoneNo);
-
-      return res.status(201).json({
-        message: "Appointment booked successfully",
-        appointment,
-      });
+      if (appointmentCount >= 20) {
+        return res.status(400).json({ message: "Consultant has reached the maximum number of appointments for the day (20 patients)." });
+      }
     }
+
+    appointment.appointTime = appointmentTime || appointment.appointTime;
+    appointment.reason = reason || appointment.reason;
+    appointment.deptId = deptId || appointment.deptId;
+    if (patient) {
+      appointment.patId = patient.patId; 
+    }
+    if (consultant) {
+      appointment.staffId = consultant.staffId; 
+    }
+    
+    await appointment.save();
+
+    // Send notification email/SMS if required
+    const emailContent = `
+      Dear ${patient.firstName},
+      Your appointment has been updated to ${appointmentDate} at ${appointmentTime}.
+      Reason: ${reason || "N/A"}.
+      Doctor: ${consultant ? consultant.firstName : "N/A"}.
+    `;
+    const smsContent = `Appointment updated: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant ? consultant.firstName : "N/A"}.`;
+    
+    await sendMail(patient.email, "EMS Appointment Update", emailContent);
+    await sendSMS(smsContent, patient.phone);
+
+    return res.status(200).json({
+      message: "Appointment updated successfully",
+      appointment,
+    });
+
   } catch (error) {
-    console.error("Error updating or booking appointment:", error);
+    console.error("Error updating appointment:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -366,9 +314,9 @@ const getAppointmentById = async (req, res) => {
 
 
 const deleteAppointment = async (req, res) => {
-  const { appointmentId } = req.params;
+  const { appointId } = req.params;
   try {
-    const appointment = await Appointment.findByPk(appointmentId);
+    const appointment = await Appointment.findByPk(appointId);
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
@@ -442,19 +390,26 @@ const getAllRecentAppointments = async (req, res) => {
 //staff get recent appointment
 const getStaffRecentAppointments = async (req, res) => {
   const { staffId } = req.params;
-  const {  date } = req.query;
+  const { date } = req.query;
 
   try {
-    // Validate staff ID and date
-    if (!staffId || !date) {
-      return res.status(400).json({ message: "Staff ID and date are required" });
+    if (!staffId) {
+      return res.status(400).json({ message: "Staff ID is required" });
     }
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (date && !dateRegex.test(date)) {
+      return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD." });
+    }
+    const whereClause = date
+      ? { staffId, appointDate: date } 
+      : { staffId };                   
+
     const appointments = await Appointment.findAll({
-      where: {
-        staffId, 
-        appointDate: date, 
-      },
-      order: [["appointTime", "DESC"]], 
+      where: whereClause,
+      order: [
+        ["appointDate", "DESC"],   
+        ["appointTime", "DESC"],   
+      ],
       include: [
         {
           model: Patient,
@@ -470,15 +425,18 @@ const getStaffRecentAppointments = async (req, res) => {
     });
 
     if (appointments.length === 0) {
-      return res.status(404).json({ message: "No appointments found for this staff member on the given date" });
+      return res.status(404).json({ message: "No appointments found for this staff member" });
     }
-   
+    const message = date 
+      ? `Appointments for staff member on ${date}` 
+      : "Recent appointments for staff member";
+
     return res.status(200).json({
-      message: `Recent appointments for staff member on ${date}`,
+      message,
       appointments,
     });
   } catch (error) {
-    console.error("Error retrieving staff's recent appointments:", error);
+    console.error("Error retrieving staff's appointments:", error.message || error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
