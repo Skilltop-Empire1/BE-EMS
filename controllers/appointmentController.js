@@ -3,6 +3,7 @@
  const { Appointment, Patient, Staff, Department } = require("../models");
  const { sendMail, sendSMS } = require("../utils/mail");
  const formatPhoneNumber = require("../utils/formatNo")
+ const {appointmentValidationSchema} = require("../validations/appointmentValidation")
  
 
  const bookAppointment = async (req, res) => {
@@ -18,6 +19,10 @@
    } = req.body;
  
    try {
+    const { error } = appointmentValidationSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
      const dept = await Department.findOne({ where: { name: deptName } });
      if (!dept) {
        return res.status(400).json({ message: "Department not found" });
@@ -57,7 +62,7 @@
      if (!consultant) {
        return res.status(404).json({ message: `Consultant ${consultName} not found` });
      }
- console.log("CON",consultant)
+ 
  const appointExist = await Appointment.findAll({
   where: {
     [Sequelize.Op.or]: [{ patName: name }, { phone: phoneNo }]
