@@ -3,8 +3,13 @@ const { Account } = require('../models'); // Adjust the path if necessary
 // Create a new account
 const createAccount = async (req, res) => {
   try {
+    
     const account = await Account.create(req.body);
-    res.status(201).json({ message: 'Account created successfully', account });
+    return res.send({
+      status:200,
+      successful: true,
+      data: account,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -14,9 +19,17 @@ const createAccount = async (req, res) => {
 const getAllAccounts = async (req, res) => {
   try {
     const accounts = await Account.findAll();
-    res.status(200).json(accounts);
+    return res.send({
+      status:200,
+      successful: true,
+      data: accounts,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.send({
+      status:400,
+      successful: false,
+      error: error.message,
+    });
   }
 };
 
