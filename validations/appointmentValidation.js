@@ -21,11 +21,11 @@ const appointmentValidationSchema = Joi.object({
     .allow(null, '')
     .optional(),
 
-  address: Joi.string()
+  specialty: Joi.string()
     .allow(null, '')
     .optional(),
 
-  patName: Joi.string()
+  deptName: Joi.string()
     .max(100)
     .required()
     .messages({
@@ -33,15 +33,23 @@ const appointmentValidationSchema = Joi.object({
       'string.max': 'Patient name must be less than or equal to 100 characters',
     }),
 
-  email: Joi.string()
-    .email()
+  consultName: Joi.string()
+    .max(50)
     .allow(null, '')
     .optional()
     .messages({
-      'string.email': 'Email must be a valid email address',
+      'string.max': 'Consultant name must be a string',
     }),
 
-  phone: Joi.string()
+  firstname: Joi.string()
+    .max(20)
+    .allow(null, '')
+    .optional()
+    .messages({
+      'string.max': 'Firstname must be a string',
+    }),
+
+  phoneNo: Joi.string()
     .max(20)
     .allow(null, '')
     .optional()
@@ -49,20 +57,8 @@ const appointmentValidationSchema = Joi.object({
       'string.max': 'Phone number must be less than or equal to 20 characters',
     }),
 
-  gender: Joi.string()
-    .valid('Male', 'Female', 'Other')
-    .allow(null, '')
-    .optional()
-    .messages({
-      'any.only': 'Gender must be one of Male, Female, or Other',
-    }),
 
-  dateOfBirth: Joi.date()
-    .required()
-    .messages({
-      'any.required': 'Date of birth is required',
-      'date.base': 'Date of birth must be a valid date',
-    }),
+ 
 });
 
 
