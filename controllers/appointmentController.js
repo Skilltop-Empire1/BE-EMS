@@ -19,10 +19,10 @@
    } = req.body;
  
    try {
-    const { error } = appointmentValidationSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
+    // const { error } = appointmentValidationSchema.validate(req.body);
+    // if (error) {
+    //   return res.status(400).json({ message: error.details[0].message });
+    // }
      const dept = await Department.findOne({ where: { name: deptName } });
      if (!dept) {
        return res.status(400).json({ message: "Department not found" });

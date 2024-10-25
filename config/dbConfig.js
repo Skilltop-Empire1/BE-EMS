@@ -1,8 +1,11 @@
+
 // Import dependencies
 const { Sequelize } = require("sequelize");
 require("dotenv").config(); 
 
 
+
+// Declaring database configuration parameters
 const CONFIG = {
   DB_NAME: process.env.DB_NAME,
   DB_USERNAME: process.env.DB_USERNAME,
@@ -12,33 +15,33 @@ const CONFIG = {
   DB_PORT: parseInt(process.env.DB_PORT, 10) || 5432, 
 };
 
-
+// Create a new Sequelize instance
 const sequelize = new Sequelize(
   CONFIG.DB_NAME,
   CONFIG.DB_USERNAME,
   CONFIG.DB_PASSWORD,
   {
     host: CONFIG.DB_HOST,
-    dialect: CONFIG.DB_DIALECT, 
+    dialect: CONFIG.DB_DIALECT,
     port: CONFIG.DB_PORT,
-    logging: false, 
-    dialectOptions: {
-      ssl: {
-        require: true, 
-        rejectUnauthorized: false 
-      },
-      connectTimeout: 60000,
-    },
+    logging: false,
+    dialectOptions: CONFIG.DB_USE_SSL
+      ? {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        }
+      : {}, 
   }
 );
 
-// Function to authenticate and sync the database
 const initializeDatabase = async () => {
   try {
     await sequelize.authenticate();
     console.log("Connection to PostgreSQL database successful");
 
-    await sequelize.sync({ alter: false }); 
+    await sequelize.sync( { alter: true });
     console.log("Database synchronized successfully");
   } catch (error) {
     console.error("Unable to connect to the PostgreSQL database:", error);
@@ -51,3 +54,17 @@ initializeDatabase();
 
 // Export the Sequelize instance
 module.exports = sequelize;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
