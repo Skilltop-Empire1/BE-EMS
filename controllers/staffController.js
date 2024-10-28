@@ -136,7 +136,7 @@ exports.viewStaff = async (req, res) => {
     }
 
     // Authorize the request: only Super Admin, Admin, or the staff member themselves can view the profile
-    if (role === 'Super Admin' || role === 'admin' || userId === staffId) {
+    if (role === 'Super Admin' || role === 'Admin' || userId === staffId) {
       
       // Prepare the response object, including only the necessary staff details and department name
       const response = {
@@ -172,6 +172,8 @@ exports.viewStaff = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+
 exports.editStaff = async (req, res) => {
   try {
     const { userId, role: userRole } = req.user;  // Get the current user's ID and role
@@ -184,7 +186,7 @@ exports.editStaff = async (req, res) => {
     }
 
     // Only allow Superadmin, Admin, or the staff member themselves to edit the profile
-    if (userRole !== 'Super Admin' && userRole !== 'Admin' && userId !== staff.userId) {
+    if (userRole !== 'Super Admin' && userRole !== 'Admin'){ //&& userId !== staff.staffId) {
       return res.status(403).json({ error: "You do not have permission to edit this staff profile" });
     }
 
