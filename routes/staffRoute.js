@@ -616,7 +616,7 @@ router.get('/search', loginJWTAthentication, staffController.searchStaff);
  *                 id:
  *                   type: string
  *                   description: Staff ID of the signed-in member
- *                 username:
+ *                 userName:
  *                   type: string
  *                   description: Username of the signed-in member
  *                 email:
@@ -854,13 +854,13 @@ router.get('/nurses/all', loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *               password:
  *                 type: string
  *                 description: Password for the staff member's account
- *               username:
+ *               userName:
  *                 type: string
  *                 description: Username of the staff member
  *             required:
  *               - email
  *               - password
- *               - username
+ *               - userName
  *     security:
  *       - bearerAuth: []  # Assuming you are using JWT for authentication
  *     responses:
@@ -1051,9 +1051,77 @@ router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super
  *               permissions:
  *                 type: array
  *                 items:
- *                   $ref: '#/components/schemas/Permission'
- *             required:
- *               - permissions
+ *                   type: object
+ *                   properties:
+ *                     label:
+ *                       type: string
+ *                       example: "Department"
+ *                     view:
+ *                       type: boolean
+ *                       example: true
+ *                     create:
+ *                       type: boolean
+ *                       example: true
+ *                     edit:
+ *                       type: boolean
+ *                       example: true
+ *                     delete:
+ *                       type: boolean
+ *                       example: true
+ *                     transfer:
+ *                       type: boolean
+ *                       example: true
+ *             example:
+ *               permissions: [
+ *                 {
+ *                   "label": "Department",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Staff",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Patients",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Appointments",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Accounts",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Reports",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 }
+ *               ]
  *     responses:
  *       200:
  *         description: Permissions updated successfully.
