@@ -484,12 +484,12 @@ exports.inviteStaff = async (req, res) => {
   try {
     const { email, password, userName } = req.body;
     if (!email || !password || !userName) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'Invalid credentials, request must contain staffs proposed "email" ,"password" and "userName"' });
     }
      // Check if the userName is already in use by someone else
     const existingUserName = await Staff.findOne({ where: { userName: userName } });
     if (existingUserName) {
-      return res.status(409).json({ message: 'User name already exists. Please choose a different one.' });
+      return res.status(409).json({ message: 'User name already exists. Please make a more unique one.' });
     }
      // Check if the user already exists by email
      const existingStaff = await Staff.findOne({ where: { email: email } });
@@ -612,9 +612,22 @@ exports.updateStaff = async (req, res) => {
     // Extract only the fields that are provided in the request body
     const { userName,email, departmentName,role, staffStatus} = req.body;
 
-    const existingUserName = await Staff.findOne({ where: { userName: userName } });
-    if (existingUserName) {
-      return res.status(409).json({ message: 'User name already exists. Please choose a different one.' });
+    // const existingUserName = await Staff.findOne({ where: { userName: userName } });
+    // if (existingUserName) {
+    //   return res.status(409).json({ message: 'User name already exists. Please choose a different one.' });
+    // }
+
+    // Check for duplicate userName, excluding the current staff ID
+    if (userName && userName !== staff.userName) {
+      const existingUserName = await Staff.findOne({ 
+        where: { 
+          userName: userName,
+          staffId: { [Op.ne]: staffId } // Exclude the current staff by ID
+        } 
+      });
+      if (existingUserName) {
+        return res.status(409).json({ message: 'User name already exists. Please make a more unique User name.' });
+      }
     }
 
     // If email is provided and different from current, check for duplicates
