@@ -6,6 +6,10 @@ const nodemailer = require('nodemailer')
 const { Op } = require("sequelize"); 
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const {updatePasswordSchema } = require('../validations/updatePasswordSchema')
+const cloudinary = require("../config/cloudinary");
+const multer = require("multer");
+const randompassword = require("../middlewares/passwordReset");
 
 
 let mailTransporter = nodemailer.createTransport({
@@ -756,3 +760,228 @@ exports.updatePermissions = async (req, res) => {
   }
 };
   
+
+// Change staff password
+exports.changePassword = async (req, res) => {
+  const { oldPassword, password, confirmPassword } = req.body;
+
+  // Validate details
+  const check = updatePasswordSchema.validate(req.body);
+  if (check.error) {
+    return res.status(400).json({ error: check.error.details[0].message });
+  }
+
+  const { email } = req.user;
+
+  try {
+    // Check if the staff exists
+    const staff = await Staff.findOne({ where: { email } });
+    if (!staff) {
+      return res.status(404).json({ msg: "Staff with the provided email does not exist" });
+    }
+
+    console.log("Old password (plaintext):", oldPassword);
+    console.log("Stored hashed password:", staff.password);
+
+    // Check if old password matches the current password
+    const isMatch = await bcrypt.compare(oldPassword, staff.password);
+    console.log("Password match result:", isMatch);
+
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Incorrect old password" });
+    }
+
+    // Check if new password matches confirm password
+    if (password !== confirmPassword) {
+      return res.status(400).json({ msg: "New password must match the confirmation" });
+    }
+
+    // Hash the new password
+    const hash = await bcrypt.hash(password, 10);
+
+    // Update the staff's password
+    const [updated] = await Staff.update(
+      { password: hash },
+      { where: { email } }
+    );
+
+    if (updated) {
+      return res.status(200).json({ msg: "Staff password updated successfully" });
+    } else {
+      return res.status(500).json({ msg: "Password update failed" });
+    }
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return res.status(500).json({ msg: "An error occurred while updating the password" });
+  }
+};
+
+//PROFILE 
+// Setup multer for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const ext = file.mimetype;
+    if (ext !== 'image/jpeg' && ext !== 'image/png' && ext !== 'image/jpg') {
+      return cb(new Error('File type is not supported'), false);
+    }
+    cb(null, true);
+  },
+  limits: { fileSize: 5 * 1024 * 1024 } // Limit size to 5MB
+});
+
+// Upload Profile Picture
+exports.uploadProfilePic = async (req, res) => {
+
+  // Use multer to handle the file upload
+  upload.single('profilePic')(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: 'File upload error: ' + err.message });
+    } else if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    try {
+      const { userId } = req.user; // Get Id from the middleware
+
+      // Find the staff member using userId
+      const staff = await Staff.findByPk(userId);
+      if (!staff) {
+        return res.status(404).json({ error: 'Staff member not found' });
+      }
+
+      // Upload image to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ folder: 'profile_pics' }, (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }).end(req.file.buffer);
+      });
+
+      // Update profileUrl with Cloudinary URL
+      staff.profileUrl = result.secure_url;
+      await staff.save();
+
+   //Response
+      res.status(200).json({ message: 'Profile picture uploaded successfully', profileUrl: staff.profileUrl });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+};
+
+
+exports.getProfilePic = async (req, res) => {
+  try {
+    // Get Id 
+    const staffId = req.user.userId;
+
+    // Fetch staff data 
+    const staff = await Staff.findByPk(staffId);
+
+    if (!staff) {
+      return res.status(404).json({ error: "Staff not found" });
+    }
+
+    // display profile picture URL or null if not set
+    res.json({ profilePic: staff.profileUrl || null });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve profile picture" });
+  }
+};
+
+
+
+//RESET PASSWORD
+exports.passwordReset = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
+
+  try {
+    // Find staff by email
+    const staff = await Staff.findOne({ where: { email } });
+    if (!staff) {
+      return res.status(404).json({ msg: "Staff member does not exist" });
+    }
+
+    // Generate a random token for password reset link
+    let randomText = randompassword.generateRandomPassword(50);
+    let transporter = nodemailer.createTransport({
+      host: "mail.skilltopims.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    // Construct the password reset link
+    const resetLink = `${process.env.CLIENT2_URL}/passwordConfirmation?token=${randomText}&email=${email}`;
+
+    let mailOptions = {
+      from: {
+        name: "IMS Password Reset",
+        address: process.env.EMAIL_USER,
+      },
+      to: staff.email,
+      subject: "IMS Reset Link",
+      html: `<a href="${resetLink}">Click here to reset your password</a>`,
+    };
+
+    // Send email with reset link
+    await transporter.sendMail(mailOptions);
+    res.json({
+      msg: "An email has been sent to you with a link to reset your password. If not seen in your inbox, please check your spam.",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "An error occurred while sending the email." });
+  }
+};
+
+//*********** Reset Password Submission *********/
+exports.resetSubmit = async (req, res) => {
+  const { email, password, confirmPassword } = req.body;
+
+  // Validate reset password req body
+  if (!email || !password || !confirmPassword) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ msg: "Password mismatch." });
+  }
+
+  try {
+    const staff = await Staff.findOne({ where: { email } });
+    if (!staff) {
+      return res.status(400).json({ msg: "Enter a correct email address" });
+    }
+
+    // Hash the new password
+    const hash = await bcrypt.hash(password, 10);
+    
+    // Update new password in the db
+    const updatedPassword = await Staff.update(
+      { password: hash },
+      { where: { email: email } }
+    );
+
+    if (updatedPassword[0] === 0) { // Check if update was successful
+      return res.status(404).json({ msg: "Password reset failed" });
+    }
+
+    res.status(200).json({ msg: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "An error occurred while resetting the password." });
+  }
+};
