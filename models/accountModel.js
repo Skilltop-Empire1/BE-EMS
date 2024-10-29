@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       patName: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+        type: DataTypes.STRING,
+        allowNull:false
       },
       paymentMethod: {
         type: DataTypes.ENUM("HMO", "Insurance", "NHIS", "Direct"),

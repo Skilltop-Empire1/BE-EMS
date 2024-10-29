@@ -7,7 +7,8 @@ const validatePermissions = (permissions) => {
         typeof perm.view === 'boolean' &&
         typeof perm.create === 'boolean' &&
         typeof perm.edit === 'boolean' &&
-        typeof perm.approval === 'boolean'
+        typeof perm.delete === 'boolean' &&
+        typeof perm.transfer === 'boolean'
       );
     });
   };
