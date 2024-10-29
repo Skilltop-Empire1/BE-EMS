@@ -37,7 +37,7 @@ const router = express.Router();
  *                     description: The patient's last name.
  *                     example: Doe
  */
-router.route("/list").get(loginJWTAthentication,patient.patientClass.patientdisplay);
+router.route("/list").get(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.patientdisplay);
 
 /**
  * @swagger
@@ -88,7 +88,7 @@ router.route("/list").get(loginJWTAthentication,patient.patientClass.patientdisp
  *       409:
  *         description: Patient already exists.
  */
-router.route("/create").post(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.createPatient);
+router.route("/create").post(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.createPatient);
 
 /**
  * @swagger
@@ -105,14 +105,14 @@ router.route("/create").post(loginJWTAthentication, checkRole(['Admin', 'Super A
  *               type: integer
  *               example: 100
  */
-router.route("/count").post(patient.patientClass.patientCount);
+router.route("/count").post(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/ patient.patientClass.patientCount);
 
 /**
  * @swagger
  * /api/v1/patient/edit:
  *   put:
  *     summary: Edit a patient's details
- *     description: Updates an existing patient's details based on their phone number.
+ *     description: Updates an existing patient's details based on their id.
  *     requestBody:
  *       required: true
  *       content:
@@ -154,14 +154,14 @@ router.route("/count").post(patient.patientClass.patientCount);
  *       404:
  *         description: Patient not found.
  */
-router.route("/edit").put(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.patientEdit);
+router.route("/edit").put(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.patientEdit);
 
 /**
  * @swagger
  * /api/v1/patient/delete:
  *   delete:
  *     summary: Delete a patient's record
- *     description: Deletes a patient's record based on their phone number.
+ *     description: Deletes a patient's record based on their id.
  *     requestBody:
  *       required: true
  *       content:
@@ -178,6 +178,35 @@ router.route("/edit").put(loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *       404:
  *         description: Patient not found.
  */
-router.route("/delete").delete(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.deletePatient);
+router.route("/delete").delete(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.deletePatient);
+
+
+
+
+/**
+ * @swagger
+ * /api/v1/patient/update-password:
+ *   put:
+ *     summary: change a staff password
+ *     description: Update a staff password base on staff email.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: +123456789
+ *     responses:
+ *       200:
+ *         description: Patient record deleted successfully.
+ *       404:
+ *         description: Patient not found.
+ */
+router.route("/search").get(/*loginJWTAthentication,checkRole(['Admin', 'Super Admin']),*/patient.patientClass.searchPartient);
+
+
 
 module.exports = router;

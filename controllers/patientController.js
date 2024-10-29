@@ -1,15 +1,15 @@
 const Joi = require("joi");
 const {
-  patientValidity,
   patientUpdateSchema,
-  deletePatientValidity,
   patientCreateSchema,
   patientDeleteSchema,
 } = require("../validations/patientFormValidation");
+const bcrypt = require('bcryptjs');
 
 // requiring multer library
 const upload = require("../middlewares/multer");
-const { Patient } = require("../models");
+const { Patient,Staff } = require("../models");
+const {Op, OpTypes, where} = require("sequelize");
 
 // Object for functionality
 
@@ -63,7 +63,7 @@ class PatientClass {
       });
 
       if (patientExist) {
-        return res.status(409).json({ message: "Patient already exists" });
+        return res.status(409).json({ message: "Patient already exists with this phone number" });
       }
 
       // Create new patient if they don't exist
@@ -91,6 +91,7 @@ class PatientClass {
   //Method for edit patient details
   patientEdit = async (req, res) => {
     const {
+      id,
       firstName,
       lastName,
       email,
@@ -111,7 +112,7 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { phone: req.body.phone },
+        where: { patId: req.body.id },
       });
 
       //update logic
@@ -131,7 +132,7 @@ class PatientClass {
           },
           {
             where: {
-              phone: req.body.phone,
+              patId: req.body.id,
             },
           }
         );
@@ -151,7 +152,7 @@ class PatientClass {
 
   //method to delete patient
   deletePatient = async (req, res) => {
-    const phone = req.body.phone;
+    const patId = req.body.id;
 
     const check = patientDeleteSchema.validate(req.body);
     if (check.error) {
@@ -162,13 +163,13 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { phone: req.body.phone },
+        where: { patId: req.body.id },
       });
 
       if (patientExist) {
         await Patient.destroy({
           where: {
-            phone: req.body.phone,
+            patId: req.body.id,
           },
         });
         return res.status(201).json({ msg: "Patient deleted successfully" });
@@ -179,6 +180,99 @@ class PatientClass {
       throw error;
     }
   };
+
+
+  // search method
+  searchPartient = async (req,res) =>{
+    const {searchParameter} = req.body
+
+    if(!searchParameter){
+      return res.json({msg: "Enter a search parameter"})
+    }
+
+    const searching = await Patient.findAll({
+      where:{
+        [Op.or]: [{
+           firstName: {
+            [Op.iLike]: searchParameter.length > 2 ?  searchParameter: `%${searchParameter}%`
+        },
+       
+
+
+      }]
+    }
+    })
+
+    if(searching){
+      return res.status(200).json(searching)
+    }
+  } //search method end
+
+  
+
+
+
+
+
+
+
+
+
+
+//    //change staff password
+//    changePassword = async (req, res) => {
+//     const { 
+//       oldPassword, 
+//       password, 
+//       confirmPassword } = req.body;
+    
+//     //validate details
+//     const check = updatePasswordSchema.validate(req.body);
+//     if (check.error) {
+//       return res.status(404).json(check.error.details[0].message);
+//     }
+
+//     //queery to check if user exist */
+//     const staffEmail = req.user.email
+//     const staff = await Staff.findOne({ where: { email:staffEmail } });
+//     const isMatch = await bcrypt.compare(oldPassword, staff.password);
+//     if (!isMatch) {return res.status(404).json({ msg: "Incorrect password" });}
+//     if (!staff) {
+//       return res.status(400).send("Staff with the email does not exist");
+//     } 
+//     if (password !== confirmPassword) {
+//       return res.json({ msg: "New password must match the confirmation" });
+//     }
+
+// //update code
+//     const hash = await bcrypt.hash(password, 10);
+//     try {
+//       const staffPasswordUpdate = await Staff.update(
+//         { password: hash },
+//         { where: { email: staffEmail } }
+//       );
+
+//       if(staffPasswordUpdate){
+//         console.log(`New Hashed Password: ${staff.password}`)
+//         return res
+//           .status(201)
+//           .json({ msg: "Staff password updated successfully" });
+//       }else{
+//         return res
+//           .status(404)
+//           .json({ msg: "Password update failed" });
+//       }
+      
+//     } catch (error) {
+//       return error
+//     }
+//   };//end of method
+
+
+  
+
+
+
 
   //functionality to upload image
   // profilePics = async (req, res) => {
