@@ -16,13 +16,35 @@ const {Op, OpTypes, where} = require("sequelize");
 class PatientClass {
   //route too display all patient
   patientdisplay = async (req, res) => {
+    const page = 1
+    const pageSize = 10
+    const limit = pageSize
+    const offset = (page-1)*pageSize
+
     try {
-      const patientdisplay = await Patient.findAll({});
+      const patientdisplay = await Patient.findAll({
+        limit:limit,
+        offset:offset,
+        order: [['firstName', 'ASC']]
+        
+      });
       return res.json(patientdisplay);
     } catch (error) {
       return console.log(error);
     }
   };
+
+  //   try {
+  //     const { count, rows } = await User.findAndCountAll({
+  //       limit: limit,
+  //       offset: offset,
+  //       order: [['createdAt', 'DESC']], // Optional: Order by createdAt or any other field
+  //     });
+  
+  //     // Calculate total pages
+  //     const totalPages = Math.ceil(count / pageSize);
+  
+  //     return {
 
   //route to count number of patients
 
@@ -201,7 +223,8 @@ class PatientClass {
         lastName: {[Op.iLike]: searchParameter.length > 10 ?  searchParameter: `%${searchParameter}%`},
    },
     ]
-    }
+    },
+    order: [['firstName', 'ASC'], ['lastName', 'ASC']],
     })
 
     if(searching < 1){
