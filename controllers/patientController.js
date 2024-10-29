@@ -192,20 +192,22 @@ class PatientClass {
 
     const searching = await Patient.findAll({
       where:{
-        [Op.or]: [{
-           firstName: {
-            [Op.iLike]: searchParameter.length > 2 ?  searchParameter: `%${searchParameter}%`
-        },
-       
+        [Op.or]: [
+          {
+           firstName: {[Op.iLike]: searchParameter.length > 10 ?  searchParameter: `%${searchParameter}%`},
+      },
 
-
-      }]
+      {
+        lastName: {[Op.iLike]: searchParameter.length > 10 ?  searchParameter: `%${searchParameter}%`},
+   },
+    ]
     }
     })
 
-    if(searching){
-      return res.status(200).json(searching)
+    if(searching < 1){
+      return res.status(404).json({msg: "No patient with the search details found"})
     }
+    return res.status(200).json(searching)
   } //search method end
 
   
