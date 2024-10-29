@@ -1,34 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const {
-//   createReport,
-//   getAllReports,
-//   getReportById,
-//   getReportsByPatient,
-//   getReportsByRole,
-//   updateReport,
-//   deleteReport,
-// } = require('../controllers/reportController');
-// const loginJWTAthentication = require('../middlewares/auth');
-
-// // Define routes for medical reports
-// router.post('/create/:deptId/:patId',loginJWTAthentication, createReport); 
-// router.get('/list', getAllReports); 
-// router.get('/:reportId', getReportById); 
-// router.get('/patient/:patId', getReportsByPatient); 
-// router.get('/:roleType/:roleId', getReportsByRole); 
-// router.put('/:reportId',loginJWTAthentication, updateReport); 
-// router.delete('/:reportId',deleteReport); 
-
-// module.exports = router;
-
-/**
- * @swagger
- * tags:
- *   name: Reports
- *   description: API for managing medical reports
- */
-
 const express = require('express');
 const router = express.Router();
 const {
@@ -41,6 +10,13 @@ const {
   deleteReport,
 } = require('../controllers/reportController');
 const loginJWTAthentication = require('../middlewares/auth');
+
+/**
+ * @swagger
+ * tags:
+ *   name: Reports
+ *   description: API for managing medical reports
+ */
 
 /**
  * @swagger
@@ -70,16 +46,53 @@ const loginJWTAthentication = require('../middlewares/auth');
  *           schema:
  *             type: object
  *             properties:
- *               diagnosis:
+ *               name:
  *                 type: string
- *                 example: "Flu and fever"
- *               prescription:
+ *                 example: "Bllode"
+ *               hod:
  *                 type: string
- *                 example: "Paracetamol"
- *               followupDate:
+ *                 example: "Musa"
+ *               deptContact:
  *                 type: string
- *                 format: date
- *                 example: "2024-11-12"
+ *                 example: "07066798812"
+ *               operationHr:
+ *                 type: string
+ *                 example: "8.00AM -4.00PM"
+ *               noOfStaff:
+ *                 type: integer
+ *                 example: 24
+ *               location:
+ *                 type: string
+ *                 example: "akure"
+ *               bedCapacity:
+ *                 type: string
+ *                 example: "50"
+ *               specialty:
+ *                 type: string
+ *                 example: "pediatrics"
+ *               noOfPatient:
+ *                 type: integer
+ *                 example: 100
+ *               equipment:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["MRI Machine", "Scanner", "Pedri"]
+ *               deptBudget:
+ *                 type: integer
+ *                 example: 1000000
+ *           example:
+ *             name: "Bllode"
+ *             hod: "Musa"
+ *             deptContact: "07066798812"
+ *             operationHr: "8.00AM -4.00PM"
+ *             noOfStaff: 24
+ *             location: "akure"
+ *             bedCapacity: "50"
+ *             specialty: "pediatrics"
+ *             noOfPatient: 100
+ *             equipment: ["MRI Machine", "Scanner", "Pedri"]
+ *             deptBudget: 1000000
  *     responses:
  *       201:
  *         description: Report created successfully
@@ -88,7 +101,8 @@ const loginJWTAthentication = require('../middlewares/auth');
  *       500:
  *         description: Server error
  */
-router.post('/create/:deptId/:patId', loginJWTAthentication, createReport);
+router.post('/create/:deptId/:patId', createReport);
+
 
 /**
  * @swagger
@@ -219,7 +233,7 @@ router.get('/:roleType/:roleId', getReportsByRole);
  *       500:
  *         description: Server error
  */
-router.put('/:reportId', loginJWTAthentication, updateReport);
+router.put('/:reportId', updateReport);
 
 /**
  * @swagger
