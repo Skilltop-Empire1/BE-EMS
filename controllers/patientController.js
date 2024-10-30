@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
 
 // requiring multer library
 const upload = require("../middlewares/multer");
-const { Patient,Staff } = require("../models");
+const { Patient,Staff, Department, Appointment, Account } = require("../models");
 const {Op, OpTypes, where} = require("sequelize");
 
 // Object for functionality
@@ -23,17 +23,44 @@ class PatientClass {
 
     try {
       const patientdisplay = await Patient.findAll({
+        include: [{
+          model: Department,
+          as: 'department',
+          required: false
+        }],
+
+        include: [{
+          model: Staff,
+          as: 'staff',
+          required: false
+        }],
+
+       
+        include: [{
+          model: Appointment,
+          as: 'appointments',
+          required: false
+        }],
+
+        include: [{
+          model: Account,
+          as: 'account',
+          required: false
+        }],
+
+       
+        // pagination
         limit:limit,
         offset:offset,
-        order: [['firstName', 'ASC']]
+        order: [['firstName', 'ASC']],
+      
         
       });
-      return res.json(patientdisplay);
+      return res.status(200).json(patientdisplay)
     } catch (error) {
       return console.log(error);
     }
   };
-
 
   patientCount = async (req, res) => {
     try {

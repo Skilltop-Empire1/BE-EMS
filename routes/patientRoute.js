@@ -7,7 +7,6 @@ const checkRole = require('../middlewares/checkRole');
 const router = express.Router();
 
 
-
 /**
  * @swagger
  * /api/v1/patient/list:
