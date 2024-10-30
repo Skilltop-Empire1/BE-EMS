@@ -15,18 +15,22 @@ const sendMail = async (email, subject, message) => {
   //     pass: process.env.NODEMAIL_PASS,
   //   },
   // });
+  
   let transporter = nodemailer.createTransport({
-    host: "mail.skilltopims.com",  
-    port: 587, 
-    secure: false, 
+    host: "mail.skilltopims.com",
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
     tls: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
+    logger: true, 
+    debug: true,  
   });
+  
 
   const info = await transporter.sendMail({
     from: process.env.EMAIL_USER,
