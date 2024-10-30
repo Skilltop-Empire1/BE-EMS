@@ -34,19 +34,6 @@ class PatientClass {
     }
   };
 
-  //   try {
-  //     const { count, rows } = await User.findAndCountAll({
-  //       limit: limit,
-  //       offset: offset,
-  //       order: [['createdAt', 'DESC']], // Optional: Order by createdAt or any other field
-  //     });
-  
-  //     // Calculate total pages
-  //     const totalPages = Math.ceil(count / pageSize);
-  
-  //     return {
-
-  //route to count number of patients
 
   patientCount = async (req, res) => {
     try {

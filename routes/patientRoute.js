@@ -13,7 +13,7 @@ const router = express.Router();
  * /api/v1/patient/list:
  *   get:
  *     summary: Retrieve a list of patients
- *     description: Retrieve a list of all patients from the database.
+ *     description: Retrieve a list of all patients from the database in pagination.
  *     responses:
  *       200:
  *         description: A list of patients.
@@ -161,7 +161,7 @@ router.route("/edit").put(/*loginJWTAthentication, checkRole(['Admin', 'Super Ad
  * /api/v1/patient/delete:
  *   delete:
  *     summary: Delete a patient's record
- *     description: Deletes a patient's record based on their id.
+ *     description: Deletes a patient's record based on their uuid.
  *     requestBody:
  *       required: true
  *       content:
@@ -169,9 +169,9 @@ router.route("/edit").put(/*loginJWTAthentication, checkRole(['Admin', 'Super Ad
  *           schema:
  *             type: object
  *             properties:
- *               phone:
+ *               id:
  *                 type: string
- *                 example: +123456789
+ *                 example: a4b7e193-cdf7-40cb-8ad2-67e528407d98
  *     responses:
  *       200:
  *         description: Patient record deleted successfully.
@@ -185,25 +185,25 @@ router.route("/delete").delete(/*loginJWTAthentication, checkRole(['Admin', 'Sup
 
 /**
  * @swagger
- * /api/v1/patient/update-password:
+ * /api/v1/patient/search:
  *   put:
- *     summary: change a staff password
- *     description: Update a staff password base on staff email.
+ *     summary: Search for a patient
+ *     description: Search patient base on firstname and surname.
  *     requestBody:
- *       required: true
+ *       required:true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               phone:
+ *               searchParameter:
  *                 type: string
  *                 example: +123456789
  *     responses:
  *       200:
- *         description: Patient record deleted successfully.
+ *         description: Return json objects of the patient list.
  *       404:
- *         description: Patient not found.
+ *         description: No patient with the search details found.
  */
 router.route("/search").get(/*loginJWTAthentication,checkRole(['Admin', 'Super Admin']),*/patient.patientClass.searchPartient);
 
