@@ -115,7 +115,7 @@ router.get("/list", department.departmentClass.getDepts);
  *       500:
  *         description: Server error
  */
-router.get("/list/:id", department.departmentClass.getDepts);
+router.get("/list/:id", department.departmentClass.getADepts);
 
 /**
  * @swagger
