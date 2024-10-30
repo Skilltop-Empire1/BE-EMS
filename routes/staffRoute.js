@@ -168,7 +168,7 @@ const chekPerm = require('../middlewares/permissionMiddleware')
  *       404:
  *         description: Invalid input or missing required field
  */
-router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','create']), staffController.createStaff);
+router.post('/create', staffController.createStaff);
 /**
  * @swagger
  * /staff/view/{staffId}:
@@ -277,7 +277,7 @@ router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']
  *       404:
  *         description: Invalid input or missing required field
  */
-router.get('/view/:staffId', loginJWTAthentication,chekPerm(['Staff','view']), staffController.viewStaff);
+router.get('/view/:staffId', staffController.viewStaff);
 /*
  * @swagger
  * /staff/edit/{staffId}:
@@ -441,7 +441,7 @@ router.get('/view/:staffId', loginJWTAthentication,chekPerm(['Staff','view']), s
  *       404:
  *         description: staff not found
  */
-router.put('/edit/:staffId', loginJWTAthentication,chekPerm(['Staff','edit']), staffController.editStaff);
+router.put('/edit/:staffId', staffController.editStaff);
 /**
  * @swagger
  * /staff/delete/{staffId}:
@@ -461,7 +461,7 @@ router.put('/edit/:staffId', loginJWTAthentication,chekPerm(['Staff','edit']), s
  *       404:
  *         description: Staff member not found
  */
-router.delete('/delete/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','delete']), staffController.deleteStaff);
+router.delete('/delete/:staffId', staffController.deleteStaff);
 /**
  * @swagger
  * /staff/search:
@@ -582,7 +582,7 @@ router.delete('/delete/:staffId', loginJWTAthentication, checkRole(['Admin', 'Su
  *                   example: An error occurred while processing the request
  */
 
-router.get('/search', loginJWTAthentication, staffController.searchStaff);
+router.get('/search', staffController.searchStaff);
 /**
  * @swagger
  * /staff/signIn:
@@ -731,7 +731,7 @@ router.post('/signIn', staffController.signIn);
  *       500:
  *         description: Internal server error
  */
-router.get('/doctor/all', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.allDoctors);
+router.get('/doctor/all',  staffController.allDoctors);
 
 /**
  * @swagger
@@ -832,7 +832,7 @@ router.get('/doctor/all', loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *       500:
  *         description: Internal server error
  */
-router.get('/nurses/all', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.allNurses);
+router.get('/nurses/all', staffController.allNurses);
 
 /**
  * @swagger
@@ -919,7 +919,7 @@ router.get('/nurses/all', loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *                   type: string
  *                   description: Detailed error message
  */
-router.post('/invite', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.inviteStaff);
+router.post('/invite', staffController.inviteStaff);
 
 /**
  * @swagger
@@ -1022,7 +1022,7 @@ router.post('/invite', loginJWTAthentication, checkRole(['Admin', 'Super Admin']
  *                   type: string
  *                   description: Detailed error message
  */
-router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','edit','create']), staffController.updateStaff);
+router.put('/update/:staffId', staffController.updateStaff);
 /**
  * @swagger
  * /update-permissions/{staffId}:
@@ -1179,7 +1179,7 @@ router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super
  *                   type: string
  *                   example: "An error occurred while updating permissions"
  */
-router.put('/update-permissions/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','edit','create']), staffController.updatePermissions);
+router.put('/update-permissions/:staffId', staffController.updatePermissions);
 /**
  * @swagger
  * /staff/change-password:
@@ -1245,7 +1245,7 @@ router.put('/update-permissions/:staffId', loginJWTAthentication, checkRole(['Ad
  *                   type: string
  *                   example: "An error occurred while updating the password"
  */
-router.put('/change-password', loginJWTAthentication, staffController.changePassword);
+router.put('/change-password', staffController.changePassword);
 
 /**
  * @swagger
@@ -1309,7 +1309,7 @@ router.put('/change-password', loginJWTAthentication, staffController.changePass
  *                   type: string
  *                   example: "An error occurred while uploading the profile picture."
  */
-router.post('/upload-profilePic', loginJWTAthentication, staffController.uploadProfilePic);
+router.post('/upload-profilePic', staffController.uploadProfilePic);
 
 /**
  * @swagger
@@ -1350,7 +1350,7 @@ router.post('/upload-profilePic', loginJWTAthentication, staffController.uploadP
  *                   type: string
  *                   example: "Failed to retrieve profile picture"
  */
-router.get('/get-profilePic', loginJWTAthentication, staffController.getProfilePic);
+router.get('/get-profilePic', staffController.getProfilePic);
 
 /**
  * @swagger
