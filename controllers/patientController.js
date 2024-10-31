@@ -127,7 +127,6 @@ class PatientClass {
   //Method for edit patient details
   patientEdit = async (req, res) => {
     const {
-      id,
       firstName,
       lastName,
       email,
@@ -148,7 +147,7 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { patId: req.body.id },
+        where: { patId: req.params.patId },
       });
 
       //update logic
@@ -168,7 +167,7 @@ class PatientClass {
           },
           {
             where: {
-              patId: req.body.id,
+              patId: req.params.patId,
             },
           }
         );
