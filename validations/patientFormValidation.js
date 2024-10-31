@@ -19,7 +19,6 @@ const patientCreateSchema = Joi.object({
 
 // Validation schema for updating patient details
 const patientUpdateSchema = Joi.object({
-  id: Joi.string().uuid().required(),
   firstName: Joi.string().min(1).max(100).optional(),
   lastName: Joi.string().min(1).max(100).optional(),
   email: Joi.string().email().optional(),
@@ -33,10 +32,10 @@ const patientUpdateSchema = Joi.object({
   lastVisit: Joi.string().max(250).optional(),
   medCondition: Joi.string().optional(),
 });
-// Validation schema for deleting a patient
-const patientDeleteSchema = Joi.object({
-  id: Joi.string().uuid().required(),
-});
+// // Validation schema for deleting a patient
+// const patientDeleteSchema = Joi.object({
+//   id: Joi.string().uuid().required(),
+// });
 
 // const updatePasswordSchema = Joi.object({
 //   oldPassword:Joi.string().required(),
@@ -49,5 +48,5 @@ const patientDeleteSchema = Joi.object({
 module.exports = {
   patientCreateSchema,
   patientUpdateSchema,
-  patientDeleteSchema,
+  // patientDeleteSchema,
 };
