@@ -188,24 +188,24 @@ class PatientClass {
 
   //method to delete patient
   deletePatient = async (req, res) => {
-    const patId = req.body.id;
+    const patId = req.params;
 
-    const check = patientDeleteSchema.validate(req.body);
-    if (check.error) {
-      return res.status(404).json(check.error.details[0].message);
-    }
+    // const check = patientDeleteSchema.validate(req.body);
+    // if (check.error) {
+    //   return res.status(404).json(check.error.details[0].message);
+    // }
 
     // delete patient data
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { patId: req.body.id },
+        where: { patId:req.params.patId },
       });
 
       if (patientExist) {
         await Patient.destroy({
           where: {
-            patId: req.body.id,
+            patId:req.params.patId,
           },
         });
         return res.status(201).json({ msg: "Patient deleted successfully" });

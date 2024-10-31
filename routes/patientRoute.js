@@ -177,7 +177,7 @@ router.route("/edit").put(/*loginJWTAthentication, checkRole(['Admin', 'Super Ad
  *       404:
  *         description: Patient not found.
  */
-router.route("/delete").delete(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.deletePatient);
+router.route("/delete/:patId").delete(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.deletePatient);
 
 
 
