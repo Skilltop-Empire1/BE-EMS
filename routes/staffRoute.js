@@ -168,7 +168,7 @@ const chekPerm = require('../middlewares/permissionMiddleware')
  *       404:
  *         description: Invalid input or missing required field
  */
-router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','create']), staffController.createStaff);
+router.post('/create', staffController.createStaff);
 /**
  * @swagger
  * /staff/view/{staffId}:
@@ -277,7 +277,7 @@ router.post('/create', loginJWTAthentication, checkRole(['Admin', 'Super Admin']
  *       404:
  *         description: Invalid input or missing required field
  */
-router.get('/view/:staffId', loginJWTAthentication,chekPerm(['Staff','view']), staffController.viewStaff);
+router.get('/view/:staffId', staffController.viewStaff);
 /*
  * @swagger
  * /staff/edit/{staffId}:
@@ -441,7 +441,7 @@ router.get('/view/:staffId', loginJWTAthentication,chekPerm(['Staff','view']), s
  *       404:
  *         description: staff not found
  */
-router.put('/edit/:staffId', loginJWTAthentication,chekPerm(['Staff','edit']), staffController.editStaff);
+router.put('/edit/:staffId', staffController.editStaff);
 /**
  * @swagger
  * /staff/delete/{staffId}:
@@ -461,7 +461,7 @@ router.put('/edit/:staffId', loginJWTAthentication,chekPerm(['Staff','edit']), s
  *       404:
  *         description: Staff member not found
  */
-router.delete('/delete/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','delete']), staffController.deleteStaff);
+router.delete('/delete/:staffId', staffController.deleteStaff);
 /**
  * @swagger
  * /staff/search:
@@ -582,7 +582,7 @@ router.delete('/delete/:staffId', loginJWTAthentication, checkRole(['Admin', 'Su
  *                   example: An error occurred while processing the request
  */
 
-router.get('/search', loginJWTAthentication, staffController.searchStaff);
+router.get('/search', staffController.searchStaff);
 /**
  * @swagger
  * /staff/signIn:
@@ -616,7 +616,7 @@ router.get('/search', loginJWTAthentication, staffController.searchStaff);
  *                 id:
  *                   type: string
  *                   description: Staff ID of the signed-in member
- *                 username:
+ *                 userName:
  *                   type: string
  *                   description: Username of the signed-in member
  *                 email:
@@ -731,7 +731,7 @@ router.post('/signIn', staffController.signIn);
  *       500:
  *         description: Internal server error
  */
-router.get('/doctor/all', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.allDoctors);
+router.get('/doctor/all',  staffController.allDoctors);
 
 /**
  * @swagger
@@ -832,7 +832,7 @@ router.get('/doctor/all', loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *       500:
  *         description: Internal server error
  */
-router.get('/nurses/all', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.allNurses);
+router.get('/nurses/all', staffController.allNurses);
 
 /**
  * @swagger
@@ -854,13 +854,13 @@ router.get('/nurses/all', loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *               password:
  *                 type: string
  *                 description: Password for the staff member's account
- *               username:
+ *               userName:
  *                 type: string
  *                 description: Username of the staff member
  *             required:
  *               - email
  *               - password
- *               - username
+ *               - userName
  *     security:
  *       - bearerAuth: []  # Assuming you are using JWT for authentication
  *     responses:
@@ -919,7 +919,7 @@ router.get('/nurses/all', loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *                   type: string
  *                   description: Detailed error message
  */
-router.post('/invite', loginJWTAthentication, checkRole(['Admin', 'Super Admin']), staffController.inviteStaff);
+router.post('/invite', staffController.inviteStaff);
 
 /**
  * @swagger
@@ -1022,7 +1022,7 @@ router.post('/invite', loginJWTAthentication, checkRole(['Admin', 'Super Admin']
  *                   type: string
  *                   description: Detailed error message
  */
-router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','edit','create']), staffController.updateStaff);
+router.put('/update/:staffId', staffController.updateStaff);
 /**
  * @swagger
  * /update-permissions/{staffId}:
@@ -1051,9 +1051,77 @@ router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super
  *               permissions:
  *                 type: array
  *                 items:
- *                   $ref: '#/components/schemas/Permission'
- *             required:
- *               - permissions
+ *                   type: object
+ *                   properties:
+ *                     label:
+ *                       type: string
+ *                       example: "Department"
+ *                     view:
+ *                       type: boolean
+ *                       example: true
+ *                     create:
+ *                       type: boolean
+ *                       example: true
+ *                     edit:
+ *                       type: boolean
+ *                       example: true
+ *                     delete:
+ *                       type: boolean
+ *                       example: true
+ *                     transfer:
+ *                       type: boolean
+ *                       example: true
+ *             example:
+ *               permissions: [
+ *                 {
+ *                   "label": "Department",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Staff",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Patients",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Appointments",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Accounts",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 },
+ *                 {
+ *                   "label": "Reports",
+ *                   "view": true,
+ *                   "create": true,
+ *                   "edit": true,
+ *                   "delete": true,
+ *                   "transfer": true
+ *                 }
+ *               ]
  *     responses:
  *       200:
  *         description: Permissions updated successfully.
@@ -1111,6 +1179,297 @@ router.put('/update/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super
  *                   type: string
  *                   example: "An error occurred while updating permissions"
  */
-router.put('/update-permissions/:staffId', loginJWTAthentication, checkRole(['Admin', 'Super Admin']),chekPerm(['Staff','edit','create']), staffController.updatePermissions);
+router.put('/update-permissions/:staffId', staffController.updatePermissions);
+/**
+ * @swagger
+ * /staff/change-password:
+ *   put:
+ *     tags: [Staff]
+ *     summary: Change staff password
+ *     description: Allows staff to change their password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *                 example: "oldPassword123"
+ *               password:
+ *                 type: string
+ *                 example: "newPassword123"
+ *               confirmPassword:
+ *                 type: string
+ *                 example: "newPassword123"
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Staff password updated successfully"
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Incorrect old password"
+ *       404:
+ *         description: Staff not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Staff with the provided email does not exist"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "An error occurred while updating the password"
+ */
+router.put('/change-password', staffController.changePassword);
+
+/**
+ * @swagger
+ * /staff/upload-profile-pic:
+ *   post:
+ *     tags: [Staff]
+ *     summary: Upload staff profile picture
+ *     description: Allows staff to upload a profile picture.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profilePic:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Profile picture uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Profile picture uploaded successfully"
+ *                 profileUrl:
+ *                   type: string
+ *                   example: "https://cloudinary.com/your-profile-pic-url"
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "File upload error: ..."
+ *       404:
+ *         description: Staff not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Staff member not found"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while uploading the profile picture."
+ */
+router.post('/upload-profilePic', staffController.uploadProfilePic);
+
+/**
+ * @swagger
+ * /staff/get-profile-pic:
+ *   get:
+ *     tags: [Staff]
+ *     summary: Get staff profile picture
+ *     description: Retrieves the staff's profile picture URL.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved profile picture
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 profilePic:
+ *                   type: string
+ *                   example: "https://cloudinary.com/your-profile-pic-url"
+ *       404:
+ *         description: Staff not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Staff not found"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to retrieve profile picture"
+ */
+router.get('/get-profilePic', staffController.getProfilePic);
+
+/**
+ * @swagger
+ * /staff/forgot-password:
+ *   post:
+ *     tags: [Staff]
+ *     summary: Request password reset
+ *     description: Sends an email with a link to reset the password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "staff@example.com"
+ *     responses:
+ *       200:
+ *         description: Email sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "An email has been sent to you with a link to reset your password."
+ *       404:
+ *         description: Staff not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Staff member does not exist"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "An error occurred while sending the email."
+ */
+router.post('/forgot-password', staffController.passwordReset);
+
+/**
+ * @swagger
+ * /staff/reset-password:
+ *   post:
+ *     tags: [Staff]
+ *     summary: Reset password
+ *     description: Resets the staff password using the provided email and new password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "staff@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "newPassword123"
+ *               confirmPassword:
+ *                 type: string
+ *                 example: "newPassword123"
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Password updated successfully"
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Password mismatch."
+ *       404:
+ *         description: Staff not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Enter a correct email address."
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "An error occurred while resetting the password."
+ */
+router.post('/reset-password', staffController.resetSubmit);
+
+
 
 module.exports = router;

@@ -1,30 +1,66 @@
 const Joi = require("joi");
 const {
-  patientValidity,
   patientUpdateSchema,
-  deletePatientValidity,
   patientCreateSchema,
   patientDeleteSchema,
 } = require("../validations/patientFormValidation");
+const bcrypt = require('bcryptjs');
 
 // requiring multer library
 const upload = require("../middlewares/multer");
-const { Patient } = require("../models");
+const { Patient,Staff, Department, Appointment, Account } = require("../models");
+const {Op, OpTypes, where} = require("sequelize");
 
 // Object for functionality
 
 class PatientClass {
   //route too display all patient
   patientdisplay = async (req, res) => {
+    const page = 1
+    const pageSize = 10
+    const limit = pageSize
+    const offset = (page-1)*pageSize
+
     try {
-      const patientdisplay = await Patient.findAll({});
-      return res.json(patientdisplay);
+      const patientdisplay = await Patient.findAll({
+        include: [{
+          model: Department,
+          as: 'department',
+          required: false
+        }],
+
+        include: [{
+          model: Staff,
+          as: 'staff',
+          required: false
+        }],
+
+       
+        include: [{
+          model: Appointment,
+          as: 'appointments',
+          required: false
+        }],
+
+        include: [{
+          model: Account,
+          as: 'account',
+          required: false
+        }],
+
+       
+        // pagination
+        limit:limit,
+        offset:offset,
+        order: [['firstName', 'ASC']],
+      
+        
+      });
+      return res.status(200).json(patientdisplay)
     } catch (error) {
       return console.log(error);
     }
   };
-
-  //route to count number of patients
 
   patientCount = async (req, res) => {
     try {
@@ -63,7 +99,7 @@ class PatientClass {
       });
 
       if (patientExist) {
-        return res.status(409).json({ message: "Patient already exists" });
+        return res.status(409).json({ message: "Patient already exists with this phone number" });
       }
 
       // Create new patient if they don't exist
@@ -111,7 +147,7 @@ class PatientClass {
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { phone: req.body.phone },
+        where: { patId: req.params.patId },
       });
 
       //update logic
@@ -131,7 +167,7 @@ class PatientClass {
           },
           {
             where: {
-              phone: req.body.phone,
+              patId: req.params.patId,
             },
           }
         );
@@ -151,24 +187,24 @@ class PatientClass {
 
   //method to delete patient
   deletePatient = async (req, res) => {
-    const phone = req.body.phone;
+    const patId = req.params;
 
-    const check = patientDeleteSchema.validate(req.body);
-    if (check.error) {
-      return res.status(404).json(check.error.details[0].message);
-    }
+    // const check = patientDeleteSchema.validate(req.body);
+    // if (check.error) {
+    //   return res.status(404).json(check.error.details[0].message);
+    // }
 
     // delete patient data
     try {
       // check if patient exist
       const patientExist = await Patient.findOne({
-        where: { phone: req.body.phone },
+        where: { patId:req.params.patId },
       });
 
       if (patientExist) {
         await Patient.destroy({
           where: {
-            phone: req.body.phone,
+            patId:req.params.patId,
           },
         });
         return res.status(201).json({ msg: "Patient deleted successfully" });
@@ -179,6 +215,102 @@ class PatientClass {
       throw error;
     }
   };
+
+
+  // search method
+  searchPartient = async (req,res) =>{
+    const {searchParameter} = req.body
+
+    if(!searchParameter){
+      return res.json({msg: "Enter a search parameter"})
+    }
+
+    const searching = await Patient.findAll({
+      where:{
+        [Op.or]: [
+          {
+           firstName: {[Op.iLike]: searchParameter.length > 10 ?  searchParameter: `%${searchParameter}%`},
+      },
+
+      {
+        lastName: {[Op.iLike]: searchParameter.length > 10 ?  searchParameter: `%${searchParameter}%`},
+   },
+    ]
+    },
+    order: [['firstName', 'ASC'], ['lastName', 'ASC']],
+    })
+
+    if(searching < 1){
+      return res.status(404).json({msg: "No patient with the search details found"})
+    }
+    return res.status(200).json(searching)
+  } //search method end
+
+  
+
+
+
+
+
+
+
+
+
+
+//    //change staff password
+//    changePassword = async (req, res) => {
+//     const { 
+//       oldPassword, 
+//       password, 
+//       confirmPassword } = req.body;
+    
+//     //validate details
+//     const check = updatePasswordSchema.validate(req.body);
+//     if (check.error) {
+//       return res.status(404).json(check.error.details[0].message);
+//     }
+
+//     //queery to check if user exist */
+//     const staffEmail = req.user.email
+//     const staff = await Staff.findOne({ where: { email:staffEmail } });
+//     const isMatch = await bcrypt.compare(oldPassword, staff.password);
+//     if (!isMatch) {return res.status(404).json({ msg: "Incorrect password" });}
+//     if (!staff) {
+//       return res.status(400).send("Staff with the email does not exist");
+//     } 
+//     if (password !== confirmPassword) {
+//       return res.json({ msg: "New password must match the confirmation" });
+//     }
+
+// //update code
+//     const hash = await bcrypt.hash(password, 10);
+//     try {
+//       const staffPasswordUpdate = await Staff.update(
+//         { password: hash },
+//         { where: { email: staffEmail } }
+//       );
+
+//       if(staffPasswordUpdate){
+//         console.log(`New Hashed Password: ${staff.password}`)
+//         return res
+//           .status(201)
+//           .json({ msg: "Staff password updated successfully" });
+//       }else{
+//         return res
+//           .status(404)
+//           .json({ msg: "Password update failed" });
+//       }
+      
+//     } catch (error) {
+//       return error
+//     }
+//   };//end of method
+
+
+  
+
+
+
 
   //functionality to upload image
   // profilePics = async (req, res) => {

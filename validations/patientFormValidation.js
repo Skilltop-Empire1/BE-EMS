@@ -32,15 +32,21 @@ const patientUpdateSchema = Joi.object({
   lastVisit: Joi.string().max(250).optional(),
   medCondition: Joi.string().optional(),
 });
-// Validation schema for deleting a patient
-const patientDeleteSchema = Joi.object({
-  phone: Joi.string()
-    .pattern(/^[0-9]{10,15}$/)
-    .required(),
-});
+// // Validation schema for deleting a patient
+// const patientDeleteSchema = Joi.object({
+//   id: Joi.string().uuid().required(),
+// });
+
+// const updatePasswordSchema = Joi.object({
+//   oldPassword:Joi.string().required(),
+//   password: Joi.string().required(),
+//   confirmPassword: Joi.string().required(),
+// })
+
+
 
 module.exports = {
   patientCreateSchema,
   patientUpdateSchema,
-  patientDeleteSchema,
+  // patientDeleteSchema,
 };

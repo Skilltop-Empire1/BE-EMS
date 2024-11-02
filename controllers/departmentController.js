@@ -56,7 +56,7 @@ class DepartmentClass {
     }
   };
   // Get all organizations
-  getDepts = async (req, res) => {
+  getADepts = async (req, res) => {
     try {
       const {id} = req.params
       const dept = await Department.findByPk(id);

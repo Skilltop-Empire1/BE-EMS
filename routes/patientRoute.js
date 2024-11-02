@@ -7,13 +7,12 @@ const checkRole = require('../middlewares/checkRole');
 const router = express.Router();
 
 
-
 /**
  * @swagger
  * /api/v1/patient/list:
  *   get:
  *     summary: Retrieve a list of patients
- *     description: Retrieve a list of all patients from the database.
+ *     description: Retrieve a list of all patients from the database in pagination.
  *     responses:
  *       200:
  *         description: A list of patients.
@@ -37,7 +36,7 @@ const router = express.Router();
  *                     description: The patient's last name.
  *                     example: Doe
  */
-router.route("/list").get(loginJWTAthentication,patient.patientClass.patientdisplay);
+router.route("/list").get(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.patientdisplay);
 
 /**
  * @swagger
@@ -88,7 +87,7 @@ router.route("/list").get(loginJWTAthentication,patient.patientClass.patientdisp
  *       409:
  *         description: Patient already exists.
  */
-router.route("/create").post(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.createPatient);
+router.route("/create").post(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.createPatient);
 
 /**
  * @swagger
@@ -105,14 +104,14 @@ router.route("/create").post(loginJWTAthentication, checkRole(['Admin', 'Super A
  *               type: integer
  *               example: 100
  */
-router.route("/count").post(patient.patientClass.patientCount);
+router.route("/count").post(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/ patient.patientClass.patientCount);
 
 /**
  * @swagger
  * /api/v1/patient/edit:
  *   put:
  *     summary: Edit a patient's details
- *     description: Updates an existing patient's details based on their phone number.
+ *     description: Updates an existing patient's details based on their id.
  *     requestBody:
  *       required: true
  *       content:
@@ -154,14 +153,14 @@ router.route("/count").post(patient.patientClass.patientCount);
  *       404:
  *         description: Patient not found.
  */
-router.route("/edit").put(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.patientEdit);
+router.route("/edit/:patId").put(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.patientEdit);
 
 /**
  * @swagger
  * /api/v1/patient/delete:
  *   delete:
  *     summary: Delete a patient's record
- *     description: Deletes a patient's record based on their phone number.
+ *     description: Deletes a patient's record based on their uuid.
  *     requestBody:
  *       required: true
  *       content:
@@ -169,15 +168,44 @@ router.route("/edit").put(loginJWTAthentication, checkRole(['Admin', 'Super Admi
  *           schema:
  *             type: object
  *             properties:
- *               phone:
+ *               id:
  *                 type: string
- *                 example: +123456789
+ *                 example: a4b7e193-cdf7-40cb-8ad2-67e528407d98
  *     responses:
  *       200:
  *         description: Patient record deleted successfully.
  *       404:
  *         description: Patient not found.
  */
-router.route("/delete").delete(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.deletePatient);
+router.route("/delete/:patId").delete(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.deletePatient);
+
+
+
+
+/**
+ * @swagger
+ * /api/v1/patient/search:
+ *   put:
+ *     summary: Search for a patient
+ *     description: Search patient base on firstname and surname.
+ *     requestBody:
+ *       required:true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               searchParameter:
+ *                 type: string
+ *                 example: +123456789
+ *     responses:
+ *       200:
+ *         description: Return json objects of the patient list.
+ *       404:
+ *         description: No patient with the search details found.
+ */
+router.route("/search").get(/*loginJWTAthentication,checkRole(['Admin', 'Super Admin']),*/patient.patientClass.searchPartient);
+
+
 
 module.exports = router;
