@@ -10,9 +10,8 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      patId: {
-        type: DataTypes.UUID,
-        references: { model: 'Patient', key: 'patId' }, 
+      patName: {
+        type: DataTypes.STRING,
         allowNull:false
       },
       paymentMethod: {

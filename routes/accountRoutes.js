@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const loginJWTAthentication = require('../middlewares/auth');
+const checkRole = require('../middlewares/checkRole');
+const chekPerm = require('../middlewares/permissionMiddleware');
 const {
   createAccount,
   getAllAccounts,
   getAccountById,
   updateAccount,
   deleteAccount,
+  searchAccount
 } = require('../controllers/accountController');
 
 /**
@@ -15,7 +19,7 @@ const {
  *     Account:
  *       type: object
  *       required:
- *         - patId
+ *         - patName
  *         - paymentMethod
  *         - paymentProvider
  *         - treatmentType
@@ -23,9 +27,9 @@ const {
  *         acctId:
  *           type: string
  *           description: UUID of the account
- *         patId:
+ *         patName:
  *           type: string
- *           description: UUID of the associated patient (foreign key)
+ *           description: Name of the associated patient
  *         paymentMethod:
  *           type: string
  *           enum: [HMO, Insurance, NHIS, Direct]
@@ -54,6 +58,15 @@ const {
  *           type: string
  *           format: date
  *           description: Next payment due date
+ *         paymentRefNo:
+ *           type: string
+ *           description: Reference number for the payment
+ *         address:
+ *           type: string
+ *           description: Address of the patient
+ *         desc:
+ *           type: string
+ *           description: Additional description or remarks
  */
 
 /**
@@ -74,7 +87,8 @@ const {
  *       500:
  *         description: Internal Server Error
  */
-router.post('/create', createAccount);
+router.post('/create', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), createAccount);
 
 /**
  * @swagger
@@ -94,7 +108,40 @@ router.post('/create', createAccount);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', getAllAccounts);
+router.get('/', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), getAllAccounts);
+
+/**
+ * @swagger
+ * /api/v1/account/search:
+ *   get:
+ *     summary: Search for accounts by patient name or phone number
+ *     tags: [Accounts]
+ *     parameters:
+ *       - in: query
+ *         name: searchValue
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search term for patient's first name, last name, or phone
+ *     responses:
+ *       200:
+ *         description: List of matching accounts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Account'
+ *       400:
+ *         description: Bad request, search value is required
+ *       404:
+ *         description: No accounts found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.get('/search', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), searchAccount);
 
 /**
  * @swagger
@@ -121,7 +168,8 @@ router.get('/', getAllAccounts);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', getAccountById);
+router.get('/:id', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), getAccountById);
 
 /**
  * @swagger
@@ -150,7 +198,8 @@ router.get('/:id', getAccountById);
  *       500:
  *         description: Internal Server Error
  */
-router.put('/:id', updateAccount);
+router.put('/:id', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), updateAccount);
 
 /**
  * @swagger
@@ -173,6 +222,7 @@ router.put('/:id', updateAccount);
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/:id', deleteAccount);
+router.delete('/:id', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), deleteAccount);
 
 module.exports = router;
