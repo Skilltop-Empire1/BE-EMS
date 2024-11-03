@@ -36,7 +36,7 @@ const router = express.Router();
  *                     description: The patient's last name.
  *                     example: Doe
  */
-router.route("/list").get(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.patientdisplay);
+router.route("/list").get(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.patientdisplay);
 
 /**
  * @swagger
@@ -87,7 +87,7 @@ router.route("/list").get(/*loginJWTAthentication, checkRole(['Admin', 'Super Ad
  *       409:
  *         description: Patient already exists.
  */
-router.route("/create").post(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.createPatient);
+router.route("/create").post(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.createPatient);
 
 /**
  * @swagger
@@ -104,7 +104,7 @@ router.route("/create").post(/*loginJWTAthentication, checkRole(['Admin', 'Super
  *               type: integer
  *               example: 100
  */
-router.route("/count").post(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/ patient.patientClass.patientCount);
+router.route("/count").post(loginJWTAthentication, checkRole(['Admin', 'Super Admin']), patient.patientClass.patientCount);
 
 /**
  * @swagger
@@ -153,7 +153,7 @@ router.route("/count").post(/*loginJWTAthentication, checkRole(['Admin', 'Super 
  *       404:
  *         description: Patient not found.
  */
-router.route("/edit/:patId").put(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.patientEdit);
+router.route("/edit/:patId").put(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.patientEdit);
 
 /**
  * @swagger
@@ -177,7 +177,7 @@ router.route("/edit/:patId").put(/*loginJWTAthentication, checkRole(['Admin', 'S
  *       404:
  *         description: Patient not found.
  */
-router.route("/delete/:patId").delete(/*loginJWTAthentication, checkRole(['Admin', 'Super Admin']),*/patient.patientClass.deletePatient);
+router.route("/delete/:patId").delete(loginJWTAthentication, checkRole(['Admin', 'Super Admin']),patient.patientClass.deletePatient);
 
 
 
@@ -204,7 +204,7 @@ router.route("/delete/:patId").delete(/*loginJWTAthentication, checkRole(['Admin
  *       404:
  *         description: No patient with the search details found.
  */
-router.route("/search").get(/*loginJWTAthentication,checkRole(['Admin', 'Super Admin']),*/patient.patientClass.searchPartient);
+router.route("/search").get(loginJWTAthentication,checkRole(['Admin', 'Super Admin']),patient.patientClass.searchPartient);
 
 
 
