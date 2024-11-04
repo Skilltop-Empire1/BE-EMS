@@ -1251,7 +1251,7 @@ router.put('/update-permissions/:staffId', staffController.updatePermissions);
  *                   type: string
  *                   example: "An error occurred while updating the password"
  */
-router.put('/change-password', staffController.changePassword);
+router.put('/change-password',loginJWTAthentication, staffController.changePassword);
 
 /**
  * @swagger
