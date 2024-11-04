@@ -278,12 +278,13 @@ router.post('/create', staffController.createStaff);
  *         description: Invalid input or missing required field
  */
 router.get('/view/:staffId', staffController.viewStaff);
-/*
+/**
  * @swagger
  * /staff/edit/{staffId}:
  *   put:
  *     summary: Edit a staff member's details
- *     tags: [Staff]
+ *     tags:
+ *       - Staff
  *     parameters:
  *       - in: path
  *         name: staffId
@@ -298,7 +299,10 @@ router.get('/view/:staffId', staffController.viewStaff);
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               firstName:
+ *                 type: string
+ *                 description: Full name of the staff member
+ *               lastName:
  *                 type: string
  *                 description: Full name of the staff member
  *               email:
@@ -342,7 +346,7 @@ router.get('/view/:staffId', staffController.viewStaff);
  *               licence:
  *                 type: number
  *                 description: License information of the staff member 
- *                 example : 22229293938
+ *                 example: 22229293938
  *               educationalQualification:
  *                 type: string
  *                 description: Educational qualification of the staff member
@@ -352,95 +356,94 @@ router.get('/view/:staffId', staffController.viewStaff);
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   staffId:
- *                     type: string
- *                     description: The staff ID.
- *                     example: d8e6dc7a-7e7f-4873-8b02-5fe540ea7a6a
- *                   staffStatus:
- *                     type: string
- *                     description: The staff's status.
- *                     example: Registered
- *                   firstName:
- *                     type: string
- *                     description: The staff's first name.
- *                     example: Doe
- *                   lastName:
- *                     type: string
- *                     description: The staff's last name.
- *                     example: Clarkson
- *                   role:
- *                     type: string
- *                     description: The staff's role.
- *                     example: Doctor
- *                   departmentName:
- *                     type: string
- *                     description: The staff's department name.
- *                     example: Gynecology
- *                   specialization:
- *                     type: string
- *                     description: The staff's specialization.
- *                     example: Pediatrician
- *                   shiftSchedule:
- *                     type: string
- *                     description: The staff's shift schedule.
- *                     example: Day Shift
- *                   employStatus:
- *                     type: string
- *                     description: The staff's employment status.
- *                     example: Active
- *                   location:
- *                     type: string
- *                     description: The staff's location.
- *                     example: New York
- *                   dateOfHire:
- *                     type: string
- *                     format: date
- *                     description: The staff's date of hire.
- *                     example: 2023-01-15
- *                   phone:
- *                     type: string
- *                     description: The staff's phone number.
- *                     example: +1234567890
- *                   dateOfBirth:
- *                     type: string
- *                     format: date
- *                     description: The staff's date of birth.
- *                     example: 1990-05-20
- *                   gender:
- *                     type: string
- *                     description: The staff's gender.
- *                     example: Female
- *                   licence:
- *                     type: number
- *                     description: The staff's licence.
- *                     example: 2282923938
- *                   educationalQualification:
- *                     type: string
- *                     description: The staff's educational qualification.
- *                     example: Master's Degree
- *                   profileUrl:
- *                     type: string
- *                     description: The staff's profile URL.
- *                     example: http://example.com/profile/1
- *                   password:
- *                     type: string
- *                     description: The staff's password.
- *                     example: password123
- *                   vacationDays:
- *                     type: string
- *                     description: The staff's vacation days.
- *                     example: 15
- *                   permission:
- *                     type: string
- *                     description: The staff's permissions.
- *                     example: Full Access
+ *               type: object
+ *               properties:
+ *                 staffId:
+ *                   type: string
+ *                   description: The staff ID.
+ *                   example: d8e6dc7a-7e7f-4873-8b02-5fe540ea7a6a
+ *                 staffStatus:
+ *                   type: string
+ *                   description: The staff's status.
+ *                   example: Registered
+ *                 firstName:
+ *                   type: string
+ *                   description: The staff's first name.
+ *                   example: Doe
+ *                 lastName:
+ *                   type: string
+ *                   description: The staff's last name.
+ *                   example: Clarkson
+ *                 role:
+ *                   type: string
+ *                   description: The staff's role.
+ *                   example: Doctor
+ *                 departmentName:
+ *                   type: string
+ *                   description: The staff's department name.
+ *                   example: Gynecology
+ *                 specialization:
+ *                   type: string
+ *                   description: The staff's specialization.
+ *                   example: Pediatrician
+ *                 shiftSchedule:
+ *                   type: string
+ *                   description: The staff's shift schedule.
+ *                   example: Day Shift
+ *                 employStatus:
+ *                   type: string
+ *                   description: The staff's employment status.
+ *                   example: Active
+ *                 location:
+ *                   type: string
+ *                   description: The staff's location.
+ *                   example: New York
+ *                 dateOfHire:
+ *                   type: string
+ *                   format: date
+ *                   description: The staff's date of hire.
+ *                   example: 2023-01-15
+ *                 phone:
+ *                   type: string
+ *                   description: The staff's phone number.
+ *                   example: +1234567890
+ *                 dateOfBirth:
+ *                   type: string
+ *                   format: date
+ *                   description: The staff's date of birth.
+ *                   example: 1990-05-20
+ *                 gender:
+ *                   type: string
+ *                   description: The staff's gender.
+ *                   example: Female
+ *                 licence:
+ *                   type: number
+ *                   description: The staff's licence.
+ *                   example: 2282923938
+ *                 educationalQualification:
+ *                   type: string
+ *                   description: The staff's educational qualification.
+ *                   example: Master's Degree
+ *                 profileUrl:
+ *                   type: string
+ *                   description: The staff's profile URL.
+ *                   example: http://example.com/profile/1
+ *                 password:
+ *                   type: string
+ *                   description: The staff's password.
+ *                   example: password123
+ *                 vacationDays:
+ *                   type: string
+ *                   description: The staff's vacation days.
+ *                   example: 15
+ *                 permission:
+ *                   type: string
+ *                   description: The staff's permissions.
+ *                   example: Full Access
  *       404:
- *         description: staff not found
+ *         description: Staff not found
  */
+
 router.put('/edit/:staffId', staffController.editStaff);
 /**
  * @swagger
