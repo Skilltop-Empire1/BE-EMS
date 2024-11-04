@@ -25,9 +25,12 @@ const chekPerm = require('../middlewares/permissionMiddleware')
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               firstName:
  *                 type: string
- *                 description: Full name of the staff member
+ *                 description: first name of the staff member
+ *               lastName:
+ *                 type: string
+ *                 description: last name of the staff member
  *               email:
  *                 type: string
  *                 description: Email of the staff member
