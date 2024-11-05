@@ -90,58 +90,58 @@ router.get("/recent/all", getAllRecentAppointments);
 
 /**
  * @swagger
- /appointments/book:
-  post:
-    summary: Book a new appointment
-    tags: [Appointments]
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              deptName:
-                type: string
-                example: "Blood"
-                description: "The department where the appointment will take place"
-              firstname:
-                type: string
-                example: "Okparaqmw"
-                description: "Patient's first name"
-              phoneNo:
-                type: string
-                example: "08169625557"
-                description: "Patient's phone number"
-              specialty:
-                type: string
-                example: "Pediatric"
-                description: "Specialty of the doctor or department"
-              consultName:
-                type: string
-                example: "Preckututu"
-                description: "Name of the consultant or doctor"
-              reason:
-                type: string
-                example: "to see a doctor"
-                description: "Reason for the appointment"
-              appointmentDate:
-                type: string
-                format: date
-                example: "2024-08-05"
-                description: "Date of the appointment in YYYY-MM-DD format"
-              appointmentTime:
-                type: string
-                format: time
-                example: "09:30:20"
-                description: "Time of the appointment in HH:MM:SS format"
-    responses:
-      201:
-        description: Appointment booked successfully
-      400:
-        description: Validation error
-      500:
-        description: Server error
+ * /appointments/book:
+ *   post:
+ *     summary: Book a new appointment
+ *     tags: [Appointments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               deptName:
+ *                 type: string
+ *                 example: "Blood"
+ *                 description: "The department where the appointment will take place"
+ *               firstname:
+ *                 type: string
+ *                 example: "Okparaqmw"
+ *                 description: "Patient's first name"
+ *               phoneNo:
+ *                 type: string
+ *                 example: "08169625557"
+ *                 description: "Patient's phone number"
+ *               specialty:
+ *                 type: string
+ *                 example: "Pediatric"
+ *                 description: "Specialty of the doctor or department"
+ *               consultName:
+ *                 type: string
+ *                 example: "Preckututu"
+ *                 description: "Name of the consultant or doctor"
+ *               reason:
+ *                 type: string
+ *                 example: "to see a doctor"
+ *                 description: "Reason for the appointment"
+ *               appointmentDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-08-05"
+ *                 description: "Date of the appointment in YYYY-MM-DD format"
+ *               appointmentTime:
+ *                 type: string
+ *                 format: time
+ *                 example: "09:30:20"
+ *                 description: "Time of the appointment in HH:MM:SS format"
+ *     responses:
+ *       201:
+ *         description: Appointment booked successfully
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
  */
 router.post("/book", bookAppointment);
 
