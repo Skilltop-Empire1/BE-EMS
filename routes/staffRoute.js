@@ -1031,7 +1031,7 @@ router.post('/invite', staffController.inviteStaff);
 router.put('/update/:staffId', staffController.updateStaff);
 /**
  * @swagger
- * /update-permissions/{staffId}:
+ * /staff/update-permissions/{staffId}:
  *   put:
  *     summary: Update staff permissions
  *     description: Updates the permissions of a staff member.
@@ -1477,7 +1477,7 @@ router.post('/forgot-password', staffController.passwordReset);
 router.post('/reset-password', staffController.resetSubmit);
 /**
  * @swagger
- * /all-Staffs:
+ * /staff/all-Staffs:
  *   get:
  *     tags: [Staff]
  *     summary: Retrieve all staff members with pagination
