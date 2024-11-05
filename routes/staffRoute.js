@@ -1475,7 +1475,98 @@ router.post('/forgot-password', staffController.passwordReset);
  *                   example: "An error occurred while resetting the password."
  */
 router.post('/reset-password', staffController.resetSubmit);
-
-
+/**
+ * @swagger
+ * /all-Staffs:
+ *   get:
+ *     tags: [Staff]
+ *     summary: Retrieve all staff members with pagination
+ *     description: Fetches a paginated list of all staff members, filtering out any staff with null user names.
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         required: false
+ *         description: Page number for pagination (default is 1).
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *         required: false
+ *         description: Number of records per page (default is 5).
+ *     responses:
+ *       200:
+ *         description: A paginated list of staff members
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 currentPage:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 5
+ *                 totalStaff:
+ *                   type: integer
+ *                   example: 3
+ *                 hasNextPage:
+ *                   type: boolean
+ *                   example: false
+ *                 hasPrevPage:
+ *                   type: boolean
+ *                   example: false
+ *                 staff:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       userName:
+ *                         type: string
+ *                         example: "test1"
+ *                       email:
+ *                         type: string
+ *                         example: "smith1@gmail.com"
+ *                       addedDate:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-11-05T17:40:10.047Z"
+ *                       staffStatus:
+ *                         type: string
+ *                         example: "registered"
+ *                       role:
+ *                         type: string
+ *                         example: "Doctor"
+ *                       departmentName:
+ *                         type: string
+ *                         nullable: true
+ *                         example: "General Surgery"
+ *                 nextPage:
+ *                   type: string
+ *                   nullable: true
+ *                   example: null
+ *                 prevPage:
+ *                   type: string
+ *                   nullable: true
+ *                   example: null
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "An error occurred while fetching the staff data."
+ */
+router.get('/all-Staffs',staffController.getAllStaffs);
 
 module.exports = router;
