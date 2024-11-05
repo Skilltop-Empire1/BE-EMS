@@ -985,3 +985,65 @@ exports.resetSubmit = async (req, res) => {
     res.status(500).json({ msg: "An error occurred while resetting the password." });
   }
 };
+
+exports.getAllStaffs = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const offset = (page - 1) * limit;
+
+    const totalStaff = await Staff.count();
+
+    const staffData = await Staff.findAll({
+      where: {
+        userName: {
+          [Op.ne]: null, 
+        },
+      },
+      attributes: ['userName', 'email', 'createdAt', 'staffStatus', 'role'],
+      limit: limit,
+      offset: offset,
+      order: [['staffId', 'ASC']], 
+      include: [
+        {
+          model: Department,
+          as: 'department',
+          attributes: ['name'], 
+        },
+      ],
+    });
+
+    // Format the data to extract department name , and created date
+    const formattedStaffData = staffData.map(staff => ({
+      userName: staff.userName,
+      email: staff.email,
+      addedDate: staff.createdAt,
+      staffStatus: staff.staffStatus,
+      role: staff.role,
+      departmentName: staff.department ? staff.department.name : null,
+    }));
+
+    // Calculate pagination details
+    const totalPages = Math.ceil(totalStaff / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    // paginated response
+    const response = {
+      currentPage: page,
+      totalPages,
+      limit,
+      totalStaff,
+      hasNextPage,
+      hasPrevPage,
+      staff: formattedStaffData,
+      nextPage: hasNextPage ? `/api/v1/all-staff?page=${page + 1}&limit=${limit}` : null,
+      prevPage: hasPrevPage ? `/api/v1/all-staff?page=${page - 1}&limit=${limit}` : null,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching paginated staff data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
