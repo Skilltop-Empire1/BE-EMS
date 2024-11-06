@@ -1605,6 +1605,9 @@ router.post('/reset-password', staffController.resetSubmit);
  *                   items:
  *                     type: object
  *                     properties:
+ *                       staffId:
+ *                         type: string
+ *                         example: "61091484-23ea-49a8-9e19-d164dabab8a9"
  *                       userName:
  *                         type: string
  *                         example: "test1"
