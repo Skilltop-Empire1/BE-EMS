@@ -614,7 +614,7 @@ exports.updateStaff = async (req, res) => {
     }
    
     // Extract only the fields that are provided in the request body
-    const { userName,email, departmentName,role, staffStatus , permissions} = req.body;
+    const { userName,email, departmentName,role, staffStatus , permission} = req.body;
 
     // Check for duplicate userName, excluding the current staff ID
     if (userName && userName !== staff.userName) {
@@ -646,7 +646,7 @@ exports.updateStaff = async (req, res) => {
        }
      }
 
-     if (!permissions || !Array.isArray(permissions) || !validatePermissions(permissions)) {
+     if (!permission || !Array.isArray(permission) || !validatePermissions(permission)) {
       return res.status(400).json({ error: "Invalid permissions format" });
     }
 
@@ -657,7 +657,7 @@ exports.updateStaff = async (req, res) => {
       deptId: deptId || staff.deptId,
       role: role || staff.role,
       staffStatus : staffStatus || staff.staffStatus,
-      permissions:permissions || staff.permission
+      permission:permission || staff.permission
     });
 
     // Reponse
