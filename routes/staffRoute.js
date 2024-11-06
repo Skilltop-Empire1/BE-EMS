@@ -963,6 +963,44 @@ router.post('/invite', staffController.inviteStaff);
  *               staffStatus:
  *                 type: string
  *                 description: New employment status of the staff member
+ *               permissions:
+ *                           example:
+ *                             - label: "Department"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Staff"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Patients"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Appointments"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Accounts"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Reports"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
  *             required:
  *               - userName
  *               - email
@@ -997,6 +1035,45 @@ router.post('/invite', staffController.inviteStaff);
  *                 staffStatus:
  *                   type: string
  *                   description: Updated employment status
+ *                 permissions:
+ *                           example:
+ *                             - label: "Department"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Staff"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Patients"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Appointments"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Accounts"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Reports"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ 
  *       400:
  *         description: Bad request, possibly due to existing email or invalid department name
  *         content:
@@ -1548,6 +1625,44 @@ router.post('/reset-password', staffController.resetSubmit);
  *                         type: string
  *                         nullable: true
  *                         example: "General Surgery"
+ *                       permission:
+ *                           example:
+ *                             - label: "Department"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Staff"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Patients"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Appointments"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Accounts"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
+ *                             - label: "Reports"
+ *                               view: true
+ *                               create: true
+ *                               edit: true
+ *                               delete: true
+ *                               transfer: true
  *                 nextPage:
  *                   type: string
  *                   nullable: true
@@ -1567,6 +1682,7 @@ router.post('/reset-password', staffController.resetSubmit);
  *                   type: string
  *                   example: "An error occurred while fetching the staff data."
  */
+
 router.get('/all-Staffs',staffController.getAllStaffs);
 
 module.exports = router;

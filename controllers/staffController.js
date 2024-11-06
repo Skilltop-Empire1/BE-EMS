@@ -612,14 +612,9 @@ exports.updateStaff = async (req, res) => {
     if (!staff.userName) {
       return res.status(400).json({ error: "Staff has not been invited yet. You cannot update their details." });
     }
-
+   
     // Extract only the fields that are provided in the request body
-    const { userName,email, departmentName,role, staffStatus} = req.body;
-
-    // const existingUserName = await Staff.findOne({ where: { userName: userName } });
-    // if (existingUserName) {
-    //   return res.status(409).json({ message: 'User name already exists. Please choose a different one.' });
-    // }
+    const { userName,email, departmentName,role, staffStatus , permissions} = req.body;
 
     // Check for duplicate userName, excluding the current staff ID
     if (userName && userName !== staff.userName) {
@@ -651,13 +646,18 @@ exports.updateStaff = async (req, res) => {
        }
      }
 
+     if (!permissions || !Array.isArray(permissions) || !validatePermissions(permissions)) {
+      return res.status(400).json({ error: "Invalid permissions format" });
+    }
+
     // Update
     await staff.update({
       userName : userName || staff.userName,
       email: email || staff.email,
       deptId: deptId || staff.deptId,
       role: role || staff.role,
-      staffStatus : staffStatus || staff.staffStatus
+      staffStatus : staffStatus || staff.staffStatus,
+      permissions:permissions || staff.permission
     });
 
     // Reponse
@@ -667,7 +667,8 @@ exports.updateStaff = async (req, res) => {
       email: staff.email,
       departmentName: departmentName || (staff.department ? staff.department.name : null),
       role: staff.role,
-      staffStatus : staff.staffStatus
+      staffStatus : staff.staffStatus,
+      permissions : staff.permission
     };
 
     // Return the updated staff data
@@ -1000,7 +1001,7 @@ exports.getAllStaffs = async (req, res) => {
           [Op.ne]: null, 
         },
       },
-      attributes: ['userName', 'email', 'createdAt', 'staffStatus', 'role'],
+      attributes: ['staffId','userName', 'email', 'createdAt', 'staffStatus', 'role','permission'],
       limit: limit,
       offset: offset,
       order: [['staffId', 'ASC']], 
@@ -1015,12 +1016,14 @@ exports.getAllStaffs = async (req, res) => {
 
     // Format the data to extract department name , and created date
     const formattedStaffData = staffData.map(staff => ({
+      staffId: staff.staffId,
       userName: staff.userName,
       email: staff.email,
       addedDate: staff.createdAt,
       staffStatus: staff.staffStatus,
       role: staff.role,
       departmentName: staff.department ? staff.department.name : null,
+      permission: staff.permission
     }));
 
     // Calculate pagination details
@@ -1030,6 +1033,7 @@ exports.getAllStaffs = async (req, res) => {
 
     // paginated response
     const response = {
+
       currentPage: page,
       totalPages,
       limit,
