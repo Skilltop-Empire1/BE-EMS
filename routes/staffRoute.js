@@ -1392,7 +1392,7 @@ router.put('/change-password',loginJWTAthentication, staffController.changePassw
  *                   type: string
  *                   example: "An error occurred while uploading the profile picture."
  */
-router.post('/upload-profilePic', staffController.uploadProfilePic);
+router.post('/upload-profilePic',loginJWTAthentication, staffController.uploadProfilePic);
 
 /**
  * @swagger
@@ -1433,7 +1433,7 @@ router.post('/upload-profilePic', staffController.uploadProfilePic);
  *                   type: string
  *                   example: "Failed to retrieve profile picture"
  */
-router.get('/get-profilePic', staffController.getProfilePic);
+router.get('/get-profilePic',loginJWTAthentication, staffController.getProfilePic);
 
 /**
  * @swagger
