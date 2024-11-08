@@ -1,28 +1,4 @@
-// const express = require("express");
 
-// const {
-//   bookAppointment,
-//   getAllAppointments,
-//   getAppointmentById,
-//   updateAppointment,
-//   deleteAppointment,
-//   getRecentAppointments,
-//   getAllRecentAppointments,
-//   getStaffRecentAppointments
-// } = require("../controllers/appointmentController");
-
-// const router = express.Router();
-
-// router.get("/recent", getRecentAppointments);
-// router.get("/", getAllAppointments);
-// router.get("/recent/all", getAllRecentAppointments);
-// router.post("/book",bookAppointment);
-// router.get("/:id", getAppointmentById);
-// router.get("/staff/:staffId", getStaffRecentAppointments);
-// router.put("/update/:appointId", updateAppointment);
-// router.delete("/delete/:appointId", deleteAppointment);
-
-// module.exports = router;
 
 /**
  * @swagger
@@ -32,6 +8,8 @@
  */
 
 const express = require("express");
+const router = express.Router();
+
 
 const {
   bookAppointment,
@@ -44,7 +22,7 @@ const {
   getStaffRecentAppointments
 } = require("../controllers/appointmentController");
 
-const router = express.Router();
+
 
 /**
  * @swagger
@@ -254,5 +232,7 @@ router.put("/update/:appointId", updateAppointment);
  *         description: Server error
  */
 router.delete("/delete/:appointId", deleteAppointment);
+
+
 
 module.exports = router;
