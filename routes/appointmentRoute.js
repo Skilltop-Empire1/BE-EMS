@@ -9,7 +9,8 @@
 
 const express = require("express");
 const router = express.Router();
-
+const loginJWTAthentication = require("../middlewares/auth")
+const checkRole = require("../middlewares/checkRole")
 
 const {
   bookAppointment,
@@ -121,7 +122,7 @@ router.get("/recent/all", getAllRecentAppointments);
  *       500:
  *         description: Server error
  */
-router.post("/book", bookAppointment);
+router.post("/book",loginJWTAthentication,checkRole(['Admin','Doctor', 'Super Admin']), bookAppointment);
 
 /**
  * @swagger
@@ -208,7 +209,7 @@ router.get("/staff/:staffId", getStaffRecentAppointments);
  *       500:
  *         description: Server error
  */
-router.put("/update/:appointId", updateAppointment);
+router.put("/update/:appointId",loginJWTAthentication,checkRole(['Admin','Doctor', 'Super Admin']), updateAppointment);
 
 /**
  * @swagger
@@ -231,7 +232,7 @@ router.put("/update/:appointId", updateAppointment);
  *       500:
  *         description: Server error
  */
-router.delete("/delete/:appointId", deleteAppointment);
+router.delete("/delete/:appointId",loginJWTAthentication,checkRole(['Admin','Doctor', 'Super Admin']), deleteAppointment);
 
 
 

@@ -101,7 +101,7 @@ const loginJWTAthentication = require('../middlewares/auth');
  *       500:
  *         description: Server error
  */
-router.post('/create/:deptId/:patId', createReport);
+router.post('/create/:deptId/:patId',loginJWTAthentication, createReport);
 
 
 /**
@@ -116,7 +116,7 @@ router.post('/create/:deptId/:patId', createReport);
  *       500:
  *         description: Server error
  */
-router.get('/list', getAllReports);
+router.get('/list',loginJWTAthentication, getAllReports);
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ router.get('/list', getAllReports);
  *       500:
  *         description: Server error
  */
-router.get('/:reportId', getReportById);
+router.get('/:reportId', loginJWTAthentication,getReportById);
 
 /**
  * @swagger
@@ -162,7 +162,7 @@ router.get('/:reportId', getReportById);
  *       500:
  *         description: Server error
  */
-router.get('/patient/:patId', getReportsByPatient);
+router.get('/patient/:patId', loginJWTAthentication,getReportsByPatient);
 
 /**
  * @swagger
@@ -191,7 +191,7 @@ router.get('/patient/:patId', getReportsByPatient);
  *       500:
  *         description: Server error
  */
-router.get('/:roleType/:roleId', getReportsByRole);
+router.get('/:roleType/:roleId',loginJWTAthentication,getReportsByRole);
 
 /**
  * @swagger
@@ -233,7 +233,7 @@ router.get('/:roleType/:roleId', getReportsByRole);
  *       500:
  *         description: Server error
  */
-router.put('/:reportId', updateReport);
+router.put('/:reportId',loginJWTAthentication, updateReport);
 
 /**
  * @swagger
@@ -256,6 +256,6 @@ router.put('/:reportId', updateReport);
  *       500:
  *         description: Server error
  */
-router.delete('/:reportId', deleteReport);
+router.delete('/:reportId',loginJWTAthentication, deleteReport);
 
 module.exports = router;
