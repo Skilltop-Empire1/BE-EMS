@@ -1,28 +1,4 @@
-// const express = require("express");
 
-// const {
-//   bookAppointment,
-//   getAllAppointments,
-//   getAppointmentById,
-//   updateAppointment,
-//   deleteAppointment,
-//   getRecentAppointments,
-//   getAllRecentAppointments,
-//   getStaffRecentAppointments
-// } = require("../controllers/appointmentController");
-
-// const router = express.Router();
-
-// router.get("/recent", getRecentAppointments);
-// router.get("/", getAllAppointments);
-// router.get("/recent/all", getAllRecentAppointments);
-// router.post("/book",bookAppointment);
-// router.get("/:id", getAppointmentById);
-// router.get("/staff/:staffId", getStaffRecentAppointments);
-// router.put("/update/:appointId", updateAppointment);
-// router.delete("/delete/:appointId", deleteAppointment);
-
-// module.exports = router;
 
 /**
  * @swagger
@@ -32,6 +8,9 @@
  */
 
 const express = require("express");
+const router = express.Router();
+const loginJWTAthentication = require("../middlewares/auth")
+const checkRole = require("../middlewares/checkRole")
 
 const {
   bookAppointment,
@@ -44,7 +23,7 @@ const {
   getStaffRecentAppointments
 } = require("../controllers/appointmentController");
 
-const router = express.Router();
+
 
 /**
  * @swagger
@@ -143,7 +122,7 @@ router.get("/recent/all", getAllRecentAppointments);
  *       500:
  *         description: Server error
  */
-router.post("/book", bookAppointment);
+router.post("/book",loginJWTAthentication,checkRole(['Admin','Doctor', 'Super Admin']), bookAppointment);
 
 /**
  * @swagger
@@ -230,7 +209,7 @@ router.get("/staff/:staffId", getStaffRecentAppointments);
  *       500:
  *         description: Server error
  */
-router.put("/update/:appointId", updateAppointment);
+router.put("/update/:appointId",loginJWTAthentication,checkRole(['Admin','Doctor', 'Super Admin']), updateAppointment);
 
 /**
  * @swagger
@@ -253,6 +232,8 @@ router.put("/update/:appointId", updateAppointment);
  *       500:
  *         description: Server error
  */
-router.delete("/delete/:appointId", deleteAppointment);
+router.delete("/delete/:appointId",loginJWTAthentication,checkRole(['Admin','Doctor', 'Super Admin']), deleteAppointment);
+
+
 
 module.exports = router;

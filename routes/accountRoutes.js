@@ -87,8 +87,8 @@ const {
  *       500:
  *         description: Internal Server Error
  */
-router.post('/create', /*loginJWTAthentication, 
-  checkRole(['Admin', 'Super Admin', 'Account']),*/ createAccount);
+router.post('/create', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), createAccount);
 
 /**
  * @swagger
@@ -108,8 +108,8 @@ router.post('/create', /*loginJWTAthentication,
  *       500:
  *         description: Internal Server Error
  */
-router.get('/',/* loginJWTAthentication, 
-  checkRole(['Admin', 'Super Admin', 'Account']),*/ getAllAccounts);
+router.get('/', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), getAllAccounts);
 
 /**
  * @swagger
@@ -140,8 +140,8 @@ router.get('/',/* loginJWTAthentication,
  *       500:
  *         description: Internal Server Error
  */
-router.get('/search',/* loginJWTAthentication, 
-  checkRole(['Admin', 'Super Admin', 'Account']),*/ searchAccount);
+router.get('/search', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), searchAccount);
 
 /**
  * @swagger
@@ -168,8 +168,8 @@ router.get('/search',/* loginJWTAthentication,
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id',/* loginJWTAthentication, 
-  checkRole(['Admin', 'Super Admin', 'Account']), */getAccountById);
+router.get('/:id', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), getAccountById);
 
 /**
  * @swagger
@@ -198,8 +198,8 @@ router.get('/:id',/* loginJWTAthentication,
  *       500:
  *         description: Internal Server Error
  */
-router.put('/:id',/* loginJWTAthentication, 
-  checkRole(['Admin', 'Super Admin', 'Account']),*/ updateAccount);
+router.put('/:id', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), updateAccount);
 
 /**
  * @swagger
@@ -222,7 +222,7 @@ router.put('/:id',/* loginJWTAthentication,
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/:id', /*loginJWTAthentication, 
-  checkRole(['Admin', 'Super Admin', 'Account']),*/ deleteAccount);
+router.delete('/:id', loginJWTAthentication, 
+  checkRole(['Admin', 'Super Admin', 'Account']), deleteAccount);
 
 module.exports = router;

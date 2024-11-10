@@ -1,6 +1,8 @@
 const express = require("express");
 const department = require("../controllers/departmentController");
 const router = express.Router();
+const loginJWTAthentication = require("../middlewares/auth")
+const checkRole = require("../middlewares/checkRole")
 
 /**
  * @swagger
@@ -78,7 +80,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post("/create", department.departmentClass.createDept);
+router.post("/create",loginJWTAthentication,checkRole(['Admin', 'Super Admin']),department.departmentClass.createDept);
 
 /**
  * @swagger
@@ -153,7 +155,7 @@ router.get("/list/:id", department.departmentClass.getADepts);
  *       500:
  *         description: Server error
  */
-router.put("/update/:id", department.departmentClass.updateDept);
+router.put("/update/:id",loginJWTAthentication,checkRole(['Admin', 'Super Admin']), department.departmentClass.updateDept);
 
 /**
  * @swagger
@@ -176,7 +178,7 @@ router.put("/update/:id", department.departmentClass.updateDept);
  *       500:
  *         description: Server error
  */
-router.delete("/delete/:id", department.departmentClass.deleteDept);
+router.delete("/delete/:id",loginJWTAthentication,checkRole(['Admin', 'Super Admin']),department.departmentClass.deleteDept);
 
 
 module.exports = router;
