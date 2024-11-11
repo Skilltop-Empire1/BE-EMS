@@ -171,7 +171,7 @@ const chekPerm = require('../middlewares/permissionMiddleware')
  *       404:
  *         description: Invalid input or missing required field
  */
-router.post('/create', staffController.createStaff);
+router.post('/create', loginJWTAthentication,checkRole(['Super Admin', 'Admin']),chekPerm(['Staff','create']),staffController.createStaff);
 /**
  * @swagger
  * /staff/view/{staffId}:
@@ -280,7 +280,7 @@ router.post('/create', staffController.createStaff);
  *       404:
  *         description: Invalid input or missing required field
  */
-router.get('/view/:staffId', staffController.viewStaff);
+router.get('/view/:staffId',loginJWTAthentication,chekPerm(['Staff','view']), staffController.viewStaff);
 /**
  * @swagger
  * /staff/edit/{staffId}:
@@ -447,7 +447,7 @@ router.get('/view/:staffId', staffController.viewStaff);
  *         description: Staff not found
  */
 
-router.put('/edit/:staffId', staffController.editStaff);
+router.put('/edit/:staffId',loginJWTAthentication,checkRole(['Super Admin', 'Admin']), staffController.editStaff);
 /**
  * @swagger
  * /staff/delete/{staffId}:
@@ -467,7 +467,7 @@ router.put('/edit/:staffId', staffController.editStaff);
  *       404:
  *         description: Staff member not found
  */
-router.delete('/delete/:staffId', staffController.deleteStaff);
+router.delete('/delete/:staffId',loginJWTAthentication, checkRole(['Super Admin', 'Admin']),staffController.deleteStaff);
 /**
  * @swagger
  * /staff/search:
@@ -588,7 +588,7 @@ router.delete('/delete/:staffId', staffController.deleteStaff);
  *                   example: An error occurred while processing the request
  */
 
-router.get('/search', staffController.searchStaff);
+router.get('/search',loginJWTAthentication, staffController.searchStaff);
 /**
  * @swagger
  * /staff/signIn:
@@ -737,7 +737,7 @@ router.post('/signIn', staffController.signIn);
  *       500:
  *         description: Internal server error
  */
-router.get('/doctor/all',  staffController.allDoctors);
+router.get('/doctor/all',loginJWTAthentication,checkRole(['Super Admin', 'Admin']),  staffController.allDoctors);
 
 /**
  * @swagger
@@ -838,7 +838,7 @@ router.get('/doctor/all',  staffController.allDoctors);
  *       500:
  *         description: Internal server error
  */
-router.get('/nurses/all', staffController.allNurses);
+router.get('/nurses/all', loginJWTAthentication,checkRole(['Super Admin', 'Admin']),staffController.allNurses);
 
 /**
  * @swagger
@@ -925,7 +925,7 @@ router.get('/nurses/all', staffController.allNurses);
  *                   type: string
  *                   description: Detailed error message
  */
-router.post('/invite', staffController.inviteStaff);
+router.post('/invite',loginJWTAthentication,checkRole(['Super Admin', 'Admin']),chekPerm(['Staff','create']), staffController.inviteStaff);
 
 /**
  * @swagger
@@ -1105,7 +1105,7 @@ router.post('/invite', staffController.inviteStaff);
  *                   type: string
  *                   description: Detailed error message
  */
-router.put('/update/:staffId', staffController.updateStaff);
+router.put('/update/:staffId',loginJWTAthentication,checkRole(['Super Admin', 'Admin']),chekPerm(['Staff','edit']), staffController.updateStaff);
 /**
  * @swagger
  * /staff/update-permissions/{staffId}:
@@ -1686,6 +1686,6 @@ router.post('/reset-password', staffController.resetSubmit);
  *                   example: "An error occurred while fetching the staff data."
  */
 
-router.get('/all-Staffs',staffController.getAllStaffs);
+router.get('/all-Staffs',loginJWTAthentication,checkRole(['Super Admin', 'Admin']),staffController.getAllStaffs);
 
 module.exports = router;
