@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      userName: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
       profileUrl: {
         type: DataTypes.STRING(200),
         allowNull: true,
@@ -51,8 +55,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       staffStatus: {
-        type: DataTypes.ENUM("active", "pending", "inactive"),
-        defaultValue: "pending",
+        type: DataTypes.ENUM("active", "pending", "inactive","registered"),
+        defaultValue: "registered",
       },
       phone: {
         type: DataTypes.STRING(20),
@@ -86,17 +90,67 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       permission: {
-        type: DataTypes.JSONB,
+        type: DataTypes.JSON,
         allowNull: true,
+        defaultValue: [
+          {
+            label: 'Department',
+            view: false,
+            create: false,
+            edit: false,
+            transfer: false,
+            delete : false,
+          },
+          {
+            label: 'Staff',
+            view: false,
+            create: false,
+            edit: false,
+            transfer: false,
+            delete : false,          
+          },
+          {
+            label: 'Patients',
+            view: false,
+            create: false,
+            edit: false,
+            transfer: false,
+            delete : false,          
+          },
+          {
+            label: 'Appointments',
+            view: false,
+            create: false,
+            edit: false,
+            transfer: false,
+            delete : false,          
+          },
+          {
+            label: 'Accounts',
+            view: false,
+            create: false,
+            edit: false,
+            transfer: false,
+            delete : false,          
+          },
+          {
+            label: 'Reports',
+            view: false,
+            create: false,
+            edit: false,
+            transfer: false,
+            delete : false,          
+          },
+        ],
       },
       role: {
-        type: DataTypes.ENUM("Doctor", "Nurse"),
+        type: DataTypes.ENUM("Doctor", "Nurse","Admin","Account","LabTech","Pharmacist","Radiologist","Super Admin"),
         allowNull: false,
         defaultValue: "Doctor",
       },
     },
     {
-      timestamps: false,
+      timestamps: true,
       underscored: true, 
     }
   );

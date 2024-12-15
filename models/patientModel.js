@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       phone: {
         type: DataTypes.STRING(20),
-        allowNull: true,
+        allowNull: false,
       },
       lastVisit: {
         type: DataTypes.DATE,
@@ -69,17 +69,17 @@ module.exports = (sequelize, DataTypes) => {
     });
     
     Patient.hasMany(models.Appointment, {
-      foreignKey: "patId", 
+      foreignKey: "appointId", 
       as: "appointments",
     });
     
     Patient.hasOne(models.Account, {
-      foreignKey: "patId", 
+      foreignKey: "acctId", 
       as: "account",
     });
     
     Patient.hasOne(models.Report, {
-      foreignKey: "patId", 
+      foreignKey: "reportId", 
       as: "report",
     });
   };

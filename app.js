@@ -4,6 +4,9 @@ const cron = require("node-cron");
 const axios = require("axios");
 const cors = require("cors");
 const morgan = require("morgan");
+const { createSuperAdmin } = require("./controllers/staffController");
+const notFoundError = require("./errors/notFoundError")
+const globalError = require("./errors/errorHandler")
 
 const swaggerDocs = require("./swagger");
 
@@ -18,12 +21,18 @@ const staffRoute = require("./routes/staffRoute");
 const patientRoute = require("./routes/patientRoute");
 const appointmentRoute = require("./routes/appointmentRoute");
 const reportRoute = require("./routes/reportRoute");
-const accountRoute = require("./routes/reportRoute");
+const accountRoute = require("./routes/accountRoutes");
 // const settingRoute = require("./routes/settingRoute");
-
+const whiteList = [process.env.CLIENT_URL,'http://localhost:3000']
 // Configure CORS
 const corsOptions = {
-  origin: [process.env.CLIENT_URL, "*"],
+  origin: function(origin,callback){
+    if(whiteList.indexOf(origin) !== -1 || !origin){
+      callback(null,true)
+    }else{
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: "Content-Type,Authorization",
@@ -37,10 +46,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use(morgan("tiny"));
-app.use("/api/EMS/staff", staffRoute);
+
 
 // Define the port
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5005;
 
 // Schedule tasks to ping the server every 30 minutes
 cron.schedule("*/30 * * * *", async () => {
@@ -66,7 +75,9 @@ app.use("/api/v1/account", accountRoute);
 const client_url = process.env.CLIENT_URL || "http://localhost:5005";
 swaggerDocs(app, client_url);
 
-
+// errors
+app.use(notFoundError)
+app.use(globalError)
 // Synchronize models and start the server
 const startServer = async () => {
   try {
@@ -78,5 +89,9 @@ const startServer = async () => {
   }
 };
 
+
+
 // Initialize the server
 startServer();
+// Call createSuperAdmin when the app starts
+createSuperAdmin();

@@ -7,12 +7,38 @@ class DepartmentClass {
   // Create a new department
   createDept = async (req, res) => {
     try {
+      const {
+        name,
+        hod,
+        deptContact,
+        operationHr,
+        noOfStaff,
+        location,
+        bedCapacity,
+        specialty,
+        noOfPatient,
+        equipment,
+        deptBudget
+      } = req.body
       const { error } = departmentSchema.validate(req.body);
       if (error) {
         return res.status(400).json({ message: error.details[0].message });
       }
-
-      const newDept = await Department.create(req.body);
+      const deptExist = await Department.findOne({where:{name}})
+      if(deptExist) return res.status(404).json({msg:"Department already exist"})
+      const newDept = await Department.create({
+        name,
+        hod,
+        deptContact,
+        operationHr,
+        noOfStaff,
+        location,
+        bedCapacity,
+        specialty,
+        noOfPatient,
+        equipment,
+        deptBudget
+      });
       return res.status(201).json(newDept);
     } catch (err) {
       console.error("Error creating department:", err);
@@ -30,7 +56,7 @@ class DepartmentClass {
     }
   };
   // Get all organizations
-  getDepts = async (req, res) => {
+  getADepts = async (req, res) => {
     try {
       const {id} = req.params
       const dept = await Department.findByPk(id);
