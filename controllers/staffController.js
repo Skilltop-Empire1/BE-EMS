@@ -486,9 +486,9 @@ exports.allNurses = async (req, res) => {
 
 exports.inviteStaff = async (req, res) => {
   try {
-    const { email, password, userName } = req.body;
-    if (!email || !password || !userName) {
-      return res.status(400).json({ message: 'Invalid credentials, request must contain staffs proposed "email" ,"password" and "userName"' });
+    const { email, password, userName ,permission } = req.body;
+    if (!email || !password || !userName || !permission) {
+      return res.status(400).json({ message: 'Invalid credentials, request must contain staffs proposed "email" ,"password","permissions" and "userName"' });
     }
      // Check if the userName is already in use by someone else
     const existingUserName = await Staff.findOne({ where: { userName: userName } });
@@ -509,6 +509,7 @@ exports.inviteStaff = async (req, res) => {
       existingStaff.password = hashedPassword;
       existingStaff.status = 'pending';
       await existingStaff.save();
+      await existingStaff.update({permission:permission || staff.permission });
 
       let mailOption = {
         from: process.env.EMAIL_USER,
@@ -530,6 +531,7 @@ exports.inviteStaff = async (req, res) => {
           email: existingStaff.email,
           status: existingStaff.status,
           role: existingStaff.role,
+          permission:existingStaff.permission
         },
       });
     } else {
