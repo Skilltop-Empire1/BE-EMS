@@ -29,8 +29,8 @@ const appointmentValidationSchema = Joi.object({
     .max(100)
     .required()
     .messages({
-      'any.required': 'Patient name is required',
-      'string.max': 'Patient name must be less than or equal to 100 characters',
+      'any.required': 'Department name is required',
+      'string.max': 'Department name must be less than or equal to 100 characters',
     }),
 
   consultName: Joi.string()

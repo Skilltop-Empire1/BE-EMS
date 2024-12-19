@@ -6,129 +6,245 @@
  const {appointmentValidationSchema} = require("../validations/appointmentValidation")
  
 
- const bookAppointment = async (req, res) => {
-   const {
-     deptName,
-     reason,
-     firstname,
-     phoneNo,
-     appointmentDate,
-     appointmentTime,
-     specialty,
-     consultName,
-   } = req.body;
+//  const bookAppointment = async (req, res) => {
+//    const {
+//      deptName,
+//      reason,
+//      firstname,
+//      phoneNo,
+//      appointmentDate,
+//      appointmentTime,
+//      specialty,
+//      consultName,
+//    } = req.body;
  
-   try {
+//    try {
+//     const { error } = appointmentValidationSchema.validate(req.body);
+//     if (error) {
+//       return res.status(400).json({ message: error.details[0].message });
+//     }
+//      const dept = await Department.findOne({ where: { name: deptName } });
+//      if (!dept) {
+//        return res.status(400).json({ message: "Department not found" });
+//      }
+ 
+//      const patient = await Patient.findOne({
+//        where: {
+//          [Sequelize.Op.or]: [{ firstName: firstname }, { phone: phoneNo }],
+//        },
+//      });
+ 
+//      if (!patient) {
+//        return res.status(404).json({ message: "Patient not found" });
+//      }
+ 
+//      // Gather patient details
+//      const name = patient.firstName + " " + patient.lastName;
+//      const patientPhoneNo = patient.phone
+//      const gender = patient.gender;
+//      const email = patient.email;
+//      const dateOfBirth = patient.dateOfBirth;
+//      const address = patient.address;
+ 
+//      // Find available doctors from the staff
+//      const availableStaff = await Staff.findAll({
+//        where: {
+//          specialization: specialty,
+//          deptId: dept.deptId,
+//        },
+//      });
+ 
+//      if (availableStaff.length === 0) {
+//        return res.status(404).json({ message: "No available doctors found" });
+//      }
+ 
+//      const consultant = availableStaff.find((staff) => staff.firstName === consultName);
+//      if (!consultant) {
+//        return res.status(404).json({ message: `Consultant ${consultName} not found` });
+//      }
+ 
+//  const appointExist = await Appointment.findAll({
+//   where: {
+//     [Sequelize.Op.or]: [{ patName: name }, { phone: phoneNo }]
+//   }
+// });
+
+// if (appointExist.length > 0) {
+//   const appointDateExist = appointExist.find((appointment) => appointment.appointDate === appointmentDate);
+//   if (appointDateExist) {
+//     return res.status(400).json({ msg: "The patient already booked an appointment for today." });
+//   }
+// }
+   
+//      const appointmentCount = await Appointment.count({
+//        where: {
+//          staffId: consultant.dataValues.staffId,
+//          appointDate: appointmentDate,
+//        },
+//      });
+ 
+//      if (appointmentCount >= 20) {
+//        return res
+//          .status(400)
+//          .json({ message: "Consultant has reached the maximum number of appointments for the day (20 patients)." });
+//      }
+ 
+//      // Create the appointment if the count is less than 20
+//      const appointment = await Appointment.create({
+//        patId: patient.patId,
+//        patName:name,
+//        phone: patientPhoneNo,
+//        gender,
+//        email,
+//        dateOfBirth,
+//        staffId: consultant.staffId,
+//        deptId: dept.deptId,
+//        appointDate: appointmentDate,
+//        appointTime: appointmentTime,
+//        address,
+//        reason: reason || null,
+//      });
+ 
+//      // Send confirmation email and SMS
+//      const emailContent = `
+//        Dear ${name},
+//        Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
+//        Reason: ${reason || "N/A"}.
+//        Doctor: ${consultant.dataValues.name}.
+//      `;
+//      const formattedPhoneNo = formatPhoneNumber(phoneNo)
+//      console.log("sms",formattedPhoneNo)
+//      const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.dataValues.lastName}.`;
+//      await sendMail(patient.email, "EMS Appointment", emailContent);
+//      await sendSMS(smsContent, formattedPhoneNo);
+
+//     return res.status(201).json({
+//       message: "Appointment booked successfully",
+//       appointment
+//     });
+
+//   } catch (error) {
+//     console.error("Error booking appointment:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+ 
+const bookAppointment = async (req, res) => {
+  const {
+    deptName,
+    reason,
+    firstname,
+    phoneNo,
+    appointmentDate,
+    appointmentTime,
+    specialty,
+    consultName,
+  } = req.body;
+
+  try {
+    // Validate request body
     const { error } = appointmentValidationSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
-     const dept = await Department.findOne({ where: { name: deptName } });
-     if (!dept) {
-       return res.status(400).json({ message: "Department not found" });
-     }
- 
-     const patient = await Patient.findOne({
-       where: {
-         [Sequelize.Op.or]: [{ firstName: firstname }, { phone: phoneNo }],
-       },
-     });
- 
-     if (!patient) {
-       return res.status(404).json({ message: "Patient not found" });
-     }
- 
-     // Gather patient details
-     const name = patient.firstName + " " + patient.lastName;
-     const patientPhoneNo = patient.phone
-     const gender = patient.gender;
-     const email = patient.email;
-     const dateOfBirth = patient.dateOfBirth;
-     const address = patient.address;
- 
-     // Find available doctors from the staff
-     const availableStaff = await Staff.findAll({
-       where: {
-         specialization: specialty,
-         deptId: dept.deptId,
-       },
-     });
- 
-     if (availableStaff.length === 0) {
-       return res.status(404).json({ message: "No available doctors found" });
-     }
- 
-     const consultant = availableStaff.find((staff) => staff.firstName === consultName);
-     if (!consultant) {
-       return res.status(404).json({ message: `Consultant ${consultName} not found` });
-     }
- 
- const appointExist = await Appointment.findAll({
-  where: {
-    [Sequelize.Op.or]: [{ patName: name }, { phone: phoneNo }]
-  }
-});
 
-if (appointExist.length > 0) {
-  const appointDateExist = appointExist.find((appointment) => appointment.appointDate === appointmentDate);
-  if (appointDateExist) {
-    return res.status(400).json({ msg: "The patient already booked an appointment for today." });
-  }
-}
-   
-     const appointmentCount = await Appointment.count({
-       where: {
-         staffId: consultant.dataValues.staffId,
-         appointDate: appointmentDate,
-       },
-     });
- 
-     if (appointmentCount >= 20) {
-       return res
-         .status(400)
-         .json({ message: "Consultant has reached the maximum number of appointments for the day (20 patients)." });
-     }
- 
-     // Create the appointment if the count is less than 20
-     const appointment = await Appointment.create({
-       patId: patient.patId,
-       patName:name,
-       phone: patientPhoneNo,
-       gender,
-       email,
-       dateOfBirth,
-       staffId: consultant.staffId,
-       deptId: dept.deptId,
-       appointDate: appointmentDate,
-       appointTime: appointmentTime,
-       address,
-       reason: reason || null,
-     });
- 
-     // Send confirmation email and SMS
-     const emailContent = `
-       Dear ${name},
-       Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
-       Reason: ${reason || "N/A"}.
-       Doctor: ${consultant.dataValues.name}.
-     `;
-     const formattedPhoneNo = formatPhoneNumber(phoneNo)
-     console.log("sms",formattedPhoneNo)
-     const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.dataValues.lastName}.`;
-     await sendMail(patient.email, "EMS Appointment", emailContent);
-     await sendSMS(smsContent, formattedPhoneNo);
+    // Check for patient details by first name or phone number
+    const patient = await Patient.findOne({
+      where: {
+        [Sequelize.Op.or]: [{ firstName: firstname }, { phone: phoneNo }],
+      },
+    });
+
+    // If patient found, return their details for pre-filling
+    if (patient) {
+      return res.status(200).json({
+        message: "Patient details fetched successfully",
+        patient: {
+          name: `${patient.firstName} ${patient.lastName}`,
+          phone: patient.phone,
+          gender: patient.gender,
+          email: patient.email,
+          dateOfBirth: patient.dateOfBirth,
+          address: patient.address,
+          medicalCondition: patient.medCondition, 
+        },
+      });
+    }
+
+    // Proceed to book appointment if patient doesn't exist
+    const dept = await Department.findOne({ where: { name: deptName } });
+    if (!dept) {
+      return res.status(400).json({ message: "Department not found" });
+    }
+
+    const availableStaff = await Staff.findAll({
+      where: {
+        specialization: specialty,
+        deptId: dept.deptId,
+      },
+    });
+
+    if (availableStaff.length === 0) {
+      return res.status(404).json({ message: "No available doctors found" });
+    }
+
+    const consultant = availableStaff.find((staff) => staff.firstName === consultName);
+    if (!consultant) {
+      return res.status(404).json({ message: `Consultant ${consultName} not found` });
+    }
+
+    const appointmentCount = await Appointment.count({
+      where: {
+        staffId: consultant.dataValues.staffId,
+        appointDate: appointmentDate,
+      },
+    });
+
+    if (appointmentCount >= 20) {
+      return res.status(400).json({
+        message: "Consultant has reached the maximum number of appointments for the day (20 patients).",
+      });
+    }
+
+    // Create the appointment
+    const appointment = await Appointment.create({
+      patId: patient ? patient.patId : null,
+      patName: patient ? `${patient.firstName} ${patient.lastName}` : firstname,
+      phone: patient ? patient.phone : phoneNo,
+      gender: patient ? patient.gender : null,
+      email: patient ? patient.email : null,
+      patMedCond:patient ? patient.medCondition : null,
+      dateOfBirth: patient ? patient.dateOfBirth : null,
+      staffId: consultant.staffId,
+      deptId: dept.deptId,
+      appointDate: appointmentDate,
+      appointTime: appointmentTime,
+      address: patient ? patient.address : null,
+      reason: reason || null,
+    });
+
+    // Send confirmation email and SMS
+    const emailContent = `
+      Dear ${firstname},
+      Your appointment has been scheduled on ${appointmentDate} at ${appointmentTime}.
+      Reason: ${reason || "N/A"}.
+      Doctor: ${consultant.dataValues.name}.
+    `;
+    const formattedPhoneNo = formatPhoneNumber(phoneNo);
+    const smsContent = `Appointment confirmed: ${appointmentDate} at ${appointmentTime} with Dr. ${consultant.dataValues.lastName}.`;
+
+    await sendMail(patient ? patient.email : email, "EMS Appointment", emailContent);
+    await sendSMS(smsContent, formattedPhoneNo);
 
     return res.status(201).json({
       message: "Appointment booked successfully",
       appointment,
     });
-
   } catch (error) {
     console.error("Error booking appointment:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
- 
 
 
 const updateAppointment = async (req, res) => {
