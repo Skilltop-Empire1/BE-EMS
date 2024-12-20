@@ -170,7 +170,8 @@ const bookAppointment = async (req, res) => {
         },
       });
     }
-
+    //      // Gather patient details
+    const name = patient.firstName + " " + patient.lastName;
     // Proceed to book appointment if patient doesn't exist
     const dept = await Department.findOne({ where: { name: deptName } });
     if (!dept) {
@@ -209,7 +210,7 @@ const bookAppointment = async (req, res) => {
     // Create the appointment
     const appointment = await Appointment.create({
       patId: patient ? patient.patId : null,
-      patName: patient ? `${patient.firstName} ${patient.lastName}` : firstname,
+      patName: name,
       phone: patient ? patient.phone : phoneNo,
       gender: patient ? patient.gender : null,
       email: patient ? patient.email : null,
